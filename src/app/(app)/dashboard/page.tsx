@@ -1,10 +1,14 @@
-export default function DashboardPage() {
+import { getDashboardData } from "@/app/actions/assets";
+import { DashboardClient } from "./dashboard-client";
+
+export default async function DashboardPage() {
+  const data = await getDashboardData();
+
   return (
-    <div>
-      <h2 className="text-xl font-bold tracking-tight text-slate-100">
-        Dashboard
-      </h2>
-      <p className="text-xs text-outline mt-1">Welcome to your vault.</p>
-    </div>
+    <DashboardClient
+      pinnedAssets={data.pinnedAssets}
+      pinnedCollections={data.pinnedCollections}
+      recentAssets={data.recentAssets}
+    />
   );
 }
