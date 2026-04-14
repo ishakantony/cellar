@@ -88,6 +88,12 @@ Sidebar + header shell layout. Auth-protected via middleware.
 - `/api/upload` — POST multipart file upload, streams to `uploads/{userId}/{uuid}.ext`
 - `/api/files/[...path]` — auth-checked file serving route
 
+## Asset Creation
+
+Quick action buttons on the dashboard and the "Add Item" button in the header both open the same asset drawer in **create mode**. The drawer pre-selects the asset type (if triggered from a quick action button) or defaults to SNIPPET (if triggered from "Add Item"). The user fills in the title and type-specific fields, then saves. For IMAGE/FILE types, a file input replaces the Monaco editor area — the file is uploaded via `/api/upload` on save.
+
+The "New Collection" header button opens a small modal form (name, description, color picker) rather than the drawer.
+
 ## Asset Drawer
 
 Slide-out panel from the right, 680px wide (full on mobile). Not a separate route — overlays the current page.
