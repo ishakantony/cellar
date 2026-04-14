@@ -163,11 +163,13 @@ export async function getDashboardData() {
     prisma.asset.findMany({
       where: { userId: user.id, pinned: true },
       orderBy: { updatedAt: "desc" },
+      take: 20,
     }),
     prisma.collection.findMany({
       where: { userId: user.id, pinned: true },
       include: { _count: { select: { assets: true } } },
       orderBy: { updatedAt: "desc" },
+      take: 20,
     }),
     prisma.asset.findMany({
       where: { userId: user.id },

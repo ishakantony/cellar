@@ -59,6 +59,7 @@ export function DashboardClient({
     id: string;
     title: string;
   } | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   async function handleAssetClick(asset: DashboardAsset) {
     const full = await getAsset(asset.id);
@@ -78,13 +79,18 @@ export function DashboardClient({
 
   async function handleConfirmDelete() {
     if (!deleteTarget) return;
-    if (deleteTarget.type === "asset") {
-      await deleteAsset(deleteTarget.id);
-    } else {
-      await deleteCollection(deleteTarget.id);
+    try {
+      if (deleteTarget.type === "asset") {
+        await deleteAsset(deleteTarget.id);
+      } else {
+        await deleteCollection(deleteTarget.id);
+      }
+      setDeleteTarget(null);
+      router.refresh();
+    } catch {
+      setActionError("Failed to delete. Please try again.");
+      setDeleteTarget(null);
     }
-    setDeleteTarget(null);
-    router.refresh();
   }
 
   return (
@@ -120,8 +126,12 @@ export function DashboardClient({
                 asset={asset}
                 onClick={() => handleAssetClick(asset)}
                 onTogglePin={async () => {
-                  await togglePin(asset.id);
-                  router.refresh();
+                  try {
+                    await togglePin(asset.id);
+                    router.refresh();
+                  } catch {
+                    setActionError("Failed to update pin. Please try again.");
+                  }
                 }}
                 onDelete={() =>
                   setDeleteTarget({
@@ -156,8 +166,12 @@ export function DashboardClient({
                   router.push(`/collections/${collection.id}`)
                 }
                 onTogglePin={async () => {
-                  await toggleCollectionPin(collection.id);
-                  router.refresh();
+                  try {
+                    await toggleCollectionPin(collection.id);
+                    router.refresh();
+                  } catch {
+                    setActionError("Failed to update pin. Please try again.");
+                  }
                 }}
                 onDelete={() =>
                   setDeleteTarget({
@@ -190,8 +204,12 @@ export function DashboardClient({
               compact
               onClick={() => handleAssetClick(asset)}
               onTogglePin={async () => {
-                await togglePin(asset.id);
-                router.refresh();
+                try {
+                  await togglePin(asset.id);
+                  router.refresh();
+                } catch {
+                  setActionError("Failed to update pin. Please try again.");
+                }
               }}
               onDelete={() =>
                 setDeleteTarget({
@@ -211,6 +229,14 @@ export function DashboardClient({
           )}
         </div>
       </section>
+
+      {/* Action Error Toast */}
+      {actionError && (
+        <div className="fixed bottom-4 right-4 z-50 bg-error/20 border border-error/40 rounded-lg px-4 py-2 text-xs text-error">
+          {actionError}
+          <button onClick={() => setActionError(null)} className="ml-2 text-error/60 hover:text-error">×</button>
+        </div>
+      )}
 
       {/* Drawer */}
       <AssetDrawer
