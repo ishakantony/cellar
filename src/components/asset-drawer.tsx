@@ -13,7 +13,6 @@ import {
   Download,
 } from "lucide-react";
 import {
-  FileCode,
   Terminal,
   Link as LinkIcon,
   StickyNote,
