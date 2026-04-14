@@ -11,12 +11,12 @@ export function proxy(request: NextRequest) {
 
   // Check for Better Auth session cookie
   const sessionToken = request.cookies.get("better-auth.session_token");
-  if (!sessionToken && pathname !== "/") {
+  if (!sessionToken) {
     const signInUrl = new URL("/sign-in", request.url);
     return NextResponse.redirect(signInUrl);
   }
 
-  // Redirect root to dashboard
+  // Redirect root to dashboard for authenticated users
   if (pathname === "/") {
     const dashboardUrl = new URL("/dashboard", request.url);
     return NextResponse.redirect(dashboardUrl);
