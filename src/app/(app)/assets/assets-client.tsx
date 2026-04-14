@@ -55,9 +55,6 @@ export function AssetsClient({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerMode, setDrawerMode] = useState<"view" | "edit" | "create">(
-    "view"
-  );
   const [selectedAsset, setSelectedAsset] = useState<AssetItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<{
     id: string;
@@ -76,8 +73,8 @@ export function AssetsClient({
   async function handleAssetClick(asset: AssetItem) {
     const full = await getAsset(asset.id);
     if (full) {
-      setSelectedAsset(full as AssetItem);
-      setDrawerMode("view");
+      const { id, type, title, description, content, language, url, filePath, fileName, mimeType, fileSize, pinned, updatedAt } = full;
+      setSelectedAsset({ id, type, title, description, content, language, url, filePath, fileName, mimeType, fileSize, pinned, updatedAt });
       setDrawerOpen(true);
     }
   }
@@ -168,7 +165,7 @@ export function AssetsClient({
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         asset={selectedAsset}
-        mode={drawerMode}
+        mode="view"
         onSaved={() => {
           setDrawerOpen(false);
           router.refresh();

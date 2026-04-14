@@ -13,8 +13,17 @@ export default async function AssetsPage({
   }>;
 }) {
   const params = await searchParams;
-  const type = (params.type as AssetType) || null;
-  const sort = params.sort || "newest";
+
+  const VALID_ASSET_TYPES = ["SNIPPET", "PROMPT", "NOTE", "LINK", "IMAGE", "FILE"] as const;
+  const VALID_SORT = ["newest", "oldest", "az", "za"] as const;
+
+  const rawType = params.type;
+  const type = (VALID_ASSET_TYPES as readonly string[]).includes(rawType ?? "")
+    ? (rawType as AssetType)
+    : null;
+  const sort = (VALID_SORT as readonly string[]).includes(params.sort ?? "")
+    ? (params.sort as typeof VALID_SORT[number])
+    : "newest";
   const q = params.q || "";
 
   const assets = await getAssets({
@@ -24,7 +33,7 @@ export default async function AssetsPage({
   });
 
   return (
-    <Suspense>
+    <Suspense fallback={<div className="py-8 text-center text-xs text-outline">Loading...</div>}>
       <AssetsClient
         assets={assets}
         currentType={type}
