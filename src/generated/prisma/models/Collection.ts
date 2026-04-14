@@ -206,8 +206,8 @@ export type CollectionWhereInput = {
   pinned?: Prisma.BoolFilter<"Collection"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Collection"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Collection"> | Date | string
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   assets?: Prisma.AssetCollectionListRelationFilter
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type CollectionOrderByWithRelationInput = {
@@ -219,8 +219,8 @@ export type CollectionOrderByWithRelationInput = {
   pinned?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  user?: Prisma.UserOrderByWithRelationInput
   assets?: Prisma.AssetCollectionOrderByRelationAggregateInput
+  user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type CollectionWhereUniqueInput = Prisma.AtLeast<{
@@ -235,8 +235,8 @@ export type CollectionWhereUniqueInput = Prisma.AtLeast<{
   pinned?: Prisma.BoolFilter<"Collection"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Collection"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Collection"> | Date | string
-  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   assets?: Prisma.AssetCollectionListRelationFilter
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type CollectionOrderByWithAggregationInput = {
@@ -275,8 +275,8 @@ export type CollectionCreateInput = {
   pinned?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutCollectionsInput
   assets?: Prisma.AssetCollectionCreateNestedManyWithoutCollectionInput
+  user: Prisma.UserCreateNestedOneWithoutCollectionsInput
 }
 
 export type CollectionUncheckedCreateInput = {
@@ -299,8 +299,8 @@ export type CollectionUpdateInput = {
   pinned?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutCollectionsNestedInput
   assets?: Prisma.AssetCollectionUpdateManyWithoutCollectionNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutCollectionsNestedInput
 }
 
 export type CollectionUncheckedUpdateInput = {
@@ -655,8 +655,8 @@ export type CollectionSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   pinned?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   assets?: boolean | Prisma.Collection$assetsArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.CollectionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["collection"]>
 
@@ -697,8 +697,8 @@ export type CollectionSelectScalar = {
 
 export type CollectionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "name" | "description" | "color" | "pinned" | "createdAt" | "updatedAt", ExtArgs["result"]["collection"]>
 export type CollectionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   assets?: boolean | Prisma.Collection$assetsArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.CollectionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CollectionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -711,8 +711,8 @@ export type CollectionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.E
 export type $CollectionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Collection"
   objects: {
-    user: Prisma.$UserPayload<ExtArgs>
     assets: Prisma.$AssetCollectionPayload<ExtArgs>[]
+    user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1117,8 +1117,8 @@ readonly fields: CollectionFieldRefs;
  */
 export interface Prisma__CollectionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   assets<T extends Prisma.Collection$assetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Collection$assetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssetCollectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
