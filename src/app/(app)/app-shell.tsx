@@ -12,9 +12,12 @@ export function AppShell({
   user: { name: string; email: string; image?: string | null };
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // mobileMenuOpen wired to mobile overlay sidebar (Task 18)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // drawerOpen/drawerMode wired to AssetDrawer (Task 12, fully connected in Task 17)
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMode, setDrawerMode] = useState<"create" | null>(null);
+  // collectionModalOpen wired to CollectionModal (Task 17)
   const [collectionModalOpen, setCollectionModalOpen] = useState(false);
 
   function handleAddItem() {
