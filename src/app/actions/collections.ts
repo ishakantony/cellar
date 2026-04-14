@@ -53,7 +53,7 @@ export async function getCollections() {
   return prisma.collection.findMany({
     where: { userId: user.id },
     include: { _count: { select: { assets: true } } },
-    orderBy: { updatedAt: "desc" },
+    orderBy: [{ pinned: "desc" }, { updatedAt: "desc" }],
   });
 }
 

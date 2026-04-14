@@ -51,7 +51,8 @@ export function CollectionDetailClient({
   async function handleAssetClick(asset: AssetItem) {
     const full = await getAsset(asset.id);
     if (full) {
-      setSelectedAsset(full as AssetItem);
+      const { id, type, title, description, content, language, url, filePath, fileName, mimeType, fileSize, pinned, updatedAt } = full;
+      setSelectedAsset({ id, type, title, description, content, language, url, filePath, fileName, mimeType, fileSize, pinned, updatedAt });
       setDrawerOpen(true);
     }
   }
