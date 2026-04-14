@@ -1,20 +1,11 @@
 "use server";
 
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { AssetType, Prisma } from "@/generated/prisma";
 import { revalidatePath } from "next/cache";
 import { unlink } from "fs/promises";
 import { join } from "path";
-
-async function getUser() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  if (!session?.user) throw new Error("Unauthorized");
-  return session.user;
-}
+import { getUser } from "@/lib/session";
 
 export async function createAsset(data: {
   type: AssetType;
@@ -57,6 +48,7 @@ export async function updateAsset(
   });
   revalidatePath("/dashboard");
   revalidatePath("/assets");
+  revalidatePath("/collections");
   return asset;
 }
 
@@ -70,8 +62,12 @@ export async function deleteAsset(id: string) {
   // Remove file from disk if it's an image or file type
   if (asset.filePath) {
     const uploadDir = process.env.UPLOAD_DIR || "./uploads";
-    const fullPath = join(process.cwd(), uploadDir, asset.filePath);
-    await unlink(fullPath).catch(() => {});
+    const uploadsRoot = join(process.cwd(), uploadDir);
+    const fullPath = join(uploadsRoot, asset.filePath);
+    // Prevent path traversal: ensure the resolved path stays within uploads
+    if (fullPath.startsWith(uploadsRoot + "/") || fullPath.startsWith(uploadsRoot + "\\")) {
+      await unlink(fullPath).catch(() => {});
+    }
   }
 
   await prisma.asset.delete({ where: { id, userId: user.id } });

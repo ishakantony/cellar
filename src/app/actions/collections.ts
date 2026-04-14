@@ -1,17 +1,8 @@
 "use server";
 
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-
-async function getUser() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  if (!session?.user) throw new Error("Unauthorized");
-  return session.user;
-}
+import { getUser } from "@/lib/session";
 
 export async function createCollection(data: {
   name: string;
@@ -109,8 +100,10 @@ export async function addAssetToCollection(
   ]);
   if (!asset || !collection) throw new Error("Not found");
 
-  await prisma.assetCollection.create({
-    data: { assetId, collectionId },
+  await prisma.assetCollection.upsert({
+    where: { assetId_collectionId: { assetId, collectionId } },
+    create: { assetId, collectionId },
+    update: {},
   });
   revalidatePath("/collections");
 }
@@ -121,11 +114,12 @@ export async function removeAssetFromCollection(
 ) {
   const user = await getUser();
 
-  // Verify collection belongs to user
-  const collection = await prisma.collection.findUnique({
-    where: { id: collectionId, userId: user.id },
-  });
-  if (!collection) throw new Error("Collection not found");
+  // Verify both asset and collection belong to user
+  const [asset, collection] = await Promise.all([
+    prisma.asset.findUnique({ where: { id: assetId, userId: user.id } }),
+    prisma.collection.findUnique({ where: { id: collectionId, userId: user.id } }),
+  ]);
+  if (!asset || !collection) throw new Error("Not found");
 
   await prisma.assetCollection.delete({
     where: {
