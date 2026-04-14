@@ -9,8 +9,10 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check for Better Auth session cookie
-  const sessionToken = request.cookies.get("better-auth.session_token");
+  // Check for Better Auth session cookie (includes __Secure- prefix variant for HTTPS)
+  const sessionToken =
+    request.cookies.get("better-auth.session_token") ??
+    request.cookies.get("__Secure-better-auth.session_token");
   if (!sessionToken) {
     const signInUrl = new URL("/sign-in", request.url);
     return NextResponse.redirect(signInUrl);

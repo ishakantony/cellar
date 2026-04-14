@@ -33,9 +33,23 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const userDir = join(process.cwd(), uploadDir, session.user.id);
+  // Allowlist of permitted extensions and MIME types
+  const ALLOWED_EXTENSIONS = new Set([
+    ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg",
+    ".pdf", ".txt", ".md", ".json", ".csv",
+    ".js", ".ts", ".jsx", ".tsx", ".py", ".go", ".rs", ".rb", ".java", ".c", ".cpp", ".h",
+    ".html", ".css", ".xml", ".yaml", ".yml", ".toml", ".sh",
+    ".zip", ".tar", ".gz",
+  ]);
+  const ext = extname(file.name).toLowerCase();
+  if (!ALLOWED_EXTENSIONS.has(ext)) {
+    return NextResponse.json(
+      { error: `File type not allowed: ${ext || "unknown"}` },
+      { status: 415 }
+    );
+  }
 
-  const ext = extname(file.name);
+  const userDir = join(process.cwd(), uploadDir, session.user.id);
   const storedName = `${randomUUID()}${ext}`;
   const storedPath = join(userDir, storedName);
 
