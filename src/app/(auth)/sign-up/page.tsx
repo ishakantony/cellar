@@ -18,17 +18,26 @@ export default function SignUpPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
-    const result = await signUp.email({ name, email, password });
-    setLoading(false);
-    if (result.error) {
-      setError(result.error.message ?? "Sign up failed");
-    } else {
-      router.push("/dashboard");
+    try {
+      const result = await signUp.email({ name, email, password });
+      if (result.error) {
+        setError(result.error.message ?? "Sign up failed");
+      } else {
+        router.push("/dashboard");
+      }
+    } catch {
+      setError("An unexpected error occurred");
+    } finally {
+      setLoading(false);
     }
   }
 
   async function handleGitHub() {
-    await signIn.social({ provider: "github", callbackURL: "/dashboard" });
+    try {
+      await signIn.social({ provider: "github", callbackURL: "/dashboard" });
+    } catch {
+      setError("GitHub sign in failed");
+    }
   }
 
   return (
@@ -51,10 +60,11 @@ export default function SignUpPage() {
         )}
 
         <div>
-          <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+          <label htmlFor="name" className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
             Name
           </label>
           <input
+            id="name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -65,10 +75,11 @@ export default function SignUpPage() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+          <label htmlFor="email" className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
             Email
           </label>
           <input
+            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -79,10 +90,11 @@ export default function SignUpPage() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+          <label htmlFor="password" className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
             Password
           </label>
           <input
+            id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -115,6 +127,7 @@ export default function SignUpPage() {
         onClick={handleGitHub}
         className="flex w-full items-center justify-center gap-2 rounded-lg bg-surface-container ghost-border px-4 py-2.5 text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:bg-surface-bright hover:text-slate-100 transition-all"
       >
+        {/* Github icon removed in lucide-react 1.8.0; GitBranch used as substitute */}
         <GitBranch className="h-4 w-4" />
         Continue with GitHub
       </button>
