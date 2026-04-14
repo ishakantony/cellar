@@ -55,13 +55,18 @@ export async function GET(
     };
     const contentType = contentTypes[ext ?? ""] || "application/octet-stream";
 
-    return new NextResponse(buffer, {
-      headers: {
-        "Content-Type": contentType,
-        "Content-Length": fileStat.size.toString(),
-        "Cache-Control": "private, max-age=31536000, immutable",
-      },
-    });
+    const isInlineUnsafe = ["svg", "html", "htm", "js", "xml"].includes(ext ?? "");
+    const responseHeaders: Record<string, string> = {
+      "Content-Type": contentType,
+      "Content-Length": fileStat.size.toString(),
+      "Cache-Control": "private, max-age=31536000, immutable",
+      "X-Content-Type-Options": "nosniff",
+    };
+    if (isInlineUnsafe) {
+      responseHeaders["Content-Disposition"] = "attachment";
+    }
+
+    return new NextResponse(buffer, { headers: responseHeaders });
   } catch {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }

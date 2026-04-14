@@ -22,6 +22,9 @@ export function DeleteDialog({
       onClick={onCancel}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Delete "${title}"`}
         className="bg-surface-container-high rounded-xl p-6 w-[360px] mx-4 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >

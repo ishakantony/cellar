@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  FileCode,
   Terminal,
   Link as LinkIcon,
   StickyNote,
@@ -13,12 +12,13 @@ import {
   PinOff,
   Trash2,
 } from "lucide-react";
+import React from "react";
 import { AssetType } from "@/generated/prisma";
 import { useState, useRef, useEffect } from "react";
 
 const TYPE_CONFIG: Record<
   AssetType,
-  { icon: typeof FileCode; iconWrap: string; label: string }
+  { icon: React.ComponentType<{ className?: string }>; iconWrap: string; label: string }
 > = {
   SNIPPET: {
     icon: Braces,

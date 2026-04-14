@@ -40,16 +40,21 @@ export function CollectionModal({
     e.preventDefault();
     if (!name.trim()) return;
     setLoading(true);
-    await onSubmit({
-      name: name.trim(),
-      description: description.trim() || undefined,
-      color,
-    });
-    setLoading(false);
-    setName("");
-    setDescription("");
-    setColor("#3b82f6");
-    onClose();
+    try {
+      await onSubmit({
+        name: name.trim(),
+        description: description.trim() || undefined,
+        color,
+      });
+      setName("");
+      setDescription("");
+      setColor("#3b82f6");
+      onClose();
+    } catch {
+      // onSubmit failed — keep modal open so user can retry
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -59,6 +64,9 @@ export function CollectionModal({
       onClick={onClose}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={initialData ? "Edit Collection" : "New Collection"}
         className="bg-surface-container-high rounded-xl p-6 w-[400px] mx-4 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
@@ -67,10 +75,11 @@ export function CollectionModal({
         </h3>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+            <label htmlFor="collection-name" className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
               Name
             </label>
             <input
+              id="collection-name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -80,10 +89,11 @@ export function CollectionModal({
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+            <label htmlFor="collection-description" className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
               Description
             </label>
             <input
+              id="collection-description"
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -92,7 +102,7 @@ export function CollectionModal({
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+            <label htmlFor="collection-color" className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
               Color
             </label>
             <div className="flex gap-2">

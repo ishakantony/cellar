@@ -34,14 +34,18 @@ export async function POST(request: NextRequest) {
   }
 
   const userDir = join(process.cwd(), uploadDir, session.user.id);
-  await mkdir(userDir, { recursive: true });
 
   const ext = extname(file.name);
   const storedName = `${randomUUID()}${ext}`;
   const storedPath = join(userDir, storedName);
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(storedPath, buffer);
+  try {
+    await mkdir(userDir, { recursive: true });
+    const buffer = Buffer.from(await file.arrayBuffer());
+    await writeFile(storedPath, buffer);
+  } catch {
+    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+  }
 
   // Return the relative path (userId/filename) — stored in Asset.filePath
   const relativePath = `${session.user.id}/${storedName}`;

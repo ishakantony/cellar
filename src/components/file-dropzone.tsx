@@ -18,6 +18,7 @@ export function FileDropzone({
   const [uploading, setUploading] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function handleFile(file: globalThis.File) {
@@ -34,7 +35,11 @@ export function FileDropzone({
 
     if (res.ok) {
       const data = await res.json();
+      setError(null);
       onUpload(data);
+    } else {
+      const err = await res.json().catch(() => ({}));
+      setError((err as { error?: string }).error ?? "Upload failed");
     }
     setUploading(false);
   }
@@ -91,6 +96,9 @@ export function FileDropzone({
             Drop a file here or click to browse
           </p>
         </>
+      )}
+      {error && (
+        <p className="text-xs text-error mt-1">{error}</p>
       )}
     </div>
   );
