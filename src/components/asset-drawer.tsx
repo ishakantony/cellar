@@ -115,6 +115,7 @@ export function AssetDrawer({
   );
   const [showPreview, setShowPreview] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // File upload state
   const [fileData, setFileData] = useState<{
@@ -145,6 +146,7 @@ export function AssetDrawer({
 
   async function handleSave() {
     setSaving(true);
+    setSaveError(null);
     try {
       if (mode === "create") {
         await createAsset({
@@ -172,6 +174,8 @@ export function AssetDrawer({
       }
       setEditing(false);
       onSaved?.();
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Failed to save");
     } finally {
       setSaving(false);
     }
@@ -456,21 +460,28 @@ export function AssetDrawer({
 
         {/* Edit/Create footer */}
         {editing && (
-          <div className="flex items-center justify-end px-6 py-4 border-t border-white/5 shrink-0 gap-2">
-            <button
-              onClick={handleCancel}
-              className="px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:text-slate-100 hover:bg-surface-bright rounded transition-all"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={saving || !title.trim()}
-              className="flex items-center gap-1.5 px-4 py-1.5 bg-primary-container/30 hover:bg-primary-container/50 border border-primary/30 hover:border-primary/50 rounded text-xs font-bold uppercase tracking-widest text-primary transition-all disabled:opacity-50"
-            >
-              <Save className="h-3.5 w-3.5" />
-              {saving ? "Saving..." : "Save"}
-            </button>
+          <div className="flex items-center justify-between px-6 py-4 border-t border-white/5 shrink-0 gap-2">
+            {saveError ? (
+              <p className="text-xs text-error">{saveError}</p>
+            ) : (
+              <div />
+            )}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleCancel}
+                className="px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:text-slate-100 hover:bg-surface-bright rounded transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving || !title.trim()}
+                className="flex items-center gap-1.5 px-4 py-1.5 bg-primary-container/30 hover:bg-primary-container/50 border border-primary/30 hover:border-primary/50 rounded text-xs font-bold uppercase tracking-widest text-primary transition-all disabled:opacity-50"
+              >
+                <Save className="h-3.5 w-3.5" />
+                {saving ? "Saving..." : "Save"}
+              </button>
+            </div>
           </div>
         )}
       </div>
