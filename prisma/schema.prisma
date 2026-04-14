@@ -7,28 +7,18 @@ datasource db {
   provider = "postgresql"
 }
 
-enum AssetType {
-  SNIPPET
-  PROMPT
-  NOTE
-  LINK
-  IMAGE
-  FILE
-}
-
 model User {
-  id            String    @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
+  email         String       @unique
+  emailVerified Boolean      @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  sessions    Session[]
-  accounts    Account[]
-  assets      Asset[]
-  collections Collection[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  accounts      Account[]
+  assets        Asset[]
+  collections   Collection[]
+  sessions      Session[]
 }
 
 model Session {
@@ -48,7 +38,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -58,6 +47,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Verification {
@@ -70,45 +60,42 @@ model Verification {
 }
 
 model Asset {
-  id          String    @id @default(cuid())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type        AssetType
-  title       String
-  description String?
-  pinned      Boolean   @default(false)
-
-  // Type-specific fields
-  content     String?   // SNIPPET, PROMPT, NOTE
-  language    String?   // SNIPPET
-  url         String?   // LINK
-  filePath    String?   // IMAGE, FILE
-  fileName    String?   // IMAGE, FILE
-  mimeType    String?   // IMAGE, FILE
-  fileSize    Int?      // IMAGE, FILE
-
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-
-  collections AssetCollection[]
+  id           String                   @id @default(cuid())
+  userId       String
+  type         AssetType
+  title        String
+  description  String?
+  pinned       Boolean                  @default(false)
+  content      String?
+  language     String?
+  url          String?
+  filePath     String?
+  fileName     String?
+  mimeType     String?
+  fileSize     Int?
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+  searchVector Unsupported("tsvector")?
+  user         User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  collections  AssetCollection[]
 
   @@index([userId, type])
   @@index([userId, pinned])
   @@index([userId, updatedAt(sort: Desc)])
+  @@index([searchVector], type: Gin)
 }
 
 model Collection {
-  id          String   @id @default(cuid())
+  id          String            @id @default(cuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name        String
   description String?
   color       String?
-  pinned      Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  assets AssetCollection[]
+  pinned      Boolean           @default(false)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  assets      AssetCollection[]
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, pinned])
 }
@@ -120,4 +107,13 @@ model AssetCollection {
   collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
 
   @@id([assetId, collectionId])
+}
+
+enum AssetType {
+  SNIPPET
+  PROMPT
+  NOTE
+  LINK
+  IMAGE
+  FILE
 }
