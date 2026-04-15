@@ -13,6 +13,12 @@
     "test:run": "vitest run",
     "prepare": "husky"
   },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "vitest run --reporter=dot"
+    ]
+  },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
     "@prisma/adapter-pg": "^7.7.0",
