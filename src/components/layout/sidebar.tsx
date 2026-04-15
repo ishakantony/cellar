@@ -5,6 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { Suspense } from "react";
+import { Avatar } from "@/components/ui/avatar";
 import {
   LayoutDashboard,
   Package,
@@ -155,17 +156,7 @@ function SidebarContent({
           </Link>
         </div>
         <div className="flex items-center gap-3 px-4 py-3 bg-surface-container rounded-lg">
-          {user.image ? (
-            <img
-              src={user.image}
-              alt={user.name}
-              className="h-8 w-8 rounded-full bg-surface-bright object-cover"
-            />
-          ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-container text-xs font-bold text-on-primary-container">
-              {user.name?.charAt(0).toUpperCase()}
-            </div>
-          )}
+          <Avatar src={user.image} name={user.name} size="sm" />
           <div className="flex-1 overflow-hidden">
             <p className="truncate text-xs font-bold text-slate-100">
               {user.name}

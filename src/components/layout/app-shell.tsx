@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { Sidebar, SidebarCollapsedToggle } from "@/components/sidebar";
-import { Header } from "@/components/header";
+import { Sidebar, SidebarCollapsedToggle } from "@/components/layout/sidebar";
+import { Header } from "@/components/layout/header";
 import { AssetDrawer } from "@/components/asset-drawer";
 import { CollectionModal } from "@/components/collection-modal";
 import { createCollection } from "@/app/actions/collections";

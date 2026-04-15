@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Search, FolderPlus, SquarePlus, Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export function Header({
   onMobileMenuToggle,
@@ -40,31 +42,50 @@ export function Header({
       </div>
 
       <form onSubmit={handleSearch} className="relative group">
-        <input
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-outline pointer-events-none z-10" />
+        <Input
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="bg-surface-container-low border-none rounded-lg py-2 px-10 text-sm w-80 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-outline/50 text-on-surface"
+          onChange={setSearchQuery}
           placeholder="Quick search..."
-          type="text"
+          className="w-80 pl-10"
         />
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-outline pointer-events-none" />
       </form>
 
       <div className="flex items-center gap-3 flex-1 justify-end">
-        <button
+        <Button
           onClick={onAddCollection}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-container hover:bg-surface-bright ghost-border rounded text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:text-slate-100 transition-all"
+          variant="ghost"
+          size="sm"
+          className="hidden sm:flex"
         >
           <FolderPlus className="h-4 w-4" />
-          <span className="hidden sm:inline">Collection</span>
-        </button>
-        <button
+          Collection
+        </Button>
+        <Button
+          onClick={onAddCollection}
+          variant="ghost"
+          size="sm"
+          className="sm:hidden"
+        >
+          <FolderPlus className="h-4 w-4" />
+        </Button>
+        <Button
           onClick={onAddItem}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-container/20 hover:bg-primary-container/40 border border-primary/20 hover:border-primary/50 rounded text-xs font-bold uppercase tracking-widest text-primary transition-all"
+          variant="primary"
+          size="sm"
+          className="hidden sm:flex"
         >
           <SquarePlus className="h-4 w-4" />
-          <span className="hidden sm:inline">Add Item</span>
-        </button>
+          Add Item
+        </Button>
+        <Button
+          onClick={onAddItem}
+          variant="primary"
+          size="sm"
+          className="sm:hidden"
+        >
+          <SquarePlus className="h-4 w-4" />
+        </Button>
       </div>
     </header>
   );

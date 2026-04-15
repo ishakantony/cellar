@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CollectionCard } from "@/components/collection-card";
+import { CollectionCard } from "@/components/collections/collection-card";
 import { CollectionModal } from "@/components/collection-modal";
-import { DeleteDialog } from "@/components/delete-dialog";
+import { Modal } from "@/components/ui/modal";
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 import {
   createCollection,
   toggleCollectionPin,
@@ -93,12 +96,27 @@ export function CollectionsClient({
         }}
       />
 
-      <DeleteDialog
+      <Modal
         open={!!deleteTarget}
-        title={deleteTarget?.name ?? ""}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setDeleteTarget(null)}
-      />
+        onClose={() => setDeleteTarget(null)}
+        title={`Delete "${deleteTarget?.name ?? ''}"?`}
+        size="sm"
+        actions={
+          <>
+            <Button variant="ghost" onClick={() => setDeleteTarget(null)}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={handleConfirmDelete}>
+              <Trash2 className="h-3.5 w-3.5" />
+              Delete
+            </Button>
+          </>
+        }
+      >
+        <Alert variant="error">
+          This action cannot be undone. The collection will be permanently removed.
+        </Alert>
+      </Modal>
     </div>
   );
 }

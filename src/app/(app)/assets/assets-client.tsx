@@ -3,9 +3,12 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AssetType } from "@/generated/prisma";
-import { AssetCard } from "@/components/asset-card";
+import { AssetCard } from "@/components/assets/asset-card";
 import { AssetDrawer } from "@/components/asset-drawer";
-import { DeleteDialog } from "@/components/delete-dialog";
+import { Modal } from "@/components/ui/modal";
+import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 import { togglePin, deleteAsset, getAsset } from "@/app/actions/assets";
 
 const TYPE_TABS: { label: string; value: AssetType | null }[] = [
@@ -184,12 +187,28 @@ export function AssetsClient({
       />
 
       {/* Delete Dialog */}
-      <DeleteDialog
+      <Modal
         open={!!deleteTarget}
-        title={deleteTarget?.title ?? ""}
-        onConfirm={handleConfirmDelete}
-        onCancel={() => setDeleteTarget(null)}
-      />
+        onClose={() => setDeleteTarget(null)}
+        title={`Delete "${deleteTarget?.title ?? ''}"?`}
+        size="sm"
+        actions={
+          <>
+            <Button variant="ghost" onClick={() => setDeleteTarget(null)}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={handleConfirmDelete}>
+              <Trash2 className="h-3.5 w-3.5" />
+              Delete
+            </Button>
+          </>
+        }
+      >
+        <Alert variant="error">
+          This action cannot be undone. The item will be permanently removed
+          from your vault.
+        </Alert>
+      </Modal>
     </div>
   );
 }
