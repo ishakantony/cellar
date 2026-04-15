@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Terminal,
   Link as LinkIcon,
