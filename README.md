@@ -20,6 +20,36 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Testing
+
+This project uses [Vitest](https://vitest.dev/) for unit testing.
+
+### Running Tests
+
+```bash
+# Run tests in watch mode (development)
+npm test
+
+# Run tests once
+npm run test:run
+
+# Run tests with UI
+npm run test:ui
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+### Test Structure
+
+- Tests are co-located with source files (e.g., `button.tsx` → `button.test.tsx`)
+- Shared test utilities are in `src/test/`
+- Run `npm run test:coverage` to see coverage report
+
+### Pre-commit Hooks
+
+Tests automatically run on pre-commit via Husky + lint-staged. Commits will be blocked if tests fail.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
