@@ -76,7 +76,7 @@ export async function toggleCollectionPin(id: string) {
   const collection = await prisma.collection.findUnique({
     where: { id, userId: user.id },
   });
-  if (!collection) throw new Error("Collection not found");
+  if (!collection) throw new Error("Resource not found or access denied");
   await prisma.collection.update({
     where: { id, userId: user.id },
     data: { pinned: !collection.pinned },
@@ -98,7 +98,7 @@ export async function addAssetToCollection(
       where: { id: collectionId, userId: user.id },
     }),
   ]);
-  if (!asset || !collection) throw new Error("Not found");
+  if (!asset || !collection) throw new Error("Resource not found or access denied");
 
   await prisma.assetCollection.upsert({
     where: { assetId_collectionId: { assetId, collectionId } },
@@ -119,7 +119,7 @@ export async function removeAssetFromCollection(
     prisma.asset.findUnique({ where: { id: assetId, userId: user.id } }),
     prisma.collection.findUnique({ where: { id: collectionId, userId: user.id } }),
   ]);
-  if (!asset || !collection) throw new Error("Not found");
+  if (!asset || !collection) throw new Error("Resource not found or access denied");
 
   await prisma.assetCollection.delete({
     where: {

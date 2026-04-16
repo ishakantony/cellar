@@ -58,7 +58,7 @@ export async function deleteAsset(id: string) {
   const asset = await prisma.asset.findUnique({
     where: { id, userId: user.id },
   });
-  if (!asset) throw new Error("Asset not found");
+  if (!asset) throw new Error("Resource not found or access denied");
 
   // Remove file from disk if it's an image or file type
   if (asset.filePath) {
@@ -148,7 +148,7 @@ export async function togglePin(id: string) {
   const asset = await prisma.asset.findUnique({
     where: { id, userId: user.id },
   });
-  if (!asset) throw new Error("Asset not found");
+  if (!asset) throw new Error("Resource not found or access denied");
   await prisma.asset.update({
     where: { id, userId: user.id },
     data: { pinned: !asset.pinned },

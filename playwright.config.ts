@@ -2,8 +2,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
 // Use test environment variables
-(process as { env: { NODE_ENV: string; E2E_TEST_MODE: string } }).env.NODE_ENV = 'test';
-(process as { env: { NODE_ENV: string; E2E_TEST_MODE: string } }).env.E2E_TEST_MODE = 'true';
+(process.env as Record<string, string>).NODE_ENV = 'test';
+(process.env as Record<string, string>).E2E_TEST_MODE = 'true';
 
 /**
  * @see https://playwright.dev/docs/test-configuration

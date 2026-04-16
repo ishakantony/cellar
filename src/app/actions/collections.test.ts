@@ -358,7 +358,7 @@ describe('collections actions', () => {
     it('should throw error when collection not found', async () => {
       mockPrisma.collection.findUnique.mockResolvedValue(null)
 
-      await expect(toggleCollectionPin('non-existent')).rejects.toThrow('Collection not found')
+      await expect(toggleCollectionPin('non-existent')).rejects.toThrow('Resource not found or access denied')
 
       expect(mockPrisma.collection.update).not.toHaveBeenCalled()
     })
@@ -436,7 +436,7 @@ describe('collections actions', () => {
         createMockCollection({ id: 'collection-1', userId: mockUser.id })
       )
 
-      await expect(addAssetToCollection('non-existent', 'collection-1')).rejects.toThrow('Not found')
+      await expect(addAssetToCollection('non-existent', 'collection-1')).rejects.toThrow('Resource not found or access denied')
 
       expect(mockPrisma.assetCollection.upsert).not.toHaveBeenCalled()
     })
@@ -447,7 +447,7 @@ describe('collections actions', () => {
       )
       mockPrisma.collection.findUnique.mockResolvedValue(null)
 
-      await expect(addAssetToCollection('asset-1', 'non-existent')).rejects.toThrow('Not found')
+      await expect(addAssetToCollection('asset-1', 'non-existent')).rejects.toThrow('Resource not found or access denied')
 
       expect(mockPrisma.assetCollection.upsert).not.toHaveBeenCalled()
     })
@@ -510,7 +510,7 @@ describe('collections actions', () => {
         createMockCollection({ id: 'collection-1', userId: mockUser.id })
       )
 
-      await expect(removeAssetFromCollection('non-existent', 'collection-1')).rejects.toThrow('Not found')
+      await expect(removeAssetFromCollection('non-existent', 'collection-1')).rejects.toThrow('Resource not found or access denied')
 
       expect(mockPrisma.assetCollection.delete).not.toHaveBeenCalled()
     })
@@ -521,7 +521,7 @@ describe('collections actions', () => {
       )
       mockPrisma.collection.findUnique.mockResolvedValue(null)
 
-      await expect(removeAssetFromCollection('asset-1', 'non-existent')).rejects.toThrow('Not found')
+      await expect(removeAssetFromCollection('asset-1', 'non-existent')).rejects.toThrow('Resource not found or access denied')
 
       expect(mockPrisma.assetCollection.delete).not.toHaveBeenCalled()
     })

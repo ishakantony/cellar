@@ -449,7 +449,7 @@ describe('assets actions', () => {
     it('should throw error when asset not found', async () => {
       mockPrisma.asset.findUnique.mockResolvedValue(null)
 
-      await expect(deleteAsset('non-existent')).rejects.toThrow('Asset not found')
+      await expect(deleteAsset('non-existent')).rejects.toThrow('Resource not found or access denied')
 
       expect(mockPrisma.asset.delete).not.toHaveBeenCalled()
     })
@@ -520,7 +520,7 @@ describe('assets actions', () => {
     it('should throw error when asset not found', async () => {
       mockPrisma.asset.findUnique.mockResolvedValue(null)
 
-      await expect(togglePin('non-existent')).rejects.toThrow('Asset not found')
+      await expect(togglePin('non-existent')).rejects.toThrow('Resource not found or access denied')
 
       expect(mockPrisma.asset.update).not.toHaveBeenCalled()
     })
