@@ -55,3 +55,6 @@ next-env.d.ts
 /playwright/.cache/
 /playwright/.auth/
 /test-results/
+
+# Storybook
+storybook-static
