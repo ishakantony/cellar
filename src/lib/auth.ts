@@ -16,4 +16,9 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     },
   },
+  advanced: {
+    // Disable secure cookies in test environment for e2e testing
+    disableCSRFCheck: process.env.NODE_ENV === 'test',
+    cookiePrefix: process.env.NODE_ENV === 'test' ? 'cellar-test' : 'cellar',
+  },
 });
