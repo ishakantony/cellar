@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export function SettingsClient({
   user,
@@ -11,18 +12,15 @@ export function SettingsClient({
 }) {
   const [name, setName] = useState(user.name);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState("");
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    setMessage("");
     try {
       await authClient.updateUser({ name });
-      setMessage("Profile updated.");
-      setTimeout(() => setMessage(""), 3000);
+      toast.success("Profile updated successfully");
     } catch {
-      setMessage("Failed to update profile.");
+      toast.error("Failed to update profile");
     } finally {
       setSaving(false);
     }
@@ -68,9 +66,6 @@ export function SettingsClient({
               className="w-full rounded-lg border-none bg-surface-container px-4 py-2.5 text-sm text-outline cursor-not-allowed"
             />
           </div>
-          {message && (
-            <p className={`text-xs ${message.startsWith("Failed") ? "text-error" : "text-emerald-400"}`}>{message}</p>
-          )}
           <button
             type="submit"
             disabled={saving}

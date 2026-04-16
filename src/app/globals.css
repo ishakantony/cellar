@@ -107,3 +107,16 @@ body {
 .btn-gradient {
   background: linear-gradient(135deg, #b9c3ff 0%, #0033c2 100%);
 }
+
+/* Sonner toast customization */
+[data-sonner-toast][data-type="success"] [data-icon] {
+  color: var(--color-primary);
+}
+
+[data-sonner-toast][data-type="error"] [data-icon] {
+  color: var(--color-error);
+}
+
+[data-sonner-toast] {
+  backdrop-filter: blur(8px) !important;
+}
