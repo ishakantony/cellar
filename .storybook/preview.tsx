@@ -1,15 +1,7 @@
 import type { Preview } from '@storybook/nextjs-vite';
 import '../src/app/globals.css';  // Tailwind CSS
-import React from 'react';
 
 const preview: Preview = {
-  decorators: [
-    (Story) => (
-      <div className="bg-[#0f172a] min-h-screen">
-        <Story />
-      </div>
-    ),
-  ],
   parameters: {
     nextjs: {
       appDirectory: true,  // Required for next/navigation
