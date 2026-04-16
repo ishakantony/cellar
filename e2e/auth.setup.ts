@@ -1,6 +1,5 @@
 import { test as setup, expect } from '@playwright/test';
 import path from 'path';
-import { prisma } from '../src/lib/prisma';
 import { cleanupTestUser, generateTestEmail, TEST_USER_CREDENTIALS } from './utils/db';
 
 const authFile = path.join(__dirname, '../playwright/.auth/user.json');
@@ -29,7 +28,7 @@ setup('authenticate', async ({ page }) => {
   
   // Wait for successful redirect to dashboard
   await page.waitForURL('/dashboard');
-  await expect(page.getByRole('heading', { name: /Dashboard/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Quick Actions/i })).toBeVisible();
   
   // Save the authentication state
   await page.context().storageState({ path: authFile });
