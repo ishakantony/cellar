@@ -8,7 +8,7 @@ import { Header } from "@/components/layout/header";
 import { AssetDrawer } from "@/components/asset-drawer";
 import { CollectionModal } from "@/components/collection-modal";
 import { createCollection } from "@/app/actions/collections";
-import { AssetType } from "@/generated/prisma";
+import { AssetType } from "@/generated/prisma/enums";
 import { LayoutDashboard, Package, Folder, Settings, Plus } from "lucide-react";
 
 const mobileNavLinks = [

@@ -1,4 +1,4 @@
-import { AssetType } from "@/generated/prisma";
+import { AssetType } from "@/generated/prisma/enums";
 import { getAssets } from "@/app/actions/assets";
 import { AssetsClient } from "./assets-client";
 import { Suspense } from "react";

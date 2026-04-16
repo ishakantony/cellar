@@ -7,7 +7,7 @@ import {
   FileText,
   Braces,
 } from "lucide-react";
-import { AssetType } from "@/generated/prisma";
+import { AssetType } from "@/generated/prisma/enums";
 
 export const TYPE_CONFIG: Record<
   AssetType,

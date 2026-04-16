@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AssetType } from "@/generated/prisma";
+import { AssetType } from "@/generated/prisma/enums";
 import { QuickActions } from "@/components/quick-actions";
 import { AssetCard } from "@/components/assets/asset-card";
 import { CollectionCard } from "@/components/collections/collection-card";

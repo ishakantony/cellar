@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AssetType } from "@/generated/prisma";
+import { AssetType } from "@/generated/prisma/enums";
 import { AssetCard } from "@/components/assets/asset-card";
 import { AssetDrawer } from "@/components/asset-drawer";
 import { Modal } from "@/components/ui/modal";

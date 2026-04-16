@@ -1,4 +1,4 @@
-import { AssetType } from '@/generated/prisma'
+import { AssetType } from '@/generated/prisma/enums'
 
 export function createMockAsset(overrides: Partial<{
   id: string

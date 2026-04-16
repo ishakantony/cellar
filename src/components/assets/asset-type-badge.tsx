@@ -1,4 +1,4 @@
-import { AssetType } from "@/generated/prisma";
+import { AssetType } from "@/generated/prisma/enums";
 import { TYPE_CONFIG } from "@/lib/asset-types";
 
 export interface AssetTypeBadgeProps {

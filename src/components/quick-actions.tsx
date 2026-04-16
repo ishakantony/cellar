@@ -8,7 +8,7 @@ import {
   Image,
   FileText,
 } from "lucide-react";
-import { AssetType } from "@/generated/prisma";
+import { AssetType } from "@/generated/prisma/enums";
 
 const actions: { type: AssetType; icon: typeof Code; label: string; primary?: boolean }[] = [
   { type: "SNIPPET", icon: Code, label: "Snippet", primary: true },

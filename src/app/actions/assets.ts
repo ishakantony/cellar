@@ -1,7 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { AssetType, Prisma } from "@/generated/prisma";
+import { AssetType } from "@/generated/prisma/enums";
+import { Prisma } from "@/generated/prisma/client";
 import { revalidatePath } from "next/cache";
 import { unlink } from "fs/promises";
 import { join } from "path";

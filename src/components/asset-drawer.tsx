@@ -20,7 +20,7 @@ import {
   FileText,
   Braces,
 } from "lucide-react";
-import { AssetType } from "@/generated/prisma";
+import { AssetType } from "@/generated/prisma/enums";
 import { MonacoEditor } from "./monaco-editor";
 import { MarkdownPreview } from "./markdown-preview";
 import { FileDropzone } from "./file-dropzone";
