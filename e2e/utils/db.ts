@@ -1,17 +1,33 @@
-import { prisma } from '../../src/lib/prisma';
+import { Client } from 'pg';
 
 /**
- * Delete a test user by email.
+ * Delete a test user by email using raw SQL.
  * Use this in test cleanup to ensure test data doesn't persist.
  */
 export async function cleanupTestUser(email: string): Promise<void> {
+  // Load test environment variables
+  const { config } = await import('dotenv');
+  const { default: path } = await import('path');
+  config({ path: path.resolve(process.cwd(), '.env.test'), override: true });
+  
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    console.log(`Note: DATABASE_URL not set, skipping cleanup for ${email}`);
+    return;
+  }
+
+  const client = new Client({ connectionString: databaseUrl });
+  
   try {
-    await prisma.user.deleteMany({
-      where: { email },
-    });
+    await client.connect();
+    // Delete user by email (cascade will handle related records)
+    await client.query('DELETE FROM "User" WHERE email = $1', [email]);
+    console.log(`Cleaned up test user: ${email}`);
   } catch (error) {
     // User might not exist, that's fine
     console.log(`Note: Could not delete user ${email} (may not exist)`);
+  } finally {
+    await client.end();
   }
 }
 
