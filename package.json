@@ -16,7 +16,7 @@
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix",
-      "vitest run --reporter=dot"
+      "vitest run --reporter=dot --passWithNoTests"
     ]
   },
   "dependencies": {

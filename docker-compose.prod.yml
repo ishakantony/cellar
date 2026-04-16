@@ -1,0 +1,73 @@
+# Production deployment for Cellar
+#
+# Images are pulled from Docker Hub — nothing is built on the server.
+#
+# Prerequisites:
+#   1. Copy .env.example to .env and fill in all required values.
+#   2. Make sure both tags have been pushed to Docker Hub:
+#        ishakantony/cellar:latest   — the app (runner stage)
+#        ishakantony/cellar:migrate  — migration runner (migrate stage)
+#
+# NOTE: NEXT_PUBLIC_BETTER_AUTH_URL is baked into the JS bundle at build time.
+#   The pre-built image uses http://localhost:3000 by default.
+#   If you are deploying under a real domain, build the image yourself:
+#     docker buildx build --platform linux/amd64,linux/arm64 \
+#       --build-arg NEXT_PUBLIC_BETTER_AUTH_URL=https://yourdomain.com \
+#       --target runner  -t ishakantony/cellar:latest  --push .
+#     docker buildx build --platform linux/amd64,linux/arm64 \
+#       --target migrate -t ishakantony/cellar:migrate --push .
+#
+# Usage:
+#   docker compose -f docker-compose.prod.yml pull
+#   docker compose -f docker-compose.prod.yml up -d
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cellar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-cellar}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cellar} -d ${POSTGRES_DB:-cellar}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    image: ishakantony/cellar:migrate
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-cellar}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-cellar}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    image: ishakantony/cellar:latest
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-cellar}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-cellar}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Set BETTER_AUTH_SECRET in .env}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+      NEXT_PUBLIC_BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:?Set GITHUB_CLIENT_ID in .env}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:?Set GITHUB_CLIENT_SECRET in .env}
+      UPLOAD_DIR: ./uploads
+      MAX_FILE_SIZE: ${MAX_FILE_SIZE:-10485760}
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  uploads:
