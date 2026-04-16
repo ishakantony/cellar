@@ -47,6 +47,9 @@ next-env.d.ts
 # superpowers
 .superpowers/
 
+# worktrees
+.worktrees/
+
 # Playwright
 /playwright-report/
 /playwright/.cache/
