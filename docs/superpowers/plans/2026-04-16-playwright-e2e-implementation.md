@@ -53,6 +53,9 @@ git commit -m "chore: add @playwright/test dependency"
 
 ```bash
 # .env.test
+NODE_ENV=test
+# Enable E2E test mode (disables CSRF for testing only - NEVER set this in production!)
+E2E_TEST_MODE=true
 DATABASE_URL=postgresql://cellar:cellar@localhost:5432/cellar_test
 BETTER_AUTH_SECRET=test-secret-for-e2e-tests-do-not-use-in-production
 BETTER_AUTH_URL=http://localhost:3000

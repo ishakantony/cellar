@@ -76,6 +76,9 @@ Tests will use a dedicated PostgreSQL database (`cellar_test`) within the existi
 
 `.env.test`:
 ```bash
+NODE_ENV=test
+# Enable E2E test mode (disables CSRF for testing only - NEVER set this in production!)
+E2E_TEST_MODE=true
 DATABASE_URL=postgresql://cellar:cellar@localhost:5432/cellar_test
 BETTER_AUTH_SECRET=test-secret-for-e2e-tests
 BETTER_AUTH_URL=http://localhost:3000
