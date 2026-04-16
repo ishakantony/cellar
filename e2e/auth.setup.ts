@@ -32,9 +32,10 @@ setup('authenticate', async ({ page }) => {
   
   // Save the authentication state
   await page.context().storageState({ path: authFile });
-  
+
   console.log(`✅ Authenticated as ${testEmail}`);
-  
-  // Cleanup: Remove the test user
-  await cleanupTestUser(testEmail);
+
+  // Note: We don't clean up the test user here because the auth state
+  // is shared with other tests. The user must exist for the session to be valid.
+  // In a real CI environment, you'd want to clean up test data after all tests complete.
 });
