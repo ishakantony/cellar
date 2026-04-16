@@ -69,8 +69,8 @@ function SidebarContent({
   return (
     <aside
       className={`${
-        collapsed ? "hidden" : "flex"
-      } flex-col h-full py-6 bg-surface-container-low contrast-125 w-64 border-r border-white/5 shrink-0 md:flex`}
+        collapsed ? "hidden md:hidden" : "flex md:flex"
+      } flex-col h-full py-6 bg-surface-container-low contrast-125 w-64 border-r border-white/5 shrink-0`}
     >
       {/* Logo */}
       <div className="px-6 mb-8">
@@ -82,6 +82,7 @@ function SidebarContent({
             Cellar
           </h1>
           <button
+            type="button"
             onClick={onToggle}
             className="ml-auto hidden md:flex p-1 text-slate-400 hover:bg-surface-bright hover:text-slate-100 rounded transition-colors"
           >
@@ -193,6 +194,7 @@ export function Sidebar({
 export function SidebarCollapsedToggle({ onToggle }: { onToggle: () => void }) {
   return (
     <button
+      type="button"
       onClick={onToggle}
       className="hidden md:flex p-2 text-slate-400 hover:bg-surface-bright hover:text-slate-100 rounded transition-colors"
     >
