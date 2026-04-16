@@ -6,7 +6,6 @@ const preview: Preview = {
     nextjs: {
       appDirectory: true,  // Required for next/navigation
     },
-    actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {
       matchers: {
         color: /(background|color)$/i,
