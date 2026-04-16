@@ -7,6 +7,11 @@ import { revalidatePath } from "next/cache";
 import { unlink } from "fs/promises";
 import { join } from "path";
 import { getUser } from "@/lib/session";
+import {
+  CreateAssetSchema,
+  UpdateAssetSchema,
+  formatZodError,
+} from "@/lib/validation";
 
 export async function createAsset(data: {
   type: AssetType;
@@ -20,10 +25,16 @@ export async function createAsset(data: {
   mimeType?: string;
   fileSize?: number;
 }) {
+  // Validate input
+  const validated = CreateAssetSchema.safeParse(data);
+  if (!validated.success) {
+    throw new Error(`Validation failed: ${formatZodError(validated.error)}`);
+  }
+
   const user = await getUser();
   const asset = await prisma.asset.create({
     data: {
-      ...data,
+      ...validated.data,
       userId: user.id,
     },
   });
@@ -42,10 +53,16 @@ export async function updateAsset(
     url?: string;
   }
 ) {
+  // Validate input
+  const validated = UpdateAssetSchema.safeParse(data);
+  if (!validated.success) {
+    throw new Error(`Validation failed: ${formatZodError(validated.error)}`);
+  }
+
   const user = await getUser();
   const asset = await prisma.asset.update({
     where: { id, userId: user.id },
-    data,
+    data: validated.data,
   });
   revalidatePath("/dashboard");
   revalidatePath("/assets");

@@ -3,16 +3,27 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getUser } from "@/lib/session";
+import {
+  CreateCollectionSchema,
+  UpdateCollectionSchema,
+  formatZodError,
+} from "@/lib/validation";
 
 export async function createCollection(data: {
   name: string;
   description?: string;
   color?: string;
 }) {
+  // Validate input
+  const validated = CreateCollectionSchema.safeParse(data);
+  if (!validated.success) {
+    throw new Error(`Validation failed: ${formatZodError(validated.error)}`);
+  }
+
   const user = await getUser();
   const collection = await prisma.collection.create({
     data: {
-      ...data,
+      ...validated.data,
       userId: user.id,
     },
   });
@@ -29,10 +40,16 @@ export async function updateCollection(
     color?: string;
   }
 ) {
+  // Validate input
+  const validated = UpdateCollectionSchema.safeParse(data);
+  if (!validated.success) {
+    throw new Error(`Validation failed: ${formatZodError(validated.error)}`);
+  }
+
   const user = await getUser();
   const collection = await prisma.collection.update({
     where: { id, userId: user.id },
-    data,
+    data: validated.data,
   });
   revalidatePath("/collections");
   revalidatePath("/dashboard");
