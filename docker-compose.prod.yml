@@ -8,14 +8,6 @@
 #        ishakantony/cellar:latest   — the app (runner stage)
 #        ishakantony/cellar:migrate  — migration runner (migrate stage)
 #
-# NOTE: NEXT_PUBLIC_BETTER_AUTH_URL is baked into the JS bundle at build time.
-#   The pre-built image uses http://localhost:3000 by default.
-#   If you are deploying under a real domain, build the image yourself:
-#     docker buildx build --platform linux/amd64,linux/arm64 \
-#       --build-arg NEXT_PUBLIC_BETTER_AUTH_URL=https://yourdomain.com \
-#       --target runner  -t ishakantony/cellar:latest  --push .
-#     docker buildx build --platform linux/amd64,linux/arm64 \
-#       --target migrate -t ishakantony/cellar:migrate --push .
 #
 # Usage:
 #   docker compose -f docker-compose.prod.yml pull
@@ -55,7 +47,6 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-cellar}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-cellar}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Set BETTER_AUTH_SECRET in .env}
       BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
-      NEXT_PUBLIC_BETTER_AUTH_URL: ${BETTER_AUTH_URL:-http://localhost:3000}
       GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:?Set GITHUB_CLIENT_ID in .env}
       GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:?Set GITHUB_CLIENT_SECRET in .env}
       UPLOAD_DIR: ./uploads

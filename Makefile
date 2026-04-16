@@ -9,7 +9,6 @@ publish: publish-app publish-migrate
 publish-app:
 	docker buildx build \
 		--platform $(PLATFORMS) \
-		--build-arg NEXT_PUBLIC_BETTER_AUTH_URL=$(URL) \
 		--target runner \
 		-t $(IMAGE):latest \
 		--push \
