@@ -178,7 +178,7 @@ describe("Input", () => {
     });
 
     it("can be associated with a label using id", () => {
-      const { container } = render(
+      render(
         <>
           <label htmlFor="email-field">Email Address</label>
           <Input id="email-field" type="email" value="" onChange={() => {}} />
@@ -249,7 +249,7 @@ describe("Input", () => {
         );
       }
       
-      const { rerender } = render(<ControlledInput />);
+      render(<ControlledInput />);
       
       const input = screen.getByPlaceholderText("Type something");
       expect(input).toHaveValue("");

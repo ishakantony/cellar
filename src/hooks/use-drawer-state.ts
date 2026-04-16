@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 
-export interface UseDrawerStateOptions<T> {
+export interface UseDrawerStateOptions {
   onSaved?: () => void;
 }
 
@@ -19,7 +19,7 @@ export interface DrawerState<T> {
 }
 
 export function useDrawerState<T>(
-  options?: UseDrawerStateOptions<T>
+  options?: UseDrawerStateOptions
 ): DrawerState<T> {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<T | null>(null);

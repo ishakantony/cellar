@@ -424,6 +424,7 @@ export function AssetDrawer({
               ) : asset?.filePath ? (
                 <>
                   {type === "IMAGE" && asset.mimeType?.startsWith("image/") ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- Dynamic image from internal API
                     <img
                       src={`/api/files/${asset.filePath}`}
                       alt={asset.title}

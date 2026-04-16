@@ -15,7 +15,7 @@ export interface TabsProps {
   className?: string;
 }
 
-export function Tabs({ value, options, onChange, size = "sm", className }: TabsProps) {
+export function Tabs({ value, options, onChange, className }: TabsProps) {
   return (
     <div className={cn("flex items-center gap-1 overflow-x-auto", className)}>
       {options.map((opt) => {

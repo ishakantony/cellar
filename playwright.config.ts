@@ -1,6 +1,5 @@
 // playwright.config.ts
 import { defineConfig, devices } from '@playwright/test';
-import path from 'path';
 
 // Use test environment variables
 (process as { env: { NODE_ENV: string } }).env.NODE_ENV = 'test';

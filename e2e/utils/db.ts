@@ -23,7 +23,7 @@ export async function cleanupTestUser(email: string): Promise<void> {
     // Delete user by email (cascade will handle related records)
     await client.query('DELETE FROM "User" WHERE email = $1', [email]);
     console.log(`Cleaned up test user: ${email}`);
-  } catch (error) {
+  } catch {
     // User might not exist, that's fine
     console.log(`Note: Could not delete user ${email} (may not exist)`);
   } finally {

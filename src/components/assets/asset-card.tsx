@@ -3,6 +3,7 @@
 import { Pin, PinOff, Trash2, MoreVertical } from "lucide-react";
 import { AssetType } from "@/generated/prisma/enums";
 import { TYPE_CONFIG } from "@/lib/asset-types";
+import { IconBadgeProps } from "@/components/ui/icon-badge";
 import { Card } from "@/components/ui/card";
 import { IconBadge } from "@/components/ui/icon-badge";
 import { ActionMenu } from "@/components/ui/action-menu";
@@ -62,7 +63,7 @@ export function AssetCard({
       >
         <IconBadge
           icon={config.icon}
-          variant={asset.type.toLowerCase() as any}
+          variant={asset.type.toLowerCase() as IconBadgeProps["variant"]}
           size="sm"
         />
         <div className="flex-1 min-w-0">
@@ -84,7 +85,7 @@ export function AssetCard({
     >
       <IconBadge
         icon={config.icon}
-        variant={asset.type.toLowerCase() as any}
+        variant={asset.type.toLowerCase() as IconBadgeProps["variant"]}
         size="md"
       />
       <div className="flex-1 min-w-0">

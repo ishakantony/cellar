@@ -20,6 +20,7 @@ export function Avatar({ src, name, size = "md", className }: AvatarProps) {
 
   if (src) {
     return (
+      // eslint-disable-next-line @next/next/no-img-element -- Avatar images from external sources
       <img
         src={src}
         alt={name}

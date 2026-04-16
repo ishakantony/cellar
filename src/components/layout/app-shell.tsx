@@ -86,7 +86,7 @@ export function AppShell({
 
       {/* Mobile bottom nav */}
       <nav className="fixed bottom-0 left-0 right-0 h-16 bg-background/90 backdrop-blur-xl border-t border-white/5 flex md:hidden items-center justify-around px-4 z-50">
-        {mobileNavLinks.map((item, i) =>
+        {mobileNavLinks.map((item) =>
           item === null ? (
             <div key="fab" className="-mt-8">
               <button

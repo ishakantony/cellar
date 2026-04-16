@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { createMockPrisma, MockPrisma } from '@/test/mocks/prisma'
 import { createMockGetUser, createMockGetUserUnauthorized, mockUser } from '@/test/mocks/auth'
 import { createMockCollection, createMockAsset, createMockAssetCollection } from '@/test/utils/test-data'
-import { AssetType } from '@/generated/prisma/enums'
 import { revalidatePath } from 'next/cache'
 
 // Mock dependencies
