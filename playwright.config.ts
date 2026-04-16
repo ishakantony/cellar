@@ -36,6 +36,11 @@ export default defineConfig({
     
     /* Screenshot on failure */
     screenshot: 'only-on-failure',
+
+    launchOptions: {
+      /* Slow Motion */
+      slowMo: process.env.SLOW_MO ? 250 : 0,
+    }
   },
 
   /* Configure projects for major browsers */
