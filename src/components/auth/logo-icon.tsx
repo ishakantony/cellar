@@ -5,6 +5,9 @@ export interface LogoIconProps {
   className?: string;
 }
 
+// Alias for backward compatibility
+export const Logo = LogoIcon;
+
 export function LogoIcon({ className }: LogoIconProps) {
   return (
     <div

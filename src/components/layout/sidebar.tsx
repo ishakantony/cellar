@@ -5,7 +5,6 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { signOut } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import { Suspense } from 'react';
-import { Avatar } from '@/components/ui/avatar';
 import {
   LayoutDashboard,
   Package,
@@ -17,18 +16,20 @@ import {
   Image,
   FileText,
   Settings,
-  LogOut,
-  PanelLeftClose,
-  PanelLeftOpen,
 } from 'lucide-react';
+import { Logo } from '@/components/auth/logo-icon';
+import { SidebarToggle } from './sidebar-toggle';
+import { NavSection } from './nav-section';
+import { NavItem } from './nav-item';
+import { UserMenu } from './user-menu';
 
-const generalNav = [
+export const generalNav = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/assets', icon: Package, label: 'All Items' },
   { href: '/collections', icon: Folder, label: 'All Collections' },
 ];
 
-const assetNav = [
+export const assetNav = [
   { href: '/assets?type=SNIPPET', icon: Code, label: 'Snippets', type: 'SNIPPET' },
   { href: '/assets?type=PROMPT', icon: Terminal, label: 'Prompts', type: 'PROMPT' },
   { href: '/assets?type=LINK', icon: LinkIcon, label: 'Links', type: 'LINK' },
@@ -37,29 +38,21 @@ const assetNav = [
   { href: '/assets?type=FILE', icon: FileText, label: 'Files', type: 'FILE' },
 ];
 
-function SidebarContent({
-  collapsed,
-  onToggle,
-  user,
-}: {
+export interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
-  user: { name: string; email: string; image?: string | null };
-}) {
+  user: {
+    name: string;
+    email: string;
+    image?: string | null;
+  };
+  className?: string;
+}
+
+function SidebarContent({ collapsed, onToggle, user, className }: SidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const currentType = searchParams.get('type');
-
-  function isActive(href: string, type?: string) {
-    if (type) {
-      return pathname === '/assets' && currentType === type;
-    }
-    if (href === '/assets') {
-      return pathname === '/assets' && !currentType;
-    }
-    return pathname === href;
-  }
 
   async function handleSignOut() {
     await signOut();
@@ -70,129 +63,64 @@ function SidebarContent({
     <aside
       className={`${
         collapsed ? 'hidden md:hidden' : 'flex md:flex'
-      } flex-col h-full py-6 bg-surface-container-low contrast-125 w-64 border-r border-white/5 shrink-0`}
+      } flex-col h-full py-6 bg-surface-container-low contrast-125 w-64 border-r border-white/5 shrink-0 ${className}`}
     >
       {/* Logo */}
       <div className="px-6 mb-8">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-container text-on-primary-container">
-            <Package className="h-4 w-4" />
+            <Logo className="h-4 w-4" />
           </div>
           <h1 className="text-xl font-black uppercase tracking-tighter text-slate-100">Cellar</h1>
-          <button
-            type="button"
-            onClick={onToggle}
-            className="ml-auto hidden md:flex p-1 text-slate-400 hover:bg-surface-bright hover:text-slate-100 rounded transition-colors"
-          >
-            <PanelLeftClose className="h-4 w-4" />
-          </button>
+          <SidebarToggle onClick={onToggle} className="ml-auto hidden md:flex" />
         </div>
       </div>
 
-      {/* General nav */}
+      {/* Navigation */}
       <nav className="flex-1 overflow-y-auto space-y-1">
-        <div className="px-4 py-2">
-          <p className="px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-outline">
-            General
-          </p>
-          {generalNav.map(item => {
-            const active = isActive(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-2 text-xs font-bold uppercase tracking-tight transition-all duration-150 ${
-                  active
-                    ? 'text-primary bg-primary/10 border-r-2 border-primary'
-                    : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-100'
-                }`}
-              >
-                <item.icon className="h-[18px] w-[18px]" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </div>
-
-        {/* Assets nav */}
-        <div className="px-4 py-2 mt-4">
-          <p className="px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-outline">
-            Assets
-          </p>
-          {assetNav.map(item => {
-            const active = isActive(item.href, item.type);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-2 text-xs font-bold uppercase transition-all ${
-                  active
-                    ? 'text-primary bg-primary/10 border-r-2 border-primary'
-                    : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-100'
-                }`}
-              >
-                <item.icon className="h-[18px] w-[18px]" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </div>
+        <NavSection
+          title="General"
+          items={generalNav}
+          activePath={pathname}
+          searchParams={searchParams}
+        />
+        <NavSection
+          title="Assets"
+          items={assetNav}
+          activePath={pathname}
+          searchParams={searchParams}
+          className="mt-4"
+        />
       </nav>
 
-      {/* Bottom section */}
+      {/* Footer */}
       <div className="px-4 mt-auto">
         <div className="border-t border-white/5 pt-3 mb-2 px-4">
-          <Link
+          <NavItem
             href="/settings"
-            className={`flex items-center gap-3 py-2 text-xs font-bold uppercase transition-all ${
-              pathname === '/settings' ? 'text-primary' : 'text-slate-400 hover:text-slate-100'
-            }`}
-          >
-            <Settings className="h-[18px] w-[18px]" />
-            <span>Settings</span>
-          </Link>
+            icon={Settings}
+            label="Settings"
+            active={pathname === '/settings'}
+          />
         </div>
-        <div className="flex items-center gap-3 px-4 py-3 bg-surface-container rounded-lg">
-          <Avatar src={user.image} name={user.name} size="sm" />
-          <div className="flex-1 overflow-hidden">
-            <p className="truncate text-xs font-bold text-slate-100">{user.name}</p>
-          </div>
-          <button
-            onClick={handleSignOut}
-            className="text-slate-400 hover:text-error transition-colors"
-          >
-            <LogOut className="h-[18px] w-[18px]" />
-          </button>
-        </div>
+        <UserMenu user={user} onSignOut={handleSignOut} />
       </div>
     </aside>
   );
 }
 
-export function Sidebar({
-  collapsed,
-  onToggle,
-  user,
-}: {
-  collapsed: boolean;
-  onToggle: () => void;
-  user: { name: string; email: string; image?: string | null };
-}) {
+export function Sidebar(props: SidebarProps) {
   return (
     <Suspense fallback={null}>
-      <SidebarContent collapsed={collapsed} onToggle={onToggle} user={user} />
+      <SidebarContent {...props} />
     </Suspense>
   );
 }
 
+// Re-export for use in Header
+export { SidebarToggle };
+
+// Backward compatibility export for app-shell.tsx
 export function SidebarCollapsedToggle({ onToggle }: { onToggle: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onToggle}
-      className="hidden md:flex p-2 text-slate-400 hover:bg-surface-bright hover:text-slate-100 rounded transition-colors"
-    >
-      <PanelLeftOpen className="h-5 w-5" />
-    </button>
-  );
+  return <SidebarToggle onClick={onToggle} collapsed={true} className="hidden md:flex" />;
 }
