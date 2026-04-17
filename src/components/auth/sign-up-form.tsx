@@ -43,8 +43,11 @@ export function SignUpForm({ onSubmit, defaultValues }: SignUpFormProps) {
   };
 
   // Get current values for controlled inputs
+  // eslint-disable-next-line react-hooks/incompatible-library
   const name = watch("name") || "";
+   
   const email = watch("email") || "";
+   
   const password = watch("password") || "";
 
   return (

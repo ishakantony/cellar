@@ -82,8 +82,6 @@ describe("Tabs Component", () => {
         />
       );
 
-      const firstTab = screen.getByRole("button", { name: "First Tab" });
-
       // Click doesn't change the visual state without state update
       fireEvent.click(screen.getByRole("button", { name: "Second Tab" }));
 

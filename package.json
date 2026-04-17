@@ -29,7 +29,8 @@
     "db:reset": "prisma migrate reset --force && npm run db:seed",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test-storybook": "vitest --project=storybook --run"
+    "test-storybook": "vitest --project=storybook --run",
+    "check:all": "npm run lint && npm run test:run && npm run test-storybook && npm run test:e2e && npm run build"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

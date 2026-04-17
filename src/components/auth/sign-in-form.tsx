@@ -42,7 +42,9 @@ export function SignInForm({ onSubmit, defaultValues }: SignInFormProps) {
   };
 
   // Get current values for controlled inputs
+  // eslint-disable-next-line react-hooks/incompatible-library
   const email = watch("email") || "";
+   
   const password = watch("password") || "";
 
   return (

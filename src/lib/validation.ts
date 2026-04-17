@@ -3,7 +3,7 @@ import { AssetType } from "@/generated/prisma/enums";
 
 // Helper to format Zod errors
 export function formatZodError(error: z.ZodError): string {
-  return error.errors.map((e) => `${e.path.join(".")}: ${e.message}`).join(", ");
+  return error.issues.map((e) => `${e.path.join("")}: ${e.message}`).join(", ");
 }
 
 // Asset schemas
