@@ -24,7 +24,11 @@ export function SignInForm({ onSubmit, defaultValues }: SignInFormProps) {
     trigger,
   } = useForm<SignInData>({
     resolver: zodResolver(signInSchema),
-    defaultValues,
+    defaultValues: {
+      email: "",
+      password: "",
+      ...defaultValues,
+    },
   });
 
   const handleFormSubmit = async (data: SignInData) => {
