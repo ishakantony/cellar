@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn } from 'storybook/test';
+import { expect, fn, userEvent, within } from 'storybook/test';
 import { ColorPicker, DEFAULT_COLOR_OPTIONS } from './color-picker';
 
 const meta: Meta<typeof ColorPicker> = {
@@ -39,5 +39,21 @@ export const CustomOptions: Story = {
       { value: '#00ff00', label: 'Green' },
       { value: '#0000ff', label: 'Blue' },
     ],
+  },
+};
+
+export const Interactive: Story = {
+  args: {
+    onChange: fn(),
+    options: DEFAULT_COLOR_OPTIONS,
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const limeButton = canvas.getByLabelText('Lime');
+    await userEvent.click(limeButton);
+    expect(args.onChange).toHaveBeenCalledWith('#84cc16');
+    const pinkButton = canvas.getByLabelText('Pink');
+    await userEvent.click(pinkButton);
+    expect(args.onChange).toHaveBeenCalledWith('#ec4899');
   },
 };
