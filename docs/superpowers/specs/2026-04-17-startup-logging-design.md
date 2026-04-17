@@ -100,9 +100,9 @@ Example shape:
     DATABASE_URL: postgresql://localhost:5432/cellar
   Auth
     BETTER_AUTH_URL: http://localhost:3000
-    BETTER_AUTH_SECRET: set (length 44)
-    GITHUB_CLIENT_ID: set
-    GITHUB_CLIENT_SECRET: set
+    BETTER_AUTH_SECRET: abcd...wxyz (length 44, sha256:1a2b3c4d)
+    GITHUB_CLIENT_ID: gh_12...9f0z (length 20, sha256:9e8d7c6b)
+    GITHUB_CLIENT_SECRET: abcd...wxyz (length 40, sha256:4f3e2d1c)
   Uploads
     UPLOAD_DIR: ./uploads
     MAX_FILE_SIZE: 10485760
@@ -155,9 +155,23 @@ postgresql host=localhost port=5432 db=cellar
 **Auth**
 
 - `BETTER_AUTH_URL`: display directly
-- `BETTER_AUTH_SECRET`: display `missing` or `set (length N)`
-- `GITHUB_CLIENT_ID`: display `missing` or `set`
-- `GITHUB_CLIENT_SECRET`: display `missing` or `set`
+- `BETTER_AUTH_SECRET`: display `missing` or a masked preview with length and short fingerprint
+- `GITHUB_CLIENT_ID`: display `missing` or a masked preview with length and short fingerprint
+- `GITHUB_CLIENT_SECRET`: display `missing` or a masked preview with length and short fingerprint
+
+Recommended rendered form for secret-like values:
+
+```text
+abcd...wxyz (length 40, sha256:1a2b3c4d)
+```
+
+Masking rules:
+
+- show a short prefix and suffix when the value is long enough
+- include the original string length
+- include a short stable fingerprint derived from the full value so two runs can be compared reliably
+- never display the full raw value
+- for very short values, prefer a heavily masked representation rather than exposing most of the string
 
 **Uploads**
 
@@ -205,6 +219,7 @@ Add tests for:
 - grouped rendering of the startup report
 - `DATABASE_URL` parsing into safe derived fields
 - secret values never appearing raw in output
+- masked secret output including preview, length, and fingerprint
 - missing and malformed values degrading gracefully
 - duplicate prevention logic if it lives in the helper module
 
@@ -233,5 +248,6 @@ The design is successful when:
 - the app prints one grouped startup diagnostics block per server instance
 - database, auth, upload, and runtime settings are visible at startup
 - no raw secrets or full connection strings are logged
+- secret-like values are distinguishable across runs by masked preview plus fingerprint
 - malformed or missing values are reported without crashing the logger
 - the feature works without changing the app's existing start commands
