@@ -3,9 +3,15 @@
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+export const allButtonVariants = ["primary", "secondary", "danger", "ghost", "outline"] as const;
+export const allButtonSizes = ["sm", "md", "lg"] as const;
+
+export type ButtonVariant = (typeof allButtonVariants)[number];
+export type ButtonSize = (typeof allButtonSizes)[number];
+
 export interface ButtonProps {
-  variant?: "primary" | "secondary" | "danger" | "ghost" | "outline";
-  size?: "sm" | "md" | "lg";
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   children: React.ReactNode;
   disabled?: boolean;
   loading?: boolean;
@@ -49,7 +55,7 @@ export function Button({
       onClick={onClick}
       disabled={disabled || loading}
       className={cn(
-        "flex items-center justify-center gap-1.5 rounded font-bold uppercase tracking-widest transition-all disabled:opacity-50",
+        "flex items-center justify-center gap-1.5 rounded font-bold uppercase tracking-widest transition-all disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed",
         variantClasses[variant],
         sizeClasses[size],
         className
