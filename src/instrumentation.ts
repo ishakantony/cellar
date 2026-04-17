@@ -1,5 +1,9 @@
-import { logStartupReportOnce } from '@/lib/startup-report';
-
 export function register() {
-  logStartupReportOnce();
+  if (process.env.NEXT_RUNTIME !== 'nodejs') {
+    return;
+  }
+
+  void import('@/lib/startup-report').then(({ logStartupReportOnce }) => {
+    logStartupReportOnce();
+  });
 }
