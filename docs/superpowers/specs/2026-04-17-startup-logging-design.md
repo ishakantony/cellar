@@ -100,6 +100,7 @@ Example shape:
     DATABASE_URL: postgresql://localhost:5432/cellar
   Auth
     BETTER_AUTH_URL: http://localhost:3000
+    BETTER_AUTH_TRUSTED_ORIGINS: 2 origins [http://localhost:3000, https://cellar.example.com]
     BETTER_AUTH_SECRET: abcd...wxyz (length 44, sha256:1a2b3c4d)
     GITHUB_CLIENT_ID: gh_12...9f0z (length 20, sha256:9e8d7c6b)
     GITHUB_CLIENT_SECRET: abcd...wxyz (length 40, sha256:4f3e2d1c)
@@ -123,6 +124,7 @@ The report must only include explicitly approved settings:
 - `E2E_TEST_MODE`
 - `DATABASE_URL`
 - `BETTER_AUTH_URL`
+- `BETTER_AUTH_TRUSTED_ORIGINS`
 - `BETTER_AUTH_SECRET`
 - `GITHUB_CLIENT_ID`
 - `GITHUB_CLIENT_SECRET`
@@ -155,9 +157,24 @@ postgresql host=localhost port=5432 db=cellar
 **Auth**
 
 - `BETTER_AUTH_URL`: display directly
+- `BETTER_AUTH_TRUSTED_ORIGINS`: display a parsed summary of configured origins
 - `BETTER_AUTH_SECRET`: display `missing` or a masked preview with length and short fingerprint
 - `GITHUB_CLIENT_ID`: display `missing` or a masked preview with length and short fingerprint
 - `GITHUB_CLIENT_SECRET`: display `missing` or a masked preview with length and short fingerprint
+
+Recommended rendered form for trusted origins:
+
+```text
+2 origins [http://localhost:3000, https://cellar.example.com]
+```
+
+Trusted origins rules:
+
+- treat the value as operational configuration, not as a secret
+- if the env var contains multiple origins, parse and display each origin in a stable order
+- include the number of configured origins
+- if parsing fails, display `present (unparseable)`
+- if missing, display `missing` or `not configured`
 
 Recommended rendered form for secret-like values:
 
@@ -247,6 +264,7 @@ The design is successful when:
 
 - the app prints one grouped startup diagnostics block per server instance
 - database, auth, upload, and runtime settings are visible at startup
+- auth origin allowlist configuration is visible at startup
 - no raw secrets or full connection strings are logged
 - secret-like values are distinguishable across runs by masked preview plus fingerprint
 - malformed or missing values are reported without crashing the logger
