@@ -32,7 +32,7 @@
     "test-storybook": "vitest --project=storybook --run",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check:all": "npm run lint && npm run test:run && npm run test-storybook && npm run test:e2e && npm run build"
+    "check:all": "npm run format:check && npm run lint && npm run test:run && npm run test-storybook && npm run test:e2e && npm run build"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
