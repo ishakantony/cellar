@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { AssetType } from "@/generated/prisma/enums";
-import { QuickActions } from "@/components/quick-actions";
-import { AssetCard } from "@/components/assets/asset-card";
-import { CollectionCard } from "@/components/collections/collection-card";
-import { AssetDrawer } from "@/components/asset-drawer";
-import { Modal } from "@/components/ui/modal";
-import { Alert } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
-import { togglePin, deleteAsset, getAsset } from "@/app/actions/assets";
-import { toggleCollectionPin, deleteCollection } from "@/app/actions/collections";
-import { Pin, FolderOpen, Clock } from "lucide-react";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { AssetType } from '@/generated/prisma/enums';
+import { QuickActions } from '@/components/quick-actions';
+import { AssetCard } from '@/components/assets/asset-card';
+import { CollectionCard } from '@/components/collections/collection-card';
+import { AssetDrawer } from '@/components/asset-drawer';
+import { Modal } from '@/components/ui/modal';
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
+import { togglePin, deleteAsset, getAsset } from '@/app/actions/assets';
+import { toggleCollectionPin, deleteCollection } from '@/app/actions/collections';
+import { Pin, FolderOpen, Clock } from 'lucide-react';
 
 type DashboardAsset = {
   id: string;
@@ -50,15 +50,11 @@ export function DashboardClient({
 }) {
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerMode, setDrawerMode] = useState<"view" | "edit" | "create">(
-    "view"
-  );
-  const [selectedAsset, setSelectedAsset] = useState<DashboardAsset | null>(
-    null
-  );
-  const [defaultType, setDefaultType] = useState<AssetType>("SNIPPET");
+  const [drawerMode, setDrawerMode] = useState<'view' | 'edit' | 'create'>('view');
+  const [selectedAsset, setSelectedAsset] = useState<DashboardAsset | null>(null);
+  const [defaultType, setDefaultType] = useState<AssetType>('SNIPPET');
   const [deleteTarget, setDeleteTarget] = useState<{
-    type: "asset" | "collection";
+    type: 'asset' | 'collection';
     id: string;
     title: string;
   } | null>(null);
@@ -68,7 +64,7 @@ export function DashboardClient({
     const full = await getAsset(asset.id);
     if (full) {
       setSelectedAsset(full as DashboardAsset);
-      setDrawerMode("view");
+      setDrawerMode('view');
       setDrawerOpen(true);
     }
   }
@@ -76,14 +72,14 @@ export function DashboardClient({
   function handleQuickAction(type: AssetType) {
     setSelectedAsset(null);
     setDefaultType(type);
-    setDrawerMode("create");
+    setDrawerMode('create');
     setDrawerOpen(true);
   }
 
   async function handleConfirmDelete() {
     if (!deleteTarget) return;
     try {
-      if (deleteTarget.type === "asset") {
+      if (deleteTarget.type === 'asset') {
         await deleteAsset(deleteTarget.id);
       } else {
         await deleteCollection(deleteTarget.id);
@@ -91,7 +87,7 @@ export function DashboardClient({
       setDeleteTarget(null);
       router.refresh();
     } catch {
-      setActionError("Failed to delete. Please try again.");
+      setActionError('Failed to delete. Please try again.');
       setDeleteTarget(null);
     }
   }
@@ -101,12 +97,8 @@ export function DashboardClient({
       {/* Quick Actions */}
       <section>
         <div className="mb-6">
-          <h2 className="text-xl font-bold tracking-tight text-slate-100">
-            Quick Actions
-          </h2>
-          <p className="text-xs text-outline">
-            Instant access to creation tools.
-          </p>
+          <h2 className="text-xl font-bold tracking-tight text-slate-100">Quick Actions</h2>
+          <p className="text-xs text-outline">Instant access to creation tools.</p>
         </div>
         <QuickActions onAction={handleQuickAction} />
       </section>
@@ -123,7 +115,7 @@ export function DashboardClient({
             </div>
           </div>
           <div className="space-y-2">
-            {pinnedAssets.map((asset) => (
+            {pinnedAssets.map(asset => (
               <AssetCard
                 key={asset.id}
                 asset={asset}
@@ -133,12 +125,12 @@ export function DashboardClient({
                     await togglePin(asset.id);
                     router.refresh();
                   } catch {
-                    setActionError("Failed to update pin. Please try again.");
+                    setActionError('Failed to update pin. Please try again.');
                   }
                 }}
                 onDelete={() =>
                   setDeleteTarget({
-                    type: "asset",
+                    type: 'asset',
                     id: asset.id,
                     title: asset.title,
                   })
@@ -161,24 +153,22 @@ export function DashboardClient({
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {pinnedCollections.map((collection) => (
+            {pinnedCollections.map(collection => (
               <CollectionCard
                 key={collection.id}
                 collection={collection}
-                onClick={() =>
-                  router.push(`/collections/${collection.id}`)
-                }
+                onClick={() => router.push(`/collections/${collection.id}`)}
                 onTogglePin={async () => {
                   try {
                     await toggleCollectionPin(collection.id);
                     router.refresh();
                   } catch {
-                    setActionError("Failed to update pin. Please try again.");
+                    setActionError('Failed to update pin. Please try again.');
                   }
                 }}
                 onDelete={() =>
                   setDeleteTarget({
-                    type: "collection",
+                    type: 'collection',
                     id: collection.id,
                     title: collection.name,
                   })
@@ -200,7 +190,7 @@ export function DashboardClient({
           </div>
         </div>
         <div className="space-y-1">
-          {recentAssets.map((asset) => (
+          {recentAssets.map(asset => (
             <AssetCard
               key={asset.id}
               asset={asset}
@@ -211,12 +201,12 @@ export function DashboardClient({
                   await togglePin(asset.id);
                   router.refresh();
                 } catch {
-                  setActionError("Failed to update pin. Please try again.");
+                  setActionError('Failed to update pin. Please try again.');
                 }
               }}
               onDelete={() =>
                 setDeleteTarget({
-                  type: "asset",
+                  type: 'asset',
                   id: asset.id,
                   title: asset.title,
                 })
@@ -225,9 +215,7 @@ export function DashboardClient({
           ))}
           {recentAssets.length === 0 && (
             <div className="py-8 text-center">
-              <p className="text-xs text-outline">
-                No assets yet. Create one above!
-              </p>
+              <p className="text-xs text-outline">No assets yet. Create one above!</p>
             </div>
           )}
         </div>
@@ -237,7 +225,12 @@ export function DashboardClient({
       {actionError && (
         <div className="fixed bottom-4 right-4 z-50 bg-error/20 border border-error/40 rounded-lg px-4 py-2 text-xs text-error">
           {actionError}
-          <button onClick={() => setActionError(null)} className="ml-2 text-error/60 hover:text-error">×</button>
+          <button
+            onClick={() => setActionError(null)}
+            className="ml-2 text-error/60 hover:text-error"
+          >
+            ×
+          </button>
         </div>
       )}
 
@@ -257,7 +250,7 @@ export function DashboardClient({
             ? () => {
                 setDrawerOpen(false);
                 setDeleteTarget({
-                  type: "asset",
+                  type: 'asset',
                   id: selectedAsset.id,
                   title: selectedAsset.title,
                 });
@@ -285,8 +278,7 @@ export function DashboardClient({
         }
       >
         <Alert variant="error">
-          This action cannot be undone. The item will be permanently removed
-          from your vault.
+          This action cannot be undone. The item will be permanently removed from your vault.
         </Alert>
       </Modal>
     </div>

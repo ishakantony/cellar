@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Search, FolderPlus, SquarePlus, Menu } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useState } from 'react';
+import { Search, FolderPlus, SquarePlus, Menu } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 export function Header({
   onMobileMenuToggle,
@@ -20,7 +20,7 @@ export function Header({
   onAddCollection: () => void;
 }) {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -52,38 +52,18 @@ export function Header({
       </form>
 
       <div className="flex items-center gap-3 flex-1 justify-end">
-        <Button
-          onClick={onAddCollection}
-          variant="ghost"
-          size="sm"
-          className="hidden sm:flex"
-        >
+        <Button onClick={onAddCollection} variant="ghost" size="sm" className="hidden sm:flex">
           <FolderPlus className="h-4 w-4" />
           Collection
         </Button>
-        <Button
-          onClick={onAddCollection}
-          variant="ghost"
-          size="sm"
-          className="sm:hidden"
-        >
+        <Button onClick={onAddCollection} variant="ghost" size="sm" className="sm:hidden">
           <FolderPlus className="h-4 w-4" />
         </Button>
-        <Button
-          onClick={onAddItem}
-          variant="primary"
-          size="sm"
-          className="hidden sm:flex"
-        >
+        <Button onClick={onAddItem} variant="primary" size="sm" className="hidden sm:flex">
           <SquarePlus className="h-4 w-4" />
           Add Item
         </Button>
-        <Button
-          onClick={onAddItem}
-          variant="primary"
-          size="sm"
-          className="sm:hidden"
-        >
+        <Button onClick={onAddItem} variant="primary" size="sm" className="sm:hidden">
           <SquarePlus className="h-4 w-4" />
         </Button>
       </div>

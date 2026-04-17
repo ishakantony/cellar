@@ -1,18 +1,14 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { CollectionCard } from "@/components/collections/collection-card";
-import { CollectionModal } from "@/components/collection-modal";
-import { Modal } from "@/components/ui/modal";
-import { Alert } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
-import {
-  createCollection,
-  toggleCollectionPin,
-  deleteCollection,
-} from "@/app/actions/collections";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { CollectionCard } from '@/components/collections/collection-card';
+import { CollectionModal } from '@/components/collection-modal';
+import { Modal } from '@/components/ui/modal';
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
+import { createCollection, toggleCollectionPin, deleteCollection } from '@/app/actions/collections';
 
 type CollectionItem = {
   id: string;
@@ -23,11 +19,7 @@ type CollectionItem = {
   _count: { assets: number };
 };
 
-export function CollectionsClient({
-  collections,
-}: {
-  collections: CollectionItem[];
-}) {
+export function CollectionsClient({ collections }: { collections: CollectionItem[] }) {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{
@@ -46,12 +38,10 @@ export function CollectionsClient({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-slate-100">
-            Collections
-          </h2>
+          <h2 className="text-xl font-bold tracking-tight text-slate-100">Collections</h2>
           <p className="text-xs text-outline mt-1">
             {collections.length} collection
-            {collections.length !== 1 ? "s" : ""}
+            {collections.length !== 1 ? 's' : ''}
           </p>
         </div>
         <button
@@ -63,7 +53,7 @@ export function CollectionsClient({
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {collections.map((collection) => (
+        {collections.map(collection => (
           <CollectionCard
             key={collection.id}
             collection={collection}
@@ -72,9 +62,7 @@ export function CollectionsClient({
               await toggleCollectionPin(collection.id);
               router.refresh();
             }}
-            onDelete={() =>
-              setDeleteTarget({ id: collection.id, name: collection.name })
-            }
+            onDelete={() => setDeleteTarget({ id: collection.id, name: collection.name })}
           />
         ))}
       </div>
@@ -90,7 +78,7 @@ export function CollectionsClient({
       <CollectionModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        onSubmit={async (data) => {
+        onSubmit={async data => {
           await createCollection(data);
           router.refresh();
         }}

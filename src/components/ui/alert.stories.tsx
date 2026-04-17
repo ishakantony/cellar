@@ -31,13 +31,15 @@ export const Success: Story = {
 export const LongError: Story = {
   args: {
     variant: 'error',
-    children: 'Unable to connect to the server. Please check your internet connection and try again later.',
+    children:
+      'Unable to connect to the server. Please check your internet connection and try again later.',
   },
 };
 
 export const LongSuccess: Story = {
   args: {
     variant: 'success',
-    children: 'The file has been uploaded successfully and is now being processed. You will receive a notification when complete.',
+    children:
+      'The file has been uploaded successfully and is now being processed. You will receive a notification when complete.',
   },
 };

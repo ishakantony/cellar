@@ -31,6 +31,7 @@ This document outlines the implementation of end-to-end (e2e) testing for the Ce
 ### Approach: Setup Project with Shared Auth State
 
 We will use Playwright's recommended pattern:
+
 1. **Setup Project**: Authenticate once via UI and save session state
 2. **Test Projects**: Reuse saved auth state for fast test execution
 3. **Isolated Tests**: Specific tests perform full UI flows without shared state
@@ -67,6 +68,7 @@ cellar/
 Tests will use a dedicated PostgreSQL database (`cellar_test`) within the existing Docker Compose Postgres container.
 
 **Benefits:**
+
 - Test data isolated from development data
 - Fast setup (no additional container)
 - Easy CI integration later
@@ -75,6 +77,7 @@ Tests will use a dedicated PostgreSQL database (`cellar_test`) within the existi
 ### Environment Variables
 
 `.env.test`:
+
 ```bash
 NODE_ENV=test
 # Enable E2E test mode (disables CSRF for testing only - NEVER set this in production!)
@@ -90,6 +93,7 @@ GITHUB_CLIENT_SECRET=
 ### Test Database Setup Script
 
 `scripts/setup-test-db.ts`:
+
 - Loads `.env.test` using dotenv
 - Connects to Postgres base URL (without database name)
 - Creates `cellar_test` database if it doesn't exist
@@ -99,6 +103,7 @@ GITHUB_CLIENT_SECRET=
 ### Data Cleanup
 
 Each test is responsible for cleaning up its test data:
+
 - Use Prisma `deleteMany` with test-specific email patterns
 - Cleanup in `test.afterEach` or `test.afterAll` hooks
 - Pattern: `e2e-test-${timestamp}@example.com` for unique identification
@@ -118,7 +123,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
-  
+
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
@@ -129,7 +134,7 @@ export default defineConfig({
     { name: 'setup', testMatch: /.*\.setup\.ts/ },
     {
       name: 'chromium',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         storageState: 'playwright/.auth/user.json',
       },
@@ -165,6 +170,7 @@ All browsers reuse the same authenticated state from the setup project.
 **Purpose:** Authenticate once and save session state for reuse.
 
 **Flow:**
+
 1. Generate unique test credentials
 2. Navigate to `/sign-up`
 3. Fill and submit sign-up form
@@ -176,6 +182,7 @@ All browsers reuse the same authenticated state from the setup project.
 ### Auth Flow Tests: `e2e/specs/auth.spec.ts`
 
 **Test 1: User can sign up**
+
 - Navigate to `/sign-up`
 - Fill name, email, password fields
 - Submit form
@@ -184,6 +191,7 @@ All browsers reuse the same authenticated state from the setup project.
 - Cleanup: Delete test user
 
 **Test 2: User can sign in**
+
 - Create user via sign-up (prerequisite)
 - Navigate to `/sign-in`
 - Fill email, password
@@ -196,12 +204,14 @@ All browsers reuse the same authenticated state from the setup project.
 ### Protected Routes Tests: `e2e/specs/protected-routes.spec.ts`
 
 **Test 1: Unauthenticated redirect**
+
 - Create fresh browser context (no auth state)
 - Navigate to `/dashboard`
 - Assert redirect to `/sign-in`
 - Assert sign-in page visible
 
 **Test 2-4: Authenticated access**
+
 - Use shared auth state (from setup project)
 - Navigate to `/dashboard`, `/collections`, `/settings`
 - Assert each page loads successfully
@@ -275,6 +285,7 @@ While we are not creating CI workflows now, the structure supports easy GitHub A
 5. **Artifacts**: HTML reports, traces, and screenshots configured
 
 Future CI workflow would:
+
 - Use Postgres service container
 - Set environment variables
 - Run setup script
@@ -286,17 +297,20 @@ Future CI workflow would:
 ## Error Handling
 
 ### Test-Level
+
 - Each test cleans up its data
 - Unique email patterns prevent conflicts
 - `test.afterEach` / `test.afterAll` hooks for cleanup
 
 ### Configuration-Level
+
 - Retries on CI (2 attempts)
 - Trace collection on first retry
 - Screenshots on failure
 - `forbidOnly` prevents accidental `test.only` in CI
 
 ### Script-Level
+
 - `setup-test-db.ts` validates DATABASE_URL exists
 - Clear error messages for missing env vars
 - Graceful failure with exit code 1
@@ -313,7 +327,7 @@ Future CI workflow would:
    - Pattern: `e2e-test-${timestamp}@example.com`
    - Cleanup after tests
 
-3. **Environment Variables**: 
+3. **Environment Variables**:
    - `.env.test` should be gitignored
    - Example provided in documentation
 

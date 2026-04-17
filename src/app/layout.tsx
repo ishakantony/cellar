@@ -1,21 +1,21 @@
-import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
-import { Toaster } from "sonner";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Toaster } from 'sonner';
+import './globals.css';
 
 const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
+  variable: '--font-inter',
+  subsets: ['latin'],
 });
 
 const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
+  variable: '--font-jetbrains-mono',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "Cellar",
-  description: "Your developer vault for snippets, notes, prompts, and more",
+  title: 'Cellar',
+  description: 'Your developer vault for snippets, notes, prompts, and more',
 };
 
 export default function RootLayout({
@@ -33,11 +33,11 @@ export default function RootLayout({
           position="top-right"
           toastOptions={{
             style: {
-              background: "var(--color-surface-container-high)",
-              border: "1px solid var(--color-outline-variant)",
-              color: "var(--color-on-surface)",
-              fontSize: "13px",
-              borderRadius: "6px",
+              background: 'var(--color-surface-container-high)',
+              border: '1px solid var(--color-outline-variant)',
+              color: 'var(--color-on-surface)',
+              fontSize: '13px',
+              borderRadius: '6px',
             },
           }}
         />

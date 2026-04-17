@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { GitBranch } from "lucide-react";
-import { Divider } from "@/components/ui/divider";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { useState } from 'react';
+import { GitBranch } from 'lucide-react';
+import { Divider } from '@/components/ui/divider';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export interface SocialLoginSectionProps {
   onGitHubClick?: () => Promise<void>;
@@ -24,9 +24,9 @@ export function SocialLoginSection({ onGitHubClick, className }: SocialLoginSect
   };
 
   return (
-    <div className={cn("my-6 space-y-4", className)}>
+    <div className={cn('my-6 space-y-4', className)}>
       <Divider text="or" />
-      
+
       <Button
         variant="secondary"
         loading={isLoading}

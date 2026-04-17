@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { IconButton } from "./icon-button";
+import { X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { IconButton } from './icon-button';
 
 export interface ModalProps {
   open: boolean;
@@ -10,13 +10,13 @@ export interface ModalProps {
   title?: string;
   children: React.ReactNode;
   actions?: React.ReactNode;
-  size?: "sm" | "md";
+  size?: 'sm' | 'md';
   ariaLabel?: string;
 }
 
 const sizeClasses: Record<string, string> = {
-  sm: "w-[360px]",
-  md: "w-[400px]",
+  sm: 'w-[360px]',
+  md: 'w-[400px]',
 };
 
 export function Modal({
@@ -25,7 +25,7 @@ export function Modal({
   title,
   children,
   actions,
-  size = "md",
+  size = 'md',
   ariaLabel,
 }: ModalProps) {
   if (!open) return null;
@@ -33,7 +33,7 @@ export function Modal({
   return (
     <div
       className="fixed inset-0 bg-black/60 z-[60] flex items-center justify-center"
-      style={{ backdropFilter: "blur(4px)" }}
+      style={{ backdropFilter: 'blur(4px)' }}
       onClick={onClose}
     >
       <div
@@ -41,10 +41,10 @@ export function Modal({
         aria-modal="true"
         aria-label={ariaLabel || title}
         className={cn(
-          "bg-surface-container-high rounded-xl p-6 mx-4 shadow-2xl",
+          'bg-surface-container-high rounded-xl p-6 mx-4 shadow-2xl',
           sizeClasses[size]
         )}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
         {title && (
           <div className="flex items-center justify-between mb-4">

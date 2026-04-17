@@ -23,6 +23,7 @@ This document outlines the design for implementing unit tests across the Cellar 
 ## Approach
 
 **Hybrid Testing Strategy:**
+
 - **Phase 1 (Immediate):** Write tests for existing code to establish coverage
 - **Phase 2 (Ongoing):** Use TDD for new features going forward
 
@@ -34,14 +35,14 @@ This approach avoids the inefficiency of rewriting working code while building t
 
 ### Core Stack
 
-| Tool | Purpose | Rationale |
-|------|---------|-----------|
-| **Vitest** | Test runner | Fast, native ESM, excellent TypeScript support |
-| **@testing-library/react** | Component testing | Industry standard for React testing |
-| **@testing-library/jest-dom** | DOM assertions | Readable, semantic assertions |
-| **happy-dom** | DOM environment | Faster than jsdom, sufficient for component tests |
-| **@vitest/coverage-v8** | Code coverage | Native V8 coverage, accurate reports |
-| **vitest-mock-extended** | Mock utilities | Type-safe mocking for TypeScript |
+| Tool                          | Purpose           | Rationale                                         |
+| ----------------------------- | ----------------- | ------------------------------------------------- |
+| **Vitest**                    | Test runner       | Fast, native ESM, excellent TypeScript support    |
+| **@testing-library/react**    | Component testing | Industry standard for React testing               |
+| **@testing-library/jest-dom** | DOM assertions    | Readable, semantic assertions                     |
+| **happy-dom**                 | DOM environment   | Faster than jsdom, sufficient for component tests |
+| **@vitest/coverage-v8**       | Code coverage     | Native V8 coverage, accurate reports              |
+| **vitest-mock-extended**      | Mock utilities    | Type-safe mocking for TypeScript                  |
 
 ### Package Scripts
 
@@ -55,6 +56,7 @@ This approach avoids the inefficiency of rewriting working code while building t
 ```
 
 **Script Descriptions:**
+
 - `npm test` - Watch mode for development (re-runs on file changes)
 - `npm run test:ui` - Browser-based test explorer for debugging
 - `npm run test:coverage` - Full test run with coverage report
@@ -63,6 +65,7 @@ This approach avoids the inefficiency of rewriting working code while building t
 ### Configuration
 
 **vitest.config.ts:**
+
 - Environment: `happy-dom` for components, `node` for server actions
 - Global setup: `src/test/setup.ts`
 - Coverage thresholds: 80% lines/functions, 70% branches (adjustable)
@@ -71,14 +74,14 @@ This approach avoids the inefficiency of rewriting working code while building t
 ### Global Test Setup (src/test/setup.ts)
 
 ```typescript
-import '@testing-library/jest-dom'
-import { cleanup } from '@testing-library/react'
-import { afterEach, vi } from 'vitest'
+import '@testing-library/jest-dom';
+import { cleanup } from '@testing-library/react';
+import { afterEach, vi } from 'vitest';
 
 // Cleanup after each test
 afterEach(() => {
-  cleanup()
-})
+  cleanup();
+});
 
 // Mock next/navigation
 vi.mock('next/navigation', () => ({
@@ -89,7 +92,7 @@ vi.mock('next/navigation', () => ({
   }),
   usePathname: () => '/',
   useSearchParams: () => new URLSearchParams(),
-}))
+}));
 ```
 
 ---
@@ -136,6 +139,7 @@ describe('Button', () => {
 ### What to Test
 
 **DO Test:**
+
 - ✓ Rendering with different props
 - ✓ User interactions (click, type, focus, blur)
 - ✓ Accessibility attributes (ARIA roles, labels)
@@ -144,6 +148,7 @@ describe('Button', () => {
 - ✓ Form integration (if applicable)
 
 **DON'T Test:**
+
 - ✗ Internal implementation details
 - ✗ CSS class names (fragile, changes often)
 - ✗ Exact HTML structure
@@ -183,8 +188,8 @@ Server actions depend on Prisma and authentication. Mock external dependencies a
 ### Test Pattern
 
 ```typescript
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { createAsset, deleteAsset, getAssets } from './assets'
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { createAsset, deleteAsset, getAssets } from './assets';
 
 // Mock Prisma
 vi.mock('@/lib/prisma', () => ({
@@ -201,27 +206,27 @@ vi.mock('@/lib/prisma', () => ({
     },
     $queryRaw: vi.fn(),
   },
-}))
+}));
 
 // Mock authentication
 vi.mock('@/lib/session', () => ({
   getUser: vi.fn(() => ({ id: 'user-123', email: 'test@example.com' })),
-}))
+}));
 
 // Mock Next.js cache
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
-}))
+}));
 
 // Mock file system
 vi.mock('fs/promises', () => ({
   unlink: vi.fn(),
-}))
+}));
 
 describe('createAsset', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   it('creates asset with user association', async () => {
     const mockAsset = {
@@ -229,14 +234,14 @@ describe('createAsset', () => {
       title: 'Test Asset',
       type: 'DOCUMENT',
       userId: 'user-123',
-    }
-    const { prisma } = await import('@/lib/prisma')
-    vi.mocked(prisma.asset.create).mockResolvedValue(mockAsset)
+    };
+    const { prisma } = await import('@/lib/prisma');
+    vi.mocked(prisma.asset.create).mockResolvedValue(mockAsset);
 
     const result = await createAsset({
       type: 'DOCUMENT',
       title: 'Test Asset',
-    })
+    });
 
     expect(prisma.asset.create).toHaveBeenCalledWith({
       data: {
@@ -244,93 +249,92 @@ describe('createAsset', () => {
         title: 'Test Asset',
         userId: 'user-123',
       },
-    })
-    expect(result).toEqual(mockAsset)
-  })
+    });
+    expect(result).toEqual(mockAsset);
+  });
 
   it('throws error when user is not authenticated', async () => {
-    const { getUser } = await import('@/lib/session')
-    vi.mocked(getUser).mockRejectedValue(new Error('Unauthorized'))
+    const { getUser } = await import('@/lib/session');
+    vi.mocked(getUser).mockRejectedValue(new Error('Unauthorized'));
 
-    await expect(
-      createAsset({ type: 'DOCUMENT', title: 'Test' })
-    ).rejects.toThrow('Unauthorized')
-  })
-})
+    await expect(createAsset({ type: 'DOCUMENT', title: 'Test' })).rejects.toThrow('Unauthorized');
+  });
+});
 
 describe('deleteAsset', () => {
   it('deletes file from disk if asset has filePath', async () => {
-    const { prisma } = await import('@/lib/prisma')
-    const { unlink } = await import('fs/promises')
+    const { prisma } = await import('@/lib/prisma');
+    const { unlink } = await import('fs/promises');
 
     vi.mocked(prisma.asset.findUnique).mockResolvedValue({
       id: 'asset-1',
       filePath: 'uploads/test.pdf',
-    } as any)
+    } as any);
 
-    await deleteAsset('asset-1')
+    await deleteAsset('asset-1');
 
-    expect(unlink).toHaveBeenCalled()
+    expect(unlink).toHaveBeenCalled();
     expect(prisma.asset.delete).toHaveBeenCalledWith({
       where: { id: 'asset-1', userId: 'user-123' },
-    })
-  })
+    });
+  });
 
   it('throws error when asset not found', async () => {
-    const { prisma } = await import('@/lib/prisma')
-    vi.mocked(prisma.asset.findUnique).mockResolvedValue(null)
+    const { prisma } = await import('@/lib/prisma');
+    vi.mocked(prisma.asset.findUnique).mockResolvedValue(null);
 
-    await expect(deleteAsset('nonexistent')).rejects.toThrow('Asset not found')
-  })
+    await expect(deleteAsset('nonexistent')).rejects.toThrow('Asset not found');
+  });
 
   it('prevents path traversal attacks', async () => {
-    const { prisma } = await import('@/lib/prisma')
-    const { unlink } = await import('fs/promises')
+    const { prisma } = await import('@/lib/prisma');
+    const { unlink } = await import('fs/promises');
 
     vi.mocked(prisma.asset.findUnique).mockResolvedValue({
       id: 'asset-1',
       filePath: '../../../etc/passwd',
-    } as any)
+    } as any);
 
-    await deleteAsset('asset-1')
+    await deleteAsset('asset-1');
 
     // unlink should NOT be called for malicious paths
-    expect(unlink).not.toHaveBeenCalled()
-  })
-})
+    expect(unlink).not.toHaveBeenCalled();
+  });
+});
 
 describe('getAssets', () => {
   it('applies type filter', async () => {
-    const { prisma } = await import('@/lib/prisma')
-    const mockAssets = [{ id: '1', title: 'Doc' }]
-    vi.mocked(prisma.asset.findMany).mockResolvedValue(mockAssets)
+    const { prisma } = await import('@/lib/prisma');
+    const mockAssets = [{ id: '1', title: 'Doc' }];
+    vi.mocked(prisma.asset.findMany).mockResolvedValue(mockAssets);
 
-    const result = await getAssets({ type: 'DOCUMENT' })
+    const result = await getAssets({ type: 'DOCUMENT' });
 
     expect(prisma.asset.findMany).toHaveBeenCalledWith({
       where: { userId: 'user-123', type: 'DOCUMENT' },
       orderBy: { updatedAt: 'desc' },
-    })
-    expect(result).toEqual(mockAssets)
-  })
+    });
+    expect(result).toEqual(mockAssets);
+  });
 
   it('applies sort order', async () => {
-    const { prisma } = await import('@/lib/prisma')
-    vi.mocked(prisma.asset.findMany).mockResolvedValue([])
+    const { prisma } = await import('@/lib/prisma');
+    vi.mocked(prisma.asset.findMany).mockResolvedValue([]);
 
-    await getAssets({ sort: 'az' })
+    await getAssets({ sort: 'az' });
 
     expect(prisma.asset.findMany).toHaveBeenCalledWith({
       where: { userId: 'user-123' },
       orderBy: { title: 'asc' },
-    })
-  })
-})
+    });
+  });
+});
 ```
 
 ### What to Test
 
 **DO Test:**
+
 - ✓ Business logic and data transformations
 - ✓ Prisma query construction
 - ✓ Error handling (not found, unauthorized)
@@ -339,6 +343,7 @@ describe('getAssets', () => {
 - ✓ User authentication/authorization checks
 
 **Mocking Strategy:**
+
 - Prisma client: Mock all database calls
 - `getUser()`: Mock authentication context
 - `revalidatePath()`: Mock Next.js cache
@@ -404,8 +409,9 @@ src/test/
 ### Example Shared Utilities
 
 **src/test/mocks/prisma.ts:**
+
 ```typescript
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 
 export function createMockPrisma() {
   return {
@@ -428,14 +434,15 @@ export function createMockPrisma() {
       delete: vi.fn(),
     },
     $queryRaw: vi.fn(),
-    $transaction: vi.fn((ops) => Promise.all(ops)),
-  }
+    $transaction: vi.fn(ops => Promise.all(ops)),
+  };
 }
 ```
 
 **src/test/utils/test-data.ts:**
+
 ```typescript
-import { AssetType } from '@/generated/prisma'
+import { AssetType } from '@/generated/prisma';
 
 export function createMockAsset(overrides = {}) {
   return {
@@ -455,7 +462,7 @@ export function createMockAsset(overrides = {}) {
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
-  }
+  };
 }
 
 export function createMockCollection(overrides = {}) {
@@ -469,7 +476,7 @@ export function createMockCollection(overrides = {}) {
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
-  }
+  };
 }
 ```
 
@@ -480,6 +487,7 @@ export function createMockCollection(overrides = {}) {
 ### Husky + lint-staged Setup
 
 **Package additions:**
+
 ```json
 {
   "husky": "^9.0.0",
@@ -488,6 +496,7 @@ export function createMockCollection(overrides = {}) {
 ```
 
 **Configuration (.husky/pre-commit):**
+
 ```bash
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
@@ -496,18 +505,17 @@ npx lint-staged
 ```
 
 **lint-staged configuration (package.json):**
+
 ```json
 {
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix",
-      "vitest run --reporter=dot"
-    ]
+    "*.{ts,tsx}": ["eslint --fix", "vitest run --reporter=dot"]
   }
 }
 ```
 
 **Benefits:**
+
 - Runs linting on staged files only (fast)
 - Runs related tests before commit
 - Prevents commits with failing tests or lint errors
@@ -519,12 +527,12 @@ npx lint-staged
 
 ### Initial Targets
 
-| Category | Target | Rationale |
-|----------|--------|-----------|
-| **UI Components** | 90% | Critical for user experience |
-| **Server Actions** | 85% | Business logic, security-critical |
-| **Utilities** | 80% | Helper functions, lower risk |
-| **Overall** | 85% | Balanced coverage goal |
+| Category           | Target | Rationale                         |
+| ------------------ | ------ | --------------------------------- |
+| **UI Components**  | 90%    | Critical for user experience      |
+| **Server Actions** | 85%    | Business logic, security-critical |
+| **Utilities**      | 80%    | Helper functions, lower risk      |
+| **Overall**        | 85%    | Balanced coverage goal            |
 
 ### Coverage Reports
 
@@ -537,6 +545,7 @@ npx lint-staged
 ## 7. Implementation Phases
 
 ### Phase 1: Infrastructure (Day 1)
+
 1. Install Vitest and dependencies
 2. Create vitest.config.ts
 3. Create src/test/setup.ts
@@ -544,23 +553,27 @@ npx lint-staged
 5. Verify test runner works with a simple test
 
 ### Phase 2: UI Foundation (Days 2-3)
+
 1. Test Button component (baseline pattern)
 2. Test Input, Label, Card components
 3. Create shared test utilities
 4. Establish component testing patterns
 
 ### Phase 3: Complex UI Components (Days 4-5)
+
 1. Test Modal, Drawer (portal testing)
 2. Test Tabs, Select (state management)
 3. Test Alert, Badge, Avatar (variations)
 
 ### Phase 4: Server Actions (Days 6-8)
+
 1. Mock Prisma and auth
 2. Test assets.ts CRUD operations
 3. Test collections.ts operations
 4. Test error handling and edge cases
 
 ### Phase 5: Utilities & Integration (Days 9-10)
+
 1. Test helper utilities
 2. Add pre-commit hooks
 3. Verify coverage targets
@@ -578,9 +591,9 @@ import { render, screen, waitFor } from '@testing-library/react'
 describe('AsyncComponent', () => {
   it('shows loading state then data', async () => {
     render(<AsyncComponent />)
-    
+
     expect(screen.getByText('Loading...')).toBeInTheDocument()
-    
+
     await waitFor(() => {
       expect(screen.getByText('Data loaded')).toBeInTheDocument()
     })
@@ -597,12 +610,12 @@ describe('Form', () => {
   it('submits form data', async () => {
     const handleSubmit = vi.fn()
     render(<Form onSubmit={handleSubmit} />)
-    
+
     fireEvent.change(screen.getByLabelText('Name'), {
       target: { value: 'John' }
     })
     fireEvent.click(screen.getByText('Submit'))
-    
+
     expect(handleSubmit).toHaveBeenCalledWith({ name: 'John' })
   })
 })
@@ -617,9 +630,9 @@ describe('Component', () => {
     vi.mocked(someFunction).mockImplementation(() => {
       throw new Error('Failed')
     })
-    
+
     render(<Component />)
-    
+
     expect(screen.getByText('Something went wrong')).toBeInTheDocument()
   })
 })
@@ -654,6 +667,7 @@ describe('Component', () => {
 ### Common Issues
 
 **Tests failing due to module resolution:**
+
 ```typescript
 // Add to vitest.config.ts
 resolve: {
@@ -664,6 +678,7 @@ resolve: {
 ```
 
 **CSS/SCSS imports failing:**
+
 ```typescript
 // In vitest.config.ts
 css: {
@@ -672,15 +687,16 @@ css: {
 ```
 
 **Environment variables not loading:**
+
 ```typescript
 // In vitest.config.ts
-import { loadEnv } from 'vite'
+import { loadEnv } from 'vite';
 
 export default defineConfig({
   test: {
     env: loadEnv('', process.cwd(), ''),
   },
-})
+});
 ```
 
 ---
@@ -750,14 +766,14 @@ describe('Component', () => {
 
 ## Decision Log
 
-| Date | Decision | Rationale |
-|------|----------|-----------|
-| 2025-04-15 | Use Vitest | Faster than Jest, native ESM, better DX |
-| 2025-04-15 | happy-dom over jsdom | Faster execution, sufficient for our needs |
-| 2025-04-15 | Co-located tests | Easier to find, maintain, and encourages testing |
-| 2025-04-15 | Mock Prisma (no test DB) | Fast, isolated, sufficient for unit tests |
-| 2025-04-15 | 85% coverage target | Balanced between thoroughness and practicality |
-| 2025-04-15 | Pre-commit hooks only (no CI) | User preference, keeps workflow lightweight |
+| Date       | Decision                      | Rationale                                        |
+| ---------- | ----------------------------- | ------------------------------------------------ |
+| 2025-04-15 | Use Vitest                    | Faster than Jest, native ESM, better DX          |
+| 2025-04-15 | happy-dom over jsdom          | Faster execution, sufficient for our needs       |
+| 2025-04-15 | Co-located tests              | Easier to find, maintain, and encourages testing |
+| 2025-04-15 | Mock Prisma (no test DB)      | Fast, isolated, sufficient for unit tests        |
+| 2025-04-15 | 85% coverage target           | Balanced between thoroughness and practicality   |
+| 2025-04-15 | Pre-commit hooks only (no CI) | User preference, keeps workflow lightweight      |
 
 ---
 

@@ -7,7 +7,7 @@ const meta: Meta<typeof Drawer> = {
   component: Drawer,
   title: 'UI/Drawer',
   tags: ['autodocs'],
-  parameters: { 
+  parameters: {
     layout: 'fullscreen',
     docs: {
       story: { inline: false, iframeHeight: 400 },
@@ -48,7 +48,9 @@ export const WithFooter: Story = {
     ),
     footer: (
       <>
-        <Button variant="ghost" onClick={fn()}>Cancel</Button>
+        <Button variant="ghost" onClick={fn()}>
+          Cancel
+        </Button>
         <Button onClick={fn()}>Save Changes</Button>
       </>
     ),

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState, useRef } from "react";
-import { Upload, Loader2, File } from "lucide-react";
+import { useState, useRef } from 'react';
+import { Upload, Loader2, File } from 'lucide-react';
 
 export function FileDropzone({
   onUpload,
@@ -26,10 +26,10 @@ export function FileDropzone({
     setFileName(file.name);
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
 
-    const res = await fetch("/api/upload", {
-      method: "POST",
+    const res = await fetch('/api/upload', {
+      method: 'POST',
       body: formData,
     });
 
@@ -39,7 +39,7 @@ export function FileDropzone({
       onUpload(data);
     } else {
       const err = await res.json().catch(() => ({}));
-      setError((err as { error?: string }).error ?? "Upload failed");
+      setError((err as { error?: string }).error ?? 'Upload failed');
     }
     setUploading(false);
   }
@@ -58,7 +58,7 @@ export function FileDropzone({
 
   return (
     <div
-      onDragOver={(e) => {
+      onDragOver={e => {
         e.preventDefault();
         setDragOver(true);
       }}
@@ -67,8 +67,8 @@ export function FileDropzone({
       onClick={() => inputRef.current?.click()}
       className={`flex flex-col items-center justify-center gap-3 p-10 border-2 border-dashed rounded-xl cursor-pointer transition-all ${
         dragOver
-          ? "border-primary bg-primary/5"
-          : "border-outline-variant/30 hover:border-outline-variant/60"
+          ? 'border-primary bg-primary/5'
+          : 'border-outline-variant/30 hover:border-outline-variant/60'
       }`}
     >
       <input
@@ -92,14 +92,10 @@ export function FileDropzone({
       ) : (
         <>
           <Upload className="h-8 w-8 text-outline" />
-          <p className="text-xs text-on-surface-variant">
-            Drop a file here or click to browse
-          </p>
+          <p className="text-xs text-on-surface-variant">Drop a file here or click to browse</p>
         </>
       )}
-      {error && (
-        <p className="text-xs text-error mt-1">{error}</p>
-      )}
+      {error && <p className="text-xs text-error mt-1">{error}</p>}
     </div>
   );
 }

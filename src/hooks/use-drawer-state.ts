@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState, useCallback } from "react";
+import { useState, useCallback } from 'react';
 
 export interface UseDrawerStateOptions {
   onSaved?: () => void;
@@ -9,44 +9,42 @@ export interface UseDrawerStateOptions {
 export interface DrawerState<T> {
   open: boolean;
   selected: T | null;
-  mode: "view" | "edit" | "create";
+  mode: 'view' | 'edit' | 'create';
   openView: (item: T) => void;
   openEdit: (item: T) => void;
   openCreate: (defaultItem?: Partial<T>) => void;
   close: () => void;
-  setMode: (mode: "view" | "edit" | "create") => void;
+  setMode: (mode: 'view' | 'edit' | 'create') => void;
   setSelected: (item: T | null) => void;
 }
 
-export function useDrawerState<T>(
-  options?: UseDrawerStateOptions
-): DrawerState<T> {
+export function useDrawerState<T>(options?: UseDrawerStateOptions): DrawerState<T> {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<T | null>(null);
-  const [mode, setMode] = useState<"view" | "edit" | "create">("view");
+  const [mode, setMode] = useState<'view' | 'edit' | 'create'>('view');
 
   const openView = useCallback((item: T) => {
     setSelected(item);
-    setMode("view");
+    setMode('view');
     setOpen(true);
   }, []);
 
   const openEdit = useCallback((item: T) => {
     setSelected(item);
-    setMode("edit");
+    setMode('edit');
     setOpen(true);
   }, []);
 
   const openCreate = useCallback((defaultItem?: Partial<T>) => {
-    setSelected(defaultItem as T || null);
-    setMode("create");
+    setSelected((defaultItem as T) || null);
+    setMode('create');
     setOpen(true);
   }, []);
 
   const close = useCallback(() => {
     setOpen(false);
     setSelected(null);
-    setMode("view");
+    setMode('view');
     options?.onSaved?.();
   }, [options]);
 

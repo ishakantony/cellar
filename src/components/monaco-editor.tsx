@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import dynamic from "next/dynamic";
+import dynamic from 'next/dynamic';
 
-const Editor = dynamic(() => import("@monaco-editor/react").then((mod) => mod.default), {
+const Editor = dynamic(() => import('@monaco-editor/react').then(mod => mod.default), {
   ssr: false,
   loading: () => (
     <div className="flex h-full items-center justify-center bg-surface-container-lowest rounded-b-xl">
@@ -14,7 +14,7 @@ const Editor = dynamic(() => import("@monaco-editor/react").then((mod) => mod.de
 export function MonacoEditor({
   value,
   onChange,
-  language = "plaintext",
+  language = 'plaintext',
   readOnly = false,
 }: {
   value: string;
@@ -27,7 +27,7 @@ export function MonacoEditor({
       height="100%"
       language={language}
       value={value}
-      onChange={(val) => onChange?.(val ?? "")}
+      onChange={val => onChange?.(val ?? '')}
       theme="vs-dark"
       options={{
         readOnly,
@@ -37,7 +37,7 @@ export function MonacoEditor({
         lineHeight: 1.7,
         padding: { top: 16 },
         scrollBeyondLastLine: false,
-        wordWrap: "on",
+        wordWrap: 'on',
         automaticLayout: true,
         scrollbar: {
           verticalScrollbarSize: 4,

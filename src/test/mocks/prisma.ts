@@ -1,4 +1,4 @@
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 
 export function createMockPrisma() {
   return {
@@ -25,7 +25,7 @@ export function createMockPrisma() {
     },
     $queryRaw: vi.fn(),
     $transaction: vi.fn((ops: unknown[]) => Promise.all(ops as Promise<unknown>[])),
-  }
+  };
 }
 
-export type MockPrisma = ReturnType<typeof createMockPrisma>
+export type MockPrisma = ReturnType<typeof createMockPrisma>;

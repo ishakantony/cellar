@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { LogoIcon } from "./logo-icon";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { LogoIcon } from './logo-icon';
 
 const meta = {
-  title: "Auth/LogoIcon",
+  title: 'Auth/LogoIcon',
   component: LogoIcon,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
 } satisfies Meta<typeof LogoIcon>;
 
 export default meta;

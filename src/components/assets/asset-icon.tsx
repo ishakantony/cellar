@@ -1,5 +1,5 @@
-import { TYPE_CONFIG } from "@/lib/asset-types";
-import { AssetType } from "@/generated/prisma/enums";
+import { TYPE_CONFIG } from '@/lib/asset-types';
+import { AssetType } from '@/generated/prisma/enums';
 
 export interface AssetIconProps {
   type: AssetType;

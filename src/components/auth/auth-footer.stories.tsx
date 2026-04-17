@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { AuthFooter } from "./auth-footer";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { AuthFooter } from './auth-footer';
 
 const meta = {
-  title: "Auth/AuthFooter",
+  title: 'Auth/AuthFooter',
   component: AuthFooter,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
 } satisfies Meta<typeof AuthFooter>;
 
 export default meta;
@@ -13,15 +13,15 @@ type Story = StoryObj<typeof meta>;
 export const SignIn: Story = {
   args: {
     prompt: "Don't have an account?",
-    linkText: "Sign up",
-    linkHref: "/sign-up",
+    linkText: 'Sign up',
+    linkHref: '/sign-up',
   },
 };
 
 export const SignUp: Story = {
   args: {
-    prompt: "Already have an account?",
-    linkText: "Sign in",
-    linkHref: "/sign-in",
+    prompt: 'Already have an account?',
+    linkText: 'Sign in',
+    linkHref: '/sign-in',
   },
 };

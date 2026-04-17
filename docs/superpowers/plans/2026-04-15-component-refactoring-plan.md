@@ -15,6 +15,7 @@
 ### New Files to Create (27 components + 3 hooks + 2 libs)
 
 **UI Primitives (16):**
+
 - `src/components/ui/button.tsx`
 - `src/components/ui/icon-button.tsx`
 - `src/components/ui/input.tsx`
@@ -33,6 +34,7 @@
 - `src/components/ui/tabs.tsx`
 
 **Domain Components (6 new, 2 refactored):**
+
 - `src/components/assets/asset-card.tsx` (refactor)
 - `src/components/assets/asset-icon.tsx` (new)
 - `src/components/assets/asset-type-badge.tsx` (new)
@@ -43,20 +45,24 @@
 - `src/components/collections/collection-modal.tsx` (refactor)
 
 **Layout Components (1 new, 2 refactored):**
+
 - `src/components/layout/sidebar.tsx` (refactor - move from root)
 - `src/components/layout/header.tsx` (refactor - move from root)
 - `src/components/layout/app-shell.tsx` (new - move from app folder)
 
 **Hooks (3):**
+
 - `src/hooks/use-click-outside.ts`
 - `src/hooks/use-drawer-state.ts`
 - `src/hooks/use-asset-management.ts`
 
 **Libraries (2):**
+
 - `src/lib/asset-types.ts`
 - `src/lib/colors.ts`
 
 ### Files to Delete/Deprecate
+
 - `src/components/asset-card.tsx` → move to `src/components/assets/asset-card.tsx`
 - `src/components/collection-card.tsx` → move to `src/components/collections/collection-card.tsx`
 - `src/components/asset-drawer.tsx` → move to `src/components/assets/asset-drawer.tsx`
@@ -73,6 +79,7 @@
 ### Task 1: Create lib/asset-types.ts
 
 **Files:**
+
 - Create: `src/lib/asset-types.ts`
 
 **Purpose:** Centralize TYPE_CONFIG and asset type constants
@@ -87,8 +94,8 @@ import {
   Image as ImageIcon,
   FileText,
   Braces,
-} from "lucide-react";
-import { AssetType } from "@/generated/prisma";
+} from 'lucide-react';
+import { AssetType } from '@/generated/prisma';
 
 export const TYPE_CONFIG: Record<
   AssetType,
@@ -102,55 +109,55 @@ export const TYPE_CONFIG: Record<
 > = {
   SNIPPET: {
     icon: Braces,
-    iconWrap: "bg-primary/10 text-primary",
-    badge: "text-primary bg-primary/10",
-    label: "Snippet",
-    defaultLanguage: "javascript",
+    iconWrap: 'bg-primary/10 text-primary',
+    badge: 'text-primary bg-primary/10',
+    label: 'Snippet',
+    defaultLanguage: 'javascript',
   },
   PROMPT: {
     icon: Terminal,
-    iconWrap: "bg-tertiary-container/20 text-tertiary",
-    badge: "text-tertiary bg-tertiary/10",
-    label: "Prompt",
-    defaultLanguage: "markdown",
+    iconWrap: 'bg-tertiary-container/20 text-tertiary',
+    badge: 'text-tertiary bg-tertiary/10',
+    label: 'Prompt',
+    defaultLanguage: 'markdown',
   },
   NOTE: {
     icon: StickyNote,
-    iconWrap: "bg-amber-500/10 text-amber-400",
-    badge: "text-amber-400 bg-amber-500/10",
-    label: "Note",
-    defaultLanguage: "markdown",
+    iconWrap: 'bg-amber-500/10 text-amber-400',
+    badge: 'text-amber-400 bg-amber-500/10',
+    label: 'Note',
+    defaultLanguage: 'markdown',
   },
   LINK: {
     icon: LinkIcon,
-    iconWrap: "bg-cyan-500/10 text-cyan-400",
-    badge: "text-cyan-400 bg-cyan-500/10",
-    label: "Link",
-    defaultLanguage: "plaintext",
+    iconWrap: 'bg-cyan-500/10 text-cyan-400',
+    badge: 'text-cyan-400 bg-cyan-500/10',
+    label: 'Link',
+    defaultLanguage: 'plaintext',
   },
   IMAGE: {
     icon: ImageIcon,
-    iconWrap: "bg-rose-500/10 text-rose-400",
-    badge: "text-rose-400 bg-rose-500/10",
-    label: "Image",
-    defaultLanguage: "plaintext",
+    iconWrap: 'bg-rose-500/10 text-rose-400',
+    badge: 'text-rose-400 bg-rose-500/10',
+    label: 'Image',
+    defaultLanguage: 'plaintext',
   },
   FILE: {
     icon: FileText,
-    iconWrap: "bg-violet-500/10 text-violet-400",
-    badge: "text-violet-400 bg-violet-500/10",
-    label: "File",
-    defaultLanguage: "plaintext",
+    iconWrap: 'bg-violet-500/10 text-violet-400',
+    badge: 'text-violet-400 bg-violet-500/10',
+    label: 'File',
+    defaultLanguage: 'plaintext',
   },
 };
 
 export const ASSET_TYPE_OPTIONS: { value: AssetType; label: string }[] = [
-  { value: "SNIPPET", label: "Snippet" },
-  { value: "PROMPT", label: "Prompt" },
-  { value: "NOTE", label: "Note" },
-  { value: "LINK", label: "Link" },
-  { value: "IMAGE", label: "Image" },
-  { value: "FILE", label: "File" },
+  { value: 'SNIPPET', label: 'Snippet' },
+  { value: 'PROMPT', label: 'Prompt' },
+  { value: 'NOTE', label: 'Note' },
+  { value: 'LINK', label: 'Link' },
+  { value: 'IMAGE', label: 'Image' },
+  { value: 'FILE', label: 'File' },
 ];
 ```
 
@@ -164,6 +171,7 @@ git commit -m "feat: add asset-types constants with TYPE_CONFIG"
 ### Task 2: Create lib/colors.ts
 
 **Files:**
+
 - Create: `src/lib/colors.ts`
 
 **Purpose:** Centralize collection color constants
@@ -172,26 +180,26 @@ git commit -m "feat: add asset-types constants with TYPE_CONFIG"
 
 ```typescript
 export const COLLECTION_COLORS: Record<string, string> = {
-  "#3b82f6": "bg-blue-500/15 text-blue-400",
-  "#a855f7": "bg-purple-500/15 text-purple-400",
-  "#10b981": "bg-emerald-500/15 text-emerald-400",
-  "#f59e0b": "bg-amber-500/15 text-amber-400",
-  "#ef4444": "bg-red-500/15 text-red-400",
-  "#ec4899": "bg-pink-500/15 text-pink-400",
+  '#3b82f6': 'bg-blue-500/15 text-blue-400',
+  '#a855f7': 'bg-purple-500/15 text-purple-400',
+  '#10b981': 'bg-emerald-500/15 text-emerald-400',
+  '#f59e0b': 'bg-amber-500/15 text-amber-400',
+  '#ef4444': 'bg-red-500/15 text-red-400',
+  '#ec4899': 'bg-pink-500/15 text-pink-400',
 };
 
 export const COLOR_OPTIONS = [
-  { value: "#3b82f6", label: "Blue", className: "bg-blue-500" },
-  { value: "#a855f7", label: "Purple", className: "bg-purple-500" },
-  { value: "#10b981", label: "Green", className: "bg-emerald-500" },
-  { value: "#f59e0b", label: "Amber", className: "bg-amber-500" },
-  { value: "#ef4444", label: "Red", className: "bg-red-500" },
-  { value: "#ec4899", label: "Pink", className: "bg-pink-500" },
+  { value: '#3b82f6', label: 'Blue', className: 'bg-blue-500' },
+  { value: '#a855f7', label: 'Purple', className: 'bg-purple-500' },
+  { value: '#10b981', label: 'Green', className: 'bg-emerald-500' },
+  { value: '#f59e0b', label: 'Amber', className: 'bg-amber-500' },
+  { value: '#ef4444', label: 'Red', className: 'bg-red-500' },
+  { value: '#ec4899', label: 'Pink', className: 'bg-pink-500' },
 ];
 
 export function getColorClasses(color: string | null | undefined): string {
   if (color && COLLECTION_COLORS[color]) return COLLECTION_COLORS[color];
-  return "bg-blue-500/15 text-blue-400";
+  return 'bg-blue-500/15 text-blue-400';
 }
 ```
 
@@ -205,6 +213,7 @@ git commit -m "feat: add colors constants for collections"
 ### Task 3: Create hooks/use-click-outside.ts
 
 **Files:**
+
 - Create: `src/hooks/use-click-outside.ts`
 
 **Purpose:** Reusable hook for closing dropdowns/menus on outside click
@@ -212,9 +221,9 @@ git commit -m "feat: add colors constants for collections"
 - [ ] **Step 1: Write the file**
 
 ```typescript
-"use client";
+'use client';
 
-import { useEffect, RefObject } from "react";
+import { useEffect, RefObject } from 'react';
 
 export function useClickOutside(
   ref: RefObject<HTMLElement | null>,
@@ -230,8 +239,8 @@ export function useClickOutside(
       }
     }
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [ref, onClickOutside, enabled]);
 }
 ```
@@ -250,6 +259,7 @@ git commit -m "feat: add useClickOutside hook"
 ### Task 4: Create ui/button.tsx
 
 **Files:**
+
 - Create: `src/components/ui/button.tsx`
 
 **Purpose:** Reusable button with variants and sizes
@@ -339,6 +349,7 @@ git commit -m "feat: add Button ui primitive"
 ### Task 5: Create ui/icon-button.tsx
 
 **Files:**
+
 - Create: `src/components/ui/icon-button.tsx`
 
 **Purpose:** Icon-only button for compact actions
@@ -411,6 +422,7 @@ git commit -m "feat: add IconButton ui primitive"
 ### Task 6: Create ui/input.tsx
 
 **Files:**
+
 - Create: `src/components/ui/input.tsx`
 
 **Purpose:** Consistent text input styling
@@ -472,6 +484,7 @@ git commit -m "feat: add Input ui primitive"
 ### Task 7: Create ui/label.tsx
 
 **Files:**
+
 - Create: `src/components/ui/label.tsx`
 
 **Purpose:** Form labels with consistent styling
@@ -518,6 +531,7 @@ git commit -m "feat: add Label ui primitive"
 ### Task 8: Create ui/card.tsx
 
 **Files:**
+
 - Create: `src/components/ui/card.tsx`
 
 **Purpose:** Card container with ghost-border and hover effects
@@ -577,6 +591,7 @@ git commit -m "feat: add Card ui primitive"
 ### Task 9: Create ui/icon-badge.tsx
 
 **Files:**
+
 - Create: `src/components/ui/icon-badge.tsx`
 
 **Purpose:** Colored icon wrapper for asset/collection types
@@ -660,6 +675,7 @@ git commit -m "feat: add IconBadge ui primitive"
 ### Task 10: Create ui/badge.tsx
 
 **Files:**
+
 - Create: `src/components/ui/badge.tsx`
 
 **Purpose:** Text badge for labels and status
@@ -716,6 +732,7 @@ git commit -m "feat: add Badge ui primitive"
 ### Task 11: Create ui/modal.tsx
 
 **Files:**
+
 - Create: `src/components/ui/modal.tsx`
 
 **Purpose:** Centered dialog overlay
@@ -795,6 +812,7 @@ git commit -m "feat: add Modal ui primitive"
 ### Task 12: Create ui/drawer.tsx
 
 **Files:**
+
 - Create: `src/components/ui/drawer.tsx`
 
 **Purpose:** Slide-out side panel
@@ -887,6 +905,7 @@ git commit -m "feat: add Drawer ui primitive"
 ### Task 13: Create ui/action-menu.tsx
 
 **Files:**
+
 - Create: `src/components/ui/action-menu.tsx`
 
 **Purpose:** Dropdown menu with items (replaces inline dropdowns in cards)
@@ -977,6 +996,7 @@ git commit -m "feat: add ActionMenu ui primitive"
 ### Task 14: Create ui/select.tsx
 
 **Files:**
+
 - Create: `src/components/ui/select.tsx`
 
 **Purpose:** Dropdown select input
@@ -1039,6 +1059,7 @@ git commit -m "feat: add Select ui primitive"
 ### Task 15: Create ui/alert.tsx
 
 **Files:**
+
 - Create: `src/components/ui/alert.tsx`
 
 **Purpose:** Status/error message banner
@@ -1086,6 +1107,7 @@ git commit -m "feat: add Alert ui primitive"
 ### Task 16: Create ui/separator.tsx
 
 **Files:**
+
 - Create: `src/components/ui/separator.tsx`
 
 **Purpose:** Divider line
@@ -1128,6 +1150,7 @@ git commit -m "feat: add Separator ui primitive"
 ### Task 17: Create ui/avatar.tsx
 
 **Files:**
+
 - Create: `src/components/ui/avatar.tsx`
 
 **Purpose:** User avatar with fallback initials
@@ -1193,6 +1216,7 @@ git commit -m "feat: add Avatar ui primitive"
 ### Task 18: Create ui/empty-state.tsx
 
 **Files:**
+
 - Create: `src/components/ui/empty-state.tsx`
 
 **Purpose:** Empty list placeholder
@@ -1243,6 +1267,7 @@ git commit -m "feat: add EmptyState ui primitive"
 ### Task 19: Create ui/tabs.tsx
 
 **Files:**
+
 - Create: `src/components/ui/tabs.tsx`
 
 **Purpose:** Filter/navigation tabs
@@ -1312,6 +1337,7 @@ git commit -m "feat: add Tabs ui primitive"
 ### Task 20: Create assets/asset-icon.tsx
 
 **Files:**
+
 - Create: `src/components/assets/asset-icon.tsx`
 - Modify: Update imports in files that use TYPE_CONFIG for icons
 
@@ -1344,6 +1370,7 @@ git commit -m "feat: add AssetIcon component"
 ### Task 21: Create assets/asset-type-badge.tsx
 
 **Files:**
+
 - Create: `src/components/assets/asset-type-badge.tsx`
 
 **Purpose:** Type indicator badge with icon
@@ -1362,7 +1389,7 @@ export interface AssetTypeBadgeProps {
 
 export function AssetTypeBadge({ type, showLabel = false }: AssetTypeBadgeProps) {
   const config = TYPE_CONFIG[type];
-  
+
   return (
     <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${config.badge}`}>
       {showLabel ? config.label : type}
@@ -1381,6 +1408,7 @@ git commit -m "feat: add AssetTypeBadge component"
 ### Task 22: Refactor assets/asset-card.tsx
 
 **Files:**
+
 - Create: `src/components/assets/asset-card.tsx`
 - Delete: `src/components/asset-card.tsx` (after confirming new one works)
 
@@ -1509,23 +1537,29 @@ cd /Users/ishak/Codebase/cellar && npx tsc --noEmit src/components/assets/asset-
 - [ ] **Step 3: Update imports in dashboard-client.tsx**
 
 Change:
+
 ```typescript
-import { AssetCard } from "@/components/asset-card";
+import { AssetCard } from '@/components/asset-card';
 ```
+
 To:
+
 ```typescript
-import { AssetCard } from "@/components/assets/asset-card";
+import { AssetCard } from '@/components/assets/asset-card';
 ```
 
 - [ ] **Step 4: Update imports in assets-client.tsx**
 
 Change:
+
 ```typescript
-import { AssetCard } from "@/components/asset-card";
+import { AssetCard } from '@/components/asset-card';
 ```
+
 To:
+
 ```typescript
-import { AssetCard } from "@/components/assets/asset-card";
+import { AssetCard } from '@/components/assets/asset-card';
 ```
 
 - [ ] **Step 5: Delete old file and commit**
@@ -1543,6 +1577,7 @@ git commit -m "refactor: AssetCard now uses UI primitives"
 ### Task 23: Refactor collections/collection-card.tsx
 
 **Files:**
+
 - Create: `src/components/collections/collection-card.tsx`
 - Delete: `src/components/collection-card.tsx`
 
@@ -1635,13 +1670,15 @@ export function CollectionCard({
 - [ ] **Step 2: Update imports**
 
 Update `dashboard-client.tsx`:
+
 ```typescript
-import { CollectionCard } from "@/components/collections/collection-card";
+import { CollectionCard } from '@/components/collections/collection-card';
 ```
 
 Update `collections-client.tsx`:
+
 ```typescript
-import { CollectionCard } from "@/components/collections/collection-card";
+import { CollectionCard } from '@/components/collections/collection-card';
 ```
 
 - [ ] **Step 3: Delete old file and commit**
@@ -1659,6 +1696,7 @@ git commit -m "refactor: CollectionCard now uses UI primitives"
 ### Task 24: Move and refactor layout/sidebar.tsx
 
 **Files:**
+
 - Create: `src/components/layout/sidebar.tsx`
 - Delete: `src/components/sidebar.tsx`
 
@@ -1669,6 +1707,7 @@ git commit -m "refactor: CollectionCard now uses UI primitives"
 Copy the existing `src/components/sidebar.tsx` to `src/components/layout/sidebar.tsx`, then update the Avatar section:
 
 Find this section (around lines 158-167):
+
 ```typescript
 {user.image ? (
   <img
@@ -1684,6 +1723,7 @@ Find this section (around lines 158-167):
 ```
 
 Replace with:
+
 ```typescript
 import { Avatar } from "@/components/ui/avatar";
 // ...
@@ -1693,8 +1733,9 @@ import { Avatar } from "@/components/ui/avatar";
 - [ ] **Step 2: Update imports in layout.tsx**
 
 Update `src/app/(app)/layout.tsx`:
+
 ```typescript
-import { Sidebar } from "@/components/layout/sidebar";
+import { Sidebar } from '@/components/layout/sidebar';
 ```
 
 - [ ] **Step 3: Delete old file and commit**
@@ -1708,6 +1749,7 @@ git commit -m "refactor: move Sidebar to layout folder, use Avatar primitive"
 ### Task 25: Move and refactor layout/header.tsx
 
 **Files:**
+
 - Create: `src/components/layout/header.tsx`
 - Delete: `src/components/header.tsx`
 
@@ -1718,12 +1760,14 @@ git commit -m "refactor: move Sidebar to layout folder, use Avatar primitive"
 Copy `src/components/header.tsx` to `src/components/layout/header.tsx`, then update:
 
 Add imports:
+
 ```typescript
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 ```
 
 Replace the search input (around line 42-51):
+
 ```typescript
 {/* Old */}
 <input
@@ -1744,6 +1788,7 @@ Replace the search input (around line 42-51):
 ```
 
 Replace the buttons (around lines 54-67):
+
 ```typescript
 {/* Old */}
 <button onClick={onAddCollection} className="...">...</button>
@@ -1763,8 +1808,9 @@ Replace the buttons (around lines 54-67):
 - [ ] **Step 2: Update imports in app-shell.tsx**
 
 Update `src/app/(app)/app-shell.tsx`:
+
 ```typescript
-import { Header } from "@/components/layout/header";
+import { Header } from '@/components/layout/header';
 ```
 
 - [ ] **Step 3: Delete old file and commit**
@@ -1778,6 +1824,7 @@ git commit -m "refactor: move Header to layout folder, use Button/Input primitiv
 ### Task 26: Move layout/app-shell.tsx
 
 **Files:**
+
 - Create: `src/components/layout/app-shell.tsx`
 - Delete: `src/app/(app)/app-shell.tsx`
 
@@ -1792,8 +1839,9 @@ cp src/app/(app)/app-shell.tsx src/components/layout/app-shell.tsx
 - [ ] **Step 2: Update imports in layout.tsx**
 
 Update `src/app/(app)/layout.tsx`:
+
 ```typescript
-import { AppShell } from "@/components/layout/app-shell";
+import { AppShell } from '@/components/layout/app-shell';
 ```
 
 - [ ] **Step 3: Delete old file and commit**
@@ -1811,6 +1859,7 @@ git commit -m "refactor: move AppShell to layout folder"
 ### Task 27: Create hooks/use-drawer-state.ts
 
 **Files:**
+
 - Create: `src/hooks/use-drawer-state.ts`
 
 **Purpose:** Manage drawer state and selected item
@@ -1818,9 +1867,9 @@ git commit -m "refactor: move AppShell to layout folder"
 - [ ] **Step 1: Write the hook**
 
 ```typescript
-"use client";
+'use client';
 
-import { useState, useCallback } from "react";
+import { useState, useCallback } from 'react';
 
 export interface UseDrawerStateOptions<T> {
   onSaved?: () => void;
@@ -1829,44 +1878,42 @@ export interface UseDrawerStateOptions<T> {
 export interface DrawerState<T> {
   open: boolean;
   selected: T | null;
-  mode: "view" | "edit" | "create";
+  mode: 'view' | 'edit' | 'create';
   openView: (item: T) => void;
   openEdit: (item: T) => void;
   openCreate: (defaultItem?: Partial<T>) => void;
   close: () => void;
-  setMode: (mode: "view" | "edit" | "create") => void;
+  setMode: (mode: 'view' | 'edit' | 'create') => void;
   setSelected: (item: T | null) => void;
 }
 
-export function useDrawerState<T>(
-  options?: UseDrawerStateOptions<T>
-): DrawerState<T> {
+export function useDrawerState<T>(options?: UseDrawerStateOptions<T>): DrawerState<T> {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<T | null>(null);
-  const [mode, setMode] = useState<"view" | "edit" | "create">("view");
+  const [mode, setMode] = useState<'view' | 'edit' | 'create'>('view');
 
   const openView = useCallback((item: T) => {
     setSelected(item);
-    setMode("view");
+    setMode('view');
     setOpen(true);
   }, []);
 
   const openEdit = useCallback((item: T) => {
     setSelected(item);
-    setMode("edit");
+    setMode('edit');
     setOpen(true);
   }, []);
 
   const openCreate = useCallback((defaultItem?: Partial<T>) => {
-    setSelected(defaultItem as T || null);
-    setMode("create");
+    setSelected((defaultItem as T) || null);
+    setMode('create');
     setOpen(true);
   }, []);
 
   const close = useCallback(() => {
     setOpen(false);
     setSelected(null);
-    setMode("view");
+    setMode('view');
   }, []);
 
   const handleSaved = useCallback(() => {
@@ -1902,6 +1949,7 @@ git commit -m "feat: add useDrawerState hook"
 ### Task 28: Delete delete-dialog.tsx
 
 **Files:**
+
 - Delete: `src/components/delete-dialog.tsx`
 
 **Purpose:** No longer needed - replaced by Modal + Alert
@@ -1925,6 +1973,7 @@ git commit -m "chore: remove delete-dialog - replaced by Modal primitive"
 ### Task 29: Final TypeScript check
 
 **Files:**
+
 - All TypeScript files
 
 **Purpose:** Ensure no type errors

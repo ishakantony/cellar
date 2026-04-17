@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { AssetCard } from "@/components/assets/asset-card";
-import { AssetDrawer } from "@/components/asset-drawer";
-import { Modal } from "@/components/ui/modal";
-import { Alert } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
-import { togglePin, deleteAsset, getAsset } from "@/app/actions/assets";
-import { AssetType } from "@/generated/prisma/enums";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { AssetCard } from '@/components/assets/asset-card';
+import { AssetDrawer } from '@/components/asset-drawer';
+import { Modal } from '@/components/ui/modal';
+import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
+import { togglePin, deleteAsset, getAsset } from '@/app/actions/assets';
+import { AssetType } from '@/generated/prisma/enums';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 type AssetItem = {
   id: string;
@@ -38,11 +38,7 @@ type CollectionDetail = {
   _count: { assets: number };
 };
 
-export function CollectionDetailClient({
-  collection,
-}: {
-  collection: CollectionDetail;
-}) {
+export function CollectionDetailClient({ collection }: { collection: CollectionDetail }) {
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<AssetItem | null>(null);
@@ -54,8 +50,36 @@ export function CollectionDetailClient({
   async function handleAssetClick(asset: AssetItem) {
     const full = await getAsset(asset.id);
     if (full) {
-      const { id, type, title, description, content, language, url, filePath, fileName, mimeType, fileSize, pinned, updatedAt } = full;
-      setSelectedAsset({ id, type, title, description, content, language, url, filePath, fileName, mimeType, fileSize, pinned, updatedAt });
+      const {
+        id,
+        type,
+        title,
+        description,
+        content,
+        language,
+        url,
+        filePath,
+        fileName,
+        mimeType,
+        fileSize,
+        pinned,
+        updatedAt,
+      } = full;
+      setSelectedAsset({
+        id,
+        type,
+        title,
+        description,
+        content,
+        language,
+        url,
+        filePath,
+        fileName,
+        mimeType,
+        fileSize,
+        pinned,
+        updatedAt,
+      });
       setDrawerOpen(true);
     }
   }
@@ -67,7 +91,7 @@ export function CollectionDetailClient({
     router.refresh();
   }
 
-  const assets = collection.assets.map((ac) => ac.asset);
+  const assets = collection.assets.map(ac => ac.asset);
 
   return (
     <div className="space-y-6">
@@ -79,22 +103,18 @@ export function CollectionDetailClient({
           <ArrowLeft className="h-3.5 w-3.5" />
           Back to Collections
         </Link>
-        <h2 className="text-xl font-bold tracking-tight text-slate-100">
-          {collection.name}
-        </h2>
+        <h2 className="text-xl font-bold tracking-tight text-slate-100">{collection.name}</h2>
         {collection.description && (
-          <p className="text-xs text-outline mt-1">
-            {collection.description}
-          </p>
+          <p className="text-xs text-outline mt-1">{collection.description}</p>
         )}
         <p className="text-xs text-outline mt-1">
           {collection._count.assets} item
-          {collection._count.assets !== 1 ? "s" : ""}
+          {collection._count.assets !== 1 ? 's' : ''}
         </p>
       </div>
 
       <div className="space-y-2">
-        {assets.map((asset) => (
+        {assets.map(asset => (
           <AssetCard
             key={asset.id}
             asset={asset}
@@ -103,16 +123,12 @@ export function CollectionDetailClient({
               await togglePin(asset.id);
               router.refresh();
             }}
-            onDelete={() =>
-              setDeleteTarget({ id: asset.id, title: asset.title })
-            }
+            onDelete={() => setDeleteTarget({ id: asset.id, title: asset.title })}
           />
         ))}
         {assets.length === 0 && (
           <div className="py-16 text-center">
-            <p className="text-xs text-outline">
-              This collection is empty.
-            </p>
+            <p className="text-xs text-outline">This collection is empty.</p>
           </div>
         )}
       </div>
@@ -157,8 +173,7 @@ export function CollectionDetailClient({
         }
       >
         <Alert variant="error">
-          This action cannot be undone. The item will be permanently removed
-          from your vault.
+          This action cannot be undone. The item will be permanently removed from your vault.
         </Alert>
       </Modal>
     </div>

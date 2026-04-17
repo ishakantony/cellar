@@ -9,12 +9,14 @@
 Current auth pages are monolithic: 275 lines of duplicated code mixing business logic, auth handling, and UI markup. This violates Storybook principles and makes testing difficult.
 
 **Current State**:
+
 - `sign-in/page.tsx`: 129 lines
 - `sign-up/page.tsx`: 146 lines
 - No Storybook stories for auth components
 - Raw useState forms without validation
 
 **Target State**:
+
 - Thin page wrappers (~10 lines each)
 - Full Atomic Design hierarchy
 - 14+ Storybook stories covering all states
@@ -36,57 +38,57 @@ Pages (app/)
 
 #### Atoms - UI (Existing)
 
-| Component | Location | Status | Story |
-|-----------|----------|--------|-------|
-| `Button` | `components/ui/button.tsx` | ✅ Existing | `UI/Button` |
-| `Input` | `components/ui/input.tsx` | ✅ Existing | `UI/Input` |
-| `Label` | `components/ui/label.tsx` | ✅ Existing | `UI/Label` |
-| `Alert` | `components/ui/alert.tsx` | ✅ Existing | `UI/Alert` |
+| Component | Location                   | Status      | Story       |
+| --------- | -------------------------- | ----------- | ----------- |
+| `Button`  | `components/ui/button.tsx` | ✅ Existing | `UI/Button` |
+| `Input`   | `components/ui/input.tsx`  | ✅ Existing | `UI/Input`  |
+| `Label`   | `components/ui/label.tsx`  | ✅ Existing | `UI/Label`  |
+| `Alert`   | `components/ui/alert.tsx`  | ✅ Existing | `UI/Alert`  |
 
 #### Atoms - UI (New)
 
-| Component | Location | Status | Story |
-|-----------|----------|--------|-------|
-| `Divider` | `components/ui/divider.tsx` | 🆕 New | `UI/Divider` |
+| Component  | Location                      | Status | Story         |
+| ---------- | ----------------------------- | ------ | ------------- |
+| `Divider`  | `components/ui/divider.tsx`   | 🆕 New | `UI/Divider`  |
 | `TextLink` | `components/ui/text-link.tsx` | 🆕 New | `UI/TextLink` |
 
 #### Atoms - Auth (New)
 
-| Component | Location | Status | Story |
-|-----------|----------|--------|-------|
+| Component  | Location                        | Status | Story           |
+| ---------- | ------------------------------- | ------ | --------------- |
 | `LogoIcon` | `components/auth/logo-icon.tsx` | 🆕 New | `Auth/LogoIcon` |
 
 #### Molecules - UI (New)
 
-| Component | Location | Status | Story |
-|-----------|----------|--------|-------|
+| Component   | Location                       | Status | Story          |
+| ----------- | ------------------------------ | ------ | -------------- |
 | `FormField` | `components/ui/form-field.tsx` | 🆕 New | `UI/FormField` |
 
 #### Molecules - Auth (New)
 
-| Component | Location | Status | Story |
-|-----------|----------|--------|-------|
+| Component    | Location                          | Status | Story             |
+| ------------ | --------------------------------- | ------ | ----------------- |
 | `AuthHeader` | `components/auth/auth-header.tsx` | 🆕 New | `Auth/AuthHeader` |
 | `AuthFooter` | `components/auth/auth-footer.tsx` | 🆕 New | `Auth/AuthFooter` |
 
 #### Organisms - Auth (New)
 
-| Component | Location | Status | Story |
-|-----------|----------|--------|-------|
-| `SignInForm` | `components/auth/sign-in-form.tsx` | 🆕 New | `Auth/SignInForm` |
-| `SignUpForm` | `components/auth/sign-up-form.tsx` | 🆕 New | `Auth/SignUpForm` |
+| Component            | Location                                   | Status | Story                     |
+| -------------------- | ------------------------------------------ | ------ | ------------------------- |
+| `SignInForm`         | `components/auth/sign-in-form.tsx`         | 🆕 New | `Auth/SignInForm`         |
+| `SignUpForm`         | `components/auth/sign-up-form.tsx`         | 🆕 New | `Auth/SignUpForm`         |
 | `SocialLoginSection` | `components/auth/social-login-section.tsx` | 🆕 New | `Auth/SocialLoginSection` |
 
 #### Template - Auth (New)
 
-| Component | Location | Status | Story |
-|-----------|----------|--------|-------|
+| Component      | Location                            | Status | Story               |
+| -------------- | ----------------------------------- | ------ | ------------------- |
 | `AuthTemplate` | `components/auth/auth-template.tsx` | 🆕 New | `Auth/AuthTemplate` |
 
 #### Pages (Refactored)
 
-| Page | Location | Status | Story |
-|------|----------|--------|-------|
+| Page         | Location                      | Status      | Story          |
+| ------------ | ----------------------------- | ----------- | -------------- |
 | `SignInPage` | `app/(auth)/sign-in/page.tsx` | 🔄 Refactor | `Pages/SignIn` |
 | `SignUpPage` | `app/(auth)/sign-up/page.tsx` | 🔄 Refactor | `Pages/SignUp` |
 
@@ -164,6 +166,7 @@ export function SignInForm({ onSubmit, defaultValues }: SignInFormProps) {
 ### Injection Pattern for Testing
 
 **Storybook (Mocked)**:
+
 ```typescript
 export const WithServerError: Story = {
   args: {
@@ -175,8 +178,9 @@ export const WithServerError: Story = {
 ```
 
 **Real Page (Real Auth)**:
+
 ```typescript
-<SignInForm 
+<SignInForm
   onSubmit={async (data) => {
     const result = await signIn.email(data);
     if (result.error) throw new Error(result.error.message);
@@ -189,16 +193,19 @@ export const WithServerError: Story = {
 ### Atoms
 
 #### Divider
+
 ```typescript
 interface DividerProps {
   text?: string; // Optional text in middle
   className?: string;
 }
 ```
+
 - Single line if no text
 - Line + text + line if text provided
 
 #### TextLink
+
 ```typescript
 interface TextLinkProps {
   href: string;
@@ -206,21 +213,25 @@ interface TextLinkProps {
   className?: string;
 }
 ```
+
 - Primary color with hover state
 - Uses Next.js Link component
 
 #### LogoIcon
+
 ```typescript
 interface LogoIconProps {
   className?: string;
 }
 ```
+
 - Package icon in rounded container
 - Primary container background
 
 ### Molecules
 
 #### FormField
+
 ```typescript
 interface FormFieldProps {
   label: string;
@@ -228,42 +239,50 @@ interface FormFieldProps {
   children: React.ReactNode; // The input element
 }
 ```
+
 - Label + input with consistent spacing
 - Error message display below input
 
 #### AuthHeader
+
 ```typescript
 interface AuthHeaderProps {
   subtitle: string; // "Sign in to your vault" or "Create your vault"
 }
 ```
+
 - LogoIcon + "Cellar" title + subtitle
 
 #### AuthFooter
+
 ```typescript
 interface AuthFooterProps {
-  prompt: string;      // "Don't have an account?"
-  linkText: string;    // "Sign up"
-  linkHref: string;    // "/sign-up"
+  prompt: string; // "Don't have an account?"
+  linkText: string; // "Sign up"
+  linkHref: string; // "/sign-up"
 }
 ```
+
 - Text prompt + TextLink
 
 ### Organisms
 
 #### SignInForm
+
 ```typescript
 interface SignInFormProps {
   onSubmit?: (data: SignInData) => Promise<void>;
   defaultValues?: Partial<SignInData>;
 }
 ```
+
 - Email field (with email validation)
 - Password field
 - Submit button with loading state
 - Error alert (for API errors)
 
 **Story Variants**:
+
 - Default (empty form)
 - Loading (submitting state)
 - With Error (validation error on email)
@@ -271,12 +290,14 @@ interface SignInFormProps {
 - Pre-filled (with defaultValues)
 
 #### SignUpForm
+
 ```typescript
 interface SignUpFormProps {
   onSubmit?: (data: SignUpData) => Promise<void>;
   defaultValues?: Partial<SignUpData>;
 }
 ```
+
 - Name field
 - Email field
 - Password field (min 8 chars)
@@ -284,28 +305,33 @@ interface SignUpFormProps {
 - Error alert
 
 **Story Variants**:
+
 - Default
 - Loading
 - With Validation Error (password too short)
 - Server Error
 
 #### SocialLoginSection
+
 ```typescript
 interface SocialLoginSectionProps {
   onSuccess?: () => void;
 }
 ```
+
 - Divider with "or" text
 - GitHub button
 - Loading state during OAuth
 
 **Story Variants**:
+
 - Default
 - Loading
 
 ### Template
 
 #### AuthTemplate
+
 ```typescript
 interface AuthTemplateProps {
   headerSubtitle: string;
@@ -315,6 +341,7 @@ interface AuthTemplateProps {
   footerLinkHref: string;
 }
 ```
+
 - Centers content on page
 - Consistent max-width (max-w-sm)
 - Arranges: Header → Form → Social → Footer
@@ -355,14 +382,14 @@ interface AuthTemplateProps {
 
 ### Test Boundaries
 
-| Layer | Vitest Tests | Storybook Tests |
-|-------|--------------|-----------------|
-| Zod Schema Logic | ✅ Yes | ❌ No |
-| API Client Logic | ✅ Yes | ❌ No |
-| Component Rendering | ❌ No | ✅ Yes |
-| User Interactions | ❌ No | ✅ Yes |
-| Visual States | ❌ No | ✅ Yes |
-| Error Display | ❌ No | ✅ Yes |
+| Layer               | Vitest Tests | Storybook Tests |
+| ------------------- | ------------ | --------------- |
+| Zod Schema Logic    | ✅ Yes       | ❌ No           |
+| API Client Logic    | ✅ Yes       | ❌ No           |
+| Component Rendering | ❌ No        | ✅ Yes          |
+| User Interactions   | ❌ No        | ✅ Yes          |
+| Visual States       | ❌ No        | ✅ Yes          |
+| Error Display       | ❌ No        | ✅ Yes          |
 
 ### Vitest Test Examples
 
@@ -395,10 +422,10 @@ export const WithValidationError: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const emailInput = canvas.getByLabelText('Email');
-    
+
     await userEvent.type(emailInput, 'invalid-email');
     await userEvent.click(canvas.getByText('Sign In'));
-    
+
     expect(canvas.getByText('Please enter a valid email')).toBeInTheDocument();
   },
 };
@@ -414,7 +441,7 @@ export const WithServerError: Story = {
     await userEvent.type(canvas.getByLabelText('Email'), 'test@example.com');
     await userEvent.type(canvas.getByLabelText('Password'), 'wrongpass');
     await userEvent.click(canvas.getByText('Sign In'));
-    
+
     expect(canvas.getByText('Invalid credentials')).toBeInTheDocument();
   },
 };
@@ -531,16 +558,19 @@ export default function SignUpPage() {
 ## Migration Checklist
 
 ### Phase 1: New UI Components
+
 - [ ] Create `Divider` component + stories
 - [ ] Create `TextLink` component + stories
 - [ ] Create `FormField` molecule + stories
 
 ### Phase 2: Auth Components
+
 - [ ] Create `LogoIcon` component + stories
 - [ ] Create `AuthHeader` molecule + stories
 - [ ] Create `AuthFooter` molecule + stories
 
 ### Phase 3: Forms
+
 - [ ] Create Zod schemas in `schemas/auth.ts`
 - [ ] Write Vitest tests for schemas
 - [ ] Create `SignInForm` organism + stories
@@ -548,11 +578,13 @@ export default function SignUpPage() {
 - [ ] Create `SocialLoginSection` organism + stories
 
 ### Phase 4: Template & Pages
+
 - [ ] Create `AuthTemplate` + stories
 - [ ] Refactor `sign-in/page.tsx`
 - [ ] Refactor `sign-up/page.tsx`
 
 ### Phase 5: Cleanup
+
 - [ ] Delete old inline form code
 - [ ] Verify all stories render correctly
 - [ ] Run full test suite (Vitest + Storybook + E2E)
@@ -569,12 +601,12 @@ export default function SignUpPage() {
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Breaking form functionality | High | Comprehensive E2E tests before/after |
-| Visual regression | Medium | Storybook visual testing, manual QA |
-| Dependency conflicts | Low | Test with exact versions first |
-| Schema validation UX changes | Medium | Match existing error message style |
+| Risk                         | Impact | Mitigation                           |
+| ---------------------------- | ------ | ------------------------------------ |
+| Breaking form functionality  | High   | Comprehensive E2E tests before/after |
+| Visual regression            | Medium | Storybook visual testing, manual QA  |
+| Dependency conflicts         | Low    | Test with exact versions first       |
+| Schema validation UX changes | Medium | Match existing error message style   |
 
 ## Next Steps
 

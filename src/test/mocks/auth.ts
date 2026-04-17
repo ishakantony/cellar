@@ -1,4 +1,4 @@
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 
 export const mockUser = {
   id: 'user-123',
@@ -8,12 +8,12 @@ export const mockUser = {
   createdAt: new Date(),
   updatedAt: new Date(),
   image: null,
-}
+};
 
 export function createMockGetUser(user = mockUser) {
-  return vi.fn(() => Promise.resolve(user))
+  return vi.fn(() => Promise.resolve(user));
 }
 
 export function createMockGetUserUnauthorized() {
-  return vi.fn(() => Promise.reject(new Error('Unauthorized')))
+  return vi.fn(() => Promise.reject(new Error('Unauthorized')));
 }

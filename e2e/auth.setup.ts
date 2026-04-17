@@ -14,22 +14,22 @@ setup('authenticate', async ({ page }) => {
 
   // Navigate to sign-up page
   await page.goto('/sign-up');
-  
+
   // Verify we're on the sign-up page
   await expect(page.getByRole('heading', { name: /Cellar/i })).toBeVisible();
-  
+
   // Fill out the sign-up form
   await page.getByLabel(/Name/i).fill(name);
   await page.getByLabel(/Email/i).fill(testEmail);
   await page.getByLabel(/Password/i).fill(password);
-  
+
   // Submit the form
   await page.getByRole('button', { name: /Create Account/i }).click();
-  
+
   // Wait for successful redirect to dashboard
   await page.waitForURL('/dashboard');
   await expect(page.getByRole('heading', { name: /Quick Actions/i })).toBeVisible();
-  
+
   // Save the authentication state
   await page.context().storageState({ path: authFile });
 

@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { Pin, PinOff, Trash2, MoreVertical } from "lucide-react";
-import { AssetType } from "@/generated/prisma/enums";
-import { TYPE_CONFIG } from "@/lib/asset-types";
-import { IconBadgeProps } from "@/components/ui/icon-badge";
-import { Card } from "@/components/ui/card";
-import { IconBadge } from "@/components/ui/icon-badge";
-import { ActionMenu } from "@/components/ui/action-menu";
-import { IconButton } from "@/components/ui/icon-button";
+import { Pin, PinOff, Trash2, MoreVertical } from 'lucide-react';
+import { AssetType } from '@/generated/prisma/enums';
+import { TYPE_CONFIG } from '@/lib/asset-types';
+import { IconBadgeProps } from '@/components/ui/icon-badge';
+import { Card } from '@/components/ui/card';
+import { IconBadge } from '@/components/ui/icon-badge';
+import { ActionMenu } from '@/components/ui/action-menu';
+import { IconButton } from '@/components/ui/icon-button';
 
 interface AssetCardProps {
   asset: {
@@ -33,22 +33,22 @@ export function AssetCard({
 }: AssetCardProps) {
   const config = TYPE_CONFIG[asset.type];
   const subtitle =
-    asset.type === "SNIPPET" && asset.language
+    asset.type === 'SNIPPET' && asset.language
       ? `${config.label} • ${asset.language}`
       : config.label;
 
   const menuItems = [
     {
-      id: "pin",
-      label: asset.pinned ? "Unpin" : "Pin",
+      id: 'pin',
+      label: asset.pinned ? 'Unpin' : 'Pin',
       icon: asset.pinned ? PinOff : Pin,
       onClick: onTogglePin,
     },
     {
-      id: "delete",
-      label: "Delete",
+      id: 'delete',
+      label: 'Delete',
       icon: Trash2,
-      variant: "danger" as const,
+      variant: 'danger' as const,
       onClick: onDelete,
     },
   ];
@@ -63,13 +63,11 @@ export function AssetCard({
       >
         <IconBadge
           icon={config.icon}
-          variant={asset.type.toLowerCase() as IconBadgeProps["variant"]}
+          variant={asset.type.toLowerCase() as IconBadgeProps['variant']}
           size="sm"
         />
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold text-slate-200 truncate">
-            {asset.title}
-          </p>
+          <p className="text-xs font-semibold text-slate-200 truncate">{asset.title}</p>
           <p className="text-[10px] text-outline truncate">{subtitle}</p>
         </div>
       </Card>
@@ -85,13 +83,11 @@ export function AssetCard({
     >
       <IconBadge
         icon={config.icon}
-        variant={asset.type.toLowerCase() as IconBadgeProps["variant"]}
+        variant={asset.type.toLowerCase() as IconBadgeProps['variant']}
         size="md"
       />
       <div className="flex-1 min-w-0">
-        <h4 className="text-sm font-semibold text-slate-200 truncate">
-          {asset.title}
-        </h4>
+        <h4 className="text-sm font-semibold text-slate-200 truncate">{asset.title}</h4>
         <p className="text-[10px] text-outline font-mono truncate">{subtitle}</p>
       </div>
       <ActionMenu
@@ -100,7 +96,7 @@ export function AssetCard({
           <IconButton
             icon={MoreVertical}
             className="opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
             label="More actions"
           />
         }

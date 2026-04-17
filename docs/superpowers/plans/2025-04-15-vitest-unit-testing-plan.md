@@ -13,11 +13,13 @@
 ## File Structure
 
 **New Directories:**
+
 - `src/test/` - Shared test utilities and mocks
 - `src/test/mocks/` - Mock factories
 - `src/test/utils/` - Test helpers
 
 **New Files:**
+
 - `vitest.config.ts` - Vitest configuration
 - `src/test/setup.ts` - Global test setup
 - `src/test/mocks/prisma.ts` - Prisma mock factory
@@ -33,6 +35,7 @@
 - `.husky/pre-commit` - Git pre-commit hook
 
 **Modified Files:**
+
 - `package.json` - Add dev dependencies and scripts
 
 ---
@@ -42,6 +45,7 @@
 ### Task 1: Install Vitest Dependencies
 
 **Files:**
+
 - Modify: `package.json`
 
 **Context:** The project currently has no testing dependencies. We need to install Vitest and all related packages.
@@ -49,6 +53,7 @@
 - [ ] **Step 1: Install all testing dependencies**
 
 Run:
+
 ```bash
 npm install --save-dev vitest @vitest/ui @vitest/coverage-v8 @testing-library/react @testing-library/jest-dom @testing-library/user-event happy-dom vitest-mock-extended husky lint-staged
 ```
@@ -91,6 +96,7 @@ git commit -m "chore: install vitest and testing dependencies
 ### Task 2: Create Vitest Configuration
 
 **Files:**
+
 - Create: `vitest.config.ts`
 
 **Context:** Vitest needs configuration for TypeScript, path aliases, test environment, and coverage.
@@ -98,9 +104,9 @@ git commit -m "chore: install vitest and testing dependencies
 - [ ] **Step 1: Create vitest.config.ts**
 
 ```typescript
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
@@ -134,12 +140,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
-})
+});
 ```
 
 - [ ] **Step 2: Verify configuration**
 
 Run:
+
 ```bash
 npx vitest --version
 ```
@@ -163,6 +170,7 @@ git commit -m "chore: add vitest configuration
 ### Task 3: Create Global Test Setup
 
 **Files:**
+
 - Create: `src/test/setup.ts`
 
 **Context:** Global setup file runs before all tests. It configures jest-dom matchers and mocks common Next.js modules.
@@ -170,14 +178,14 @@ git commit -m "chore: add vitest configuration
 - [ ] **Step 1: Create src/test/setup.ts**
 
 ```typescript
-import '@testing-library/jest-dom'
-import { cleanup } from '@testing-library/react'
-import { afterEach, vi } from 'vitest'
+import '@testing-library/jest-dom';
+import { cleanup } from '@testing-library/react';
+import { afterEach, vi } from 'vitest';
 
 // Cleanup after each test
 afterEach(() => {
-  cleanup()
-})
+  cleanup();
+});
 
 // Mock next/navigation
 vi.mock('next/navigation', () => ({
@@ -191,13 +199,13 @@ vi.mock('next/navigation', () => ({
   usePathname: () => '/',
   useSearchParams: () => new URLSearchParams(),
   redirect: vi.fn(),
-}))
+}));
 
 // Mock next/cache
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
   revalidateTag: vi.fn(),
-}))
+}));
 ```
 
 - [ ] **Step 2: Commit**
@@ -216,6 +224,7 @@ git commit -m "chore: add global test setup
 ### Task 4: Create Shared Mock Utilities
 
 **Files:**
+
 - Create: `src/test/mocks/prisma.ts`
 - Create: `src/test/mocks/auth.ts`
 
@@ -226,7 +235,7 @@ git commit -m "chore: add global test setup
 Create `src/test/mocks/prisma.ts`:
 
 ```typescript
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 
 export function createMockPrisma() {
   return {
@@ -253,10 +262,10 @@ export function createMockPrisma() {
     },
     $queryRaw: vi.fn(),
     $transaction: vi.fn((ops: unknown[]) => Promise.all(ops as Promise<unknown>[])),
-  }
+  };
 }
 
-export type MockPrisma = ReturnType<typeof createMockPrisma>
+export type MockPrisma = ReturnType<typeof createMockPrisma>;
 ```
 
 - [ ] **Step 2: Create auth mock helpers**
@@ -264,7 +273,7 @@ export type MockPrisma = ReturnType<typeof createMockPrisma>
 Create `src/test/mocks/auth.ts`:
 
 ```typescript
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 
 export const mockUser = {
   id: 'user-123',
@@ -274,14 +283,14 @@ export const mockUser = {
   createdAt: new Date(),
   updatedAt: new Date(),
   image: null,
-}
+};
 
 export function createMockGetUser(user = mockUser) {
-  return vi.fn(() => Promise.resolve(user))
+  return vi.fn(() => Promise.resolve(user));
 }
 
 export function createMockGetUserUnauthorized() {
-  return vi.fn(() => Promise.reject(new Error('Unauthorized')))
+  return vi.fn(() => Promise.reject(new Error('Unauthorized')));
 }
 ```
 
@@ -301,6 +310,7 @@ git commit -m "chore: add shared test mocks
 ### Task 5: Create Test Data Generators
 
 **Files:**
+
 - Create: `src/test/utils/test-data.ts`
 
 **Context:** Consistent test data makes tests more maintainable and readable.
@@ -310,25 +320,27 @@ git commit -m "chore: add shared test mocks
 Create `src/test/utils/test-data.ts`:
 
 ```typescript
-import { AssetType } from '@/generated/prisma'
+import { AssetType } from '@/generated/prisma';
 
-export function createMockAsset(overrides: Partial<{
-  id: string
-  userId: string
-  type: AssetType
-  title: string
-  description: string | null
-  content: string | null
-  language: string | null
-  url: string | null
-  filePath: string | null
-  fileName: string | null
-  mimeType: string | null
-  fileSize: number | null
-  pinned: boolean
-  createdAt: Date
-  updatedAt: Date
-}> = {}) {
+export function createMockAsset(
+  overrides: Partial<{
+    id: string;
+    userId: string;
+    type: AssetType;
+    title: string;
+    description: string | null;
+    content: string | null;
+    language: string | null;
+    url: string | null;
+    filePath: string | null;
+    fileName: string | null;
+    mimeType: string | null;
+    fileSize: number | null;
+    pinned: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+  }> = {}
+) {
   return {
     id: 'asset-123',
     userId: 'user-123',
@@ -346,19 +358,21 @@ export function createMockAsset(overrides: Partial<{
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
     ...overrides,
-  }
+  };
 }
 
-export function createMockCollection(overrides: Partial<{
-  id: string
-  userId: string
-  name: string
-  description: string | null
-  color: string | null
-  pinned: boolean
-  createdAt: Date
-  updatedAt: Date
-}> = {}) {
+export function createMockCollection(
+  overrides: Partial<{
+    id: string;
+    userId: string;
+    name: string;
+    description: string | null;
+    color: string | null;
+    pinned: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+  }> = {}
+) {
   return {
     id: 'collection-123',
     userId: 'user-123',
@@ -369,20 +383,22 @@ export function createMockCollection(overrides: Partial<{
     createdAt: new Date('2024-01-01'),
     updatedAt: new Date('2024-01-01'),
     ...overrides,
-  }
+  };
 }
 
-export function createMockAssetCollection(overrides: Partial<{
-  assetId: string
-  collectionId: string
-  createdAt: Date
-}> = {}) {
+export function createMockAssetCollection(
+  overrides: Partial<{
+    assetId: string;
+    collectionId: string;
+    createdAt: Date;
+  }> = {}
+) {
   return {
     assetId: 'asset-123',
     collectionId: 'collection-123',
     createdAt: new Date('2024-01-01'),
     ...overrides,
-  }
+  };
 }
 ```
 
@@ -404,6 +420,7 @@ git commit -m "chore: add test data generators
 ### Task 6: Test Button Component
 
 **Files:**
+
 - Create: `src/components/ui/button.test.tsx`
 
 **Context:** Button is a fundamental UI component with variants, sizes, states, and click handling. Read `src/components/ui/button.tsx` first.
@@ -471,9 +488,9 @@ describe('Button', () => {
     it('calls onClick when clicked', async () => {
       const handleClick = vi.fn()
       render(<Button onClick={handleClick}>Click</Button>)
-      
+
       await userEvent.click(screen.getByRole('button'))
-      
+
       expect(handleClick).toHaveBeenCalledTimes(1)
     })
 
@@ -485,9 +502,9 @@ describe('Button', () => {
     it('does not call onClick when disabled', async () => {
       const handleClick = vi.fn()
       render(<Button onClick={handleClick} disabled>Disabled</Button>)
-      
+
       await userEvent.click(screen.getByRole('button'))
-      
+
       expect(handleClick).not.toHaveBeenCalled()
     })
 
@@ -517,6 +534,7 @@ describe('Button', () => {
 - [ ] **Step 3: Run the tests**
 
 Run:
+
 ```bash
 npm run test:run -- src/components/ui/button.test.tsx
 ```
@@ -540,6 +558,7 @@ git commit -m "test: add Button component tests
 ### Task 7: Test Card Component
 
 **Files:**
+
 - Create: `src/components/ui/card.test.tsx`
 
 **Context:** Card is a compound component with Header, Title, Description, Content, and Footer sub-components.
@@ -652,6 +671,7 @@ describe('Card', () => {
 - [ ] **Step 3: Run the tests**
 
 Run:
+
 ```bash
 npm run test:run -- src/components/ui/card.test.tsx
 ```
@@ -675,6 +695,7 @@ git commit -m "test: add Card component tests
 ### Task 8: Test Input Component
 
 **Files:**
+
 - Create: `src/components/ui/input.test.tsx`
 
 **Context:** Input is a form component with various states and label integration.
@@ -721,19 +742,19 @@ describe('Input', () => {
     it('calls onChange when typing', async () => {
       const handleChange = vi.fn()
       render(<Input onChange={handleChange} />)
-      
+
       const input = screen.getByRole('textbox')
       await userEvent.type(input, 'hello')
-      
+
       expect(handleChange).toHaveBeenCalled()
     })
 
     it('updates value when typing', async () => {
       render(<Input />)
-      
+
       const input = screen.getByRole('textbox')
       await userEvent.type(input, 'world')
-      
+
       expect(input).toHaveValue('world')
     })
 
@@ -783,6 +804,7 @@ describe('Input', () => {
 - [ ] **Step 3: Run the tests**
 
 Run:
+
 ```bash
 npm run test:run -- src/components/ui/input.test.tsx
 ```
@@ -807,6 +829,7 @@ git commit -m "test: add Input component tests
 ### Task 9: Test Tabs Component
 
 **Files:**
+
 - Create: `src/components/ui/tabs.test.tsx`
 
 **Context:** Tabs is a complex component with state management for switching between panels.
@@ -844,7 +867,7 @@ describe('Tabs', () => {
   describe('rendering', () => {
     it('renders tab list with triggers', () => {
       renderTabs()
-      
+
       expect(screen.getByRole('tablist')).toBeInTheDocument()
       expect(screen.getByRole('tab', { name: 'Tab 1' })).toBeInTheDocument()
       expect(screen.getByRole('tab', { name: 'Tab 2' })).toBeInTheDocument()
@@ -853,13 +876,13 @@ describe('Tabs', () => {
 
     it('shows default tab content', () => {
       renderTabs()
-      
+
       expect(screen.getByRole('tabpanel')).toHaveTextContent('Content 1')
     })
 
     it('hides non-active tab content', () => {
       renderTabs()
-      
+
       expect(screen.queryByText('Content 2')).not.toBeVisible()
       expect(screen.queryByText('Content 3')).not.toBeVisible()
     })
@@ -868,9 +891,9 @@ describe('Tabs', () => {
   describe('interactions', () => {
     it('switches tab when clicking trigger', async () => {
       renderTabs()
-      
+
       await userEvent.click(screen.getByRole('tab', { name: 'Tab 2' }))
-      
+
       expect(screen.getByRole('tabpanel')).toHaveTextContent('Content 2')
     })
 
@@ -886,9 +909,9 @@ describe('Tabs', () => {
           <Tabs.Content value="tab2">Content 2</Tabs.Content>
         </Tabs>
       )
-      
+
       await userEvent.click(screen.getByRole('tab', { name: 'Tab 2' }))
-      
+
       expect(handleChange).toHaveBeenCalledWith('tab2')
     })
   })
@@ -896,24 +919,24 @@ describe('Tabs', () => {
   describe('accessibility', () => {
     it('sets aria-selected on active tab', () => {
       renderTabs()
-      
+
       const tab1 = screen.getByRole('tab', { name: 'Tab 1' })
       expect(tab1).toHaveAttribute('aria-selected', 'true')
     })
 
     it('sets aria-selected false on inactive tabs', () => {
       renderTabs()
-      
+
       const tab2 = screen.getByRole('tab', { name: 'Tab 2' })
       expect(tab2).toHaveAttribute('aria-selected', 'false')
     })
 
     it('associates tabpanel with tab', () => {
       renderTabs()
-      
+
       const tabPanel = screen.getByRole('tabpanel')
       const tab = screen.getByRole('tab', { selected: true })
-      
+
       expect(tabPanel).toHaveAttribute('aria-labelledby', tab.id)
     })
   })
@@ -930,7 +953,7 @@ describe('Tabs', () => {
           <Tabs.Content value="tab2">Content 2</Tabs.Content>
         </Tabs>
       )
-      
+
       expect(screen.getByRole('tabpanel')).toHaveTextContent('Content 2')
     })
   })
@@ -940,6 +963,7 @@ describe('Tabs', () => {
 - [ ] **Step 3: Run the tests**
 
 Run:
+
 ```bash
 npm run test:run -- src/components/ui/tabs.test.tsx
 ```
@@ -966,6 +990,7 @@ git commit -m "test: add Tabs component tests
 ### Task 10: Test Assets Actions - Create and Get
 
 **Files:**
+
 - Create: `src/app/actions/assets.test.ts`
 
 **Context:** Assets server actions include CRUD operations and database queries. Tests need to mock Prisma and auth.
@@ -975,13 +1000,21 @@ git commit -m "test: add Tabs component tests
 Create `src/app/actions/assets.test.ts`:
 
 ```typescript
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { createAsset, getAssets, getAsset, updateAsset, deleteAsset, togglePin, getDashboardData } from './assets'
-import { prisma } from '@/lib/prisma'
-import { getUser } from '@/lib/session'
-import { revalidatePath } from 'next/cache'
-import { AssetType } from '@/generated/prisma'
-import { createMockAsset } from '@/test/utils/test-data'
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import {
+  createAsset,
+  getAssets,
+  getAsset,
+  updateAsset,
+  deleteAsset,
+  togglePin,
+  getDashboardData,
+} from './assets';
+import { prisma } from '@/lib/prisma';
+import { getUser } from '@/lib/session';
+import { revalidatePath } from 'next/cache';
+import { AssetType } from '@/generated/prisma';
+import { createMockAsset } from '@/test/utils/test-data';
 
 // Mocks
 vi.mock('@/lib/prisma', () => ({
@@ -998,37 +1031,37 @@ vi.mock('@/lib/prisma', () => ({
     },
     $queryRaw: vi.fn(),
   },
-}))
+}));
 
 vi.mock('@/lib/session', () => ({
   getUser: vi.fn(),
-}))
+}));
 
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
-}))
+}));
 
 vi.mock('fs/promises', () => ({
   unlink: vi.fn(),
-}))
+}));
 
 describe('assets actions', () => {
-  const mockUser = { id: 'user-123', email: 'test@example.com' }
+  const mockUser = { id: 'user-123', email: 'test@example.com' };
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    vi.mocked(getUser).mockResolvedValue(mockUser)
-  })
+    vi.clearAllMocks();
+    vi.mocked(getUser).mockResolvedValue(mockUser);
+  });
 
   describe('createAsset', () => {
     it('creates asset with user association', async () => {
-      const mockAsset = createMockAsset()
-      vi.mocked(prisma.asset.create).mockResolvedValue(mockAsset)
+      const mockAsset = createMockAsset();
+      vi.mocked(prisma.asset.create).mockResolvedValue(mockAsset);
 
       const result = await createAsset({
         type: AssetType.DOCUMENT,
         title: 'Test Asset',
-      })
+      });
 
       expect(prisma.asset.create).toHaveBeenCalledWith({
         data: {
@@ -1036,17 +1069,17 @@ describe('assets actions', () => {
           title: 'Test Asset',
           userId: 'user-123',
         },
-      })
-      expect(result).toEqual(mockAsset)
-    })
+      });
+      expect(result).toEqual(mockAsset);
+    });
 
     it('creates asset with all optional fields', async () => {
       const mockAsset = createMockAsset({
         description: 'Description',
         content: 'Content',
         language: 'typescript',
-      })
-      vi.mocked(prisma.asset.create).mockResolvedValue(mockAsset)
+      });
+      vi.mocked(prisma.asset.create).mockResolvedValue(mockAsset);
 
       await createAsset({
         type: AssetType.SNIPPET,
@@ -1054,7 +1087,7 @@ describe('assets actions', () => {
         description: 'Description',
         content: 'Content',
         language: 'typescript',
-      })
+      });
 
       expect(prisma.asset.create).toHaveBeenCalledWith({
         data: {
@@ -1065,91 +1098,92 @@ describe('assets actions', () => {
           language: 'typescript',
           userId: 'user-123',
         },
-      })
-    })
+      });
+    });
 
     it('revalidates paths after creation', async () => {
-      vi.mocked(prisma.asset.create).mockResolvedValue(createMockAsset())
+      vi.mocked(prisma.asset.create).mockResolvedValue(createMockAsset());
 
-      await createAsset({ type: AssetType.DOCUMENT, title: 'Test' })
+      await createAsset({ type: AssetType.DOCUMENT, title: 'Test' });
 
-      expect(revalidatePath).toHaveBeenCalledWith('/dashboard')
-      expect(revalidatePath).toHaveBeenCalledWith('/assets')
-    })
+      expect(revalidatePath).toHaveBeenCalledWith('/dashboard');
+      expect(revalidatePath).toHaveBeenCalledWith('/assets');
+    });
 
     it('throws error when user is not authenticated', async () => {
-      vi.mocked(getUser).mockRejectedValue(new Error('Unauthorized'))
+      vi.mocked(getUser).mockRejectedValue(new Error('Unauthorized'));
 
-      await expect(
-        createAsset({ type: AssetType.DOCUMENT, title: 'Test' })
-      ).rejects.toThrow('Unauthorized')
-    })
-  })
+      await expect(createAsset({ type: AssetType.DOCUMENT, title: 'Test' })).rejects.toThrow(
+        'Unauthorized'
+      );
+    });
+  });
 
   describe('getAssets', () => {
     it('returns assets for current user', async () => {
-      const mockAssets = [createMockAsset(), createMockAsset({ id: 'asset-2' })]
-      vi.mocked(prisma.asset.findMany).mockResolvedValue(mockAssets)
+      const mockAssets = [createMockAsset(), createMockAsset({ id: 'asset-2' })];
+      vi.mocked(prisma.asset.findMany).mockResolvedValue(mockAssets);
 
-      const result = await getAssets()
+      const result = await getAssets();
 
       expect(prisma.asset.findMany).toHaveBeenCalledWith({
         where: { userId: 'user-123' },
         orderBy: { updatedAt: 'desc' },
-      })
-      expect(result).toEqual(mockAssets)
-    })
+      });
+      expect(result).toEqual(mockAssets);
+    });
 
     it('filters by type', async () => {
-      vi.mocked(prisma.asset.findMany).mockResolvedValue([])
+      vi.mocked(prisma.asset.findMany).mockResolvedValue([]);
 
-      await getAssets({ type: AssetType.IMAGE })
+      await getAssets({ type: AssetType.IMAGE });
 
       expect(prisma.asset.findMany).toHaveBeenCalledWith({
         where: { userId: 'user-123', type: AssetType.IMAGE },
         orderBy: { updatedAt: 'desc' },
-      })
-    })
+      });
+    });
 
     it('sorts by oldest first', async () => {
-      vi.mocked(prisma.asset.findMany).mockResolvedValue([])
+      vi.mocked(prisma.asset.findMany).mockResolvedValue([]);
 
-      await getAssets({ sort: 'oldest' })
+      await getAssets({ sort: 'oldest' });
 
       expect(prisma.asset.findMany).toHaveBeenCalledWith({
         where: { userId: 'user-123' },
         orderBy: { createdAt: 'asc' },
-      })
-    })
+      });
+    });
 
     it('sorts alphabetically', async () => {
-      vi.mocked(prisma.asset.findMany).mockResolvedValue([])
+      vi.mocked(prisma.asset.findMany).mockResolvedValue([]);
 
-      await getAssets({ sort: 'az' })
+      await getAssets({ sort: 'az' });
 
       expect(prisma.asset.findMany).toHaveBeenCalledWith({
         where: { userId: 'user-123' },
         orderBy: { title: 'asc' },
-      })
-    })
+      });
+    });
 
     it('sorts reverse alphabetically', async () => {
-      vi.mocked(prisma.asset.findMany).mockResolvedValue([])
+      vi.mocked(prisma.asset.findMany).mockResolvedValue([]);
 
-      await getAssets({ sort: 'za' })
+      await getAssets({ sort: 'za' });
 
       expect(prisma.asset.findMany).toHaveBeenCalledWith({
         where: { userId: 'user-123' },
         orderBy: { title: 'desc' },
-      })
-    })
-  })
-})
+      });
+    });
+  });
+});
 ```
 
 - [ ] **Step 2: Run the tests**
 
 Run:
+
 ```bash
 npm run test:run -- src/app/actions/assets.test.ts
 ```
@@ -1174,6 +1208,7 @@ git commit -m "test: add assets action tests - create and get
 ### Task 11: Test Assets Actions - Update, Delete, and Dashboard
 
 **Files:**
+
 - Modify: `src/app/actions/assets.test.ts`
 
 **Context:** Continue adding tests for remaining asset actions.
@@ -1183,49 +1218,49 @@ git commit -m "test: add assets action tests - create and get
 Add to `src/app/actions/assets.test.ts` after the getAssets describe block:
 
 ```typescript
-  describe('updateAsset', () => {
-    it('updates asset fields', async () => {
-      const mockAsset = createMockAsset({ title: 'Updated' })
-      vi.mocked(prisma.asset.update).mockResolvedValue(mockAsset)
+describe('updateAsset', () => {
+  it('updates asset fields', async () => {
+    const mockAsset = createMockAsset({ title: 'Updated' });
+    vi.mocked(prisma.asset.update).mockResolvedValue(mockAsset);
 
-      const result = await updateAsset('asset-123', { title: 'Updated' })
+    const result = await updateAsset('asset-123', { title: 'Updated' });
 
-      expect(prisma.asset.update).toHaveBeenCalledWith({
-        where: { id: 'asset-123', userId: 'user-123' },
-        data: { title: 'Updated' },
-      })
-      expect(result).toEqual(mockAsset)
-    })
+    expect(prisma.asset.update).toHaveBeenCalledWith({
+      where: { id: 'asset-123', userId: 'user-123' },
+      data: { title: 'Updated' },
+    });
+    expect(result).toEqual(mockAsset);
+  });
 
-    it('updates multiple fields', async () => {
-      vi.mocked(prisma.asset.update).mockResolvedValue(createMockAsset())
+  it('updates multiple fields', async () => {
+    vi.mocked(prisma.asset.update).mockResolvedValue(createMockAsset());
 
-      await updateAsset('asset-123', {
+    await updateAsset('asset-123', {
+      title: 'New Title',
+      description: 'New Description',
+      content: 'New Content',
+    });
+
+    expect(prisma.asset.update).toHaveBeenCalledWith({
+      where: { id: 'asset-123', userId: 'user-123' },
+      data: {
         title: 'New Title',
         description: 'New Description',
         content: 'New Content',
-      })
+      },
+    });
+  });
 
-      expect(prisma.asset.update).toHaveBeenCalledWith({
-        where: { id: 'asset-123', userId: 'user-123' },
-        data: {
-          title: 'New Title',
-          description: 'New Description',
-          content: 'New Content',
-        },
-      })
-    })
+  it('revalidates paths after update', async () => {
+    vi.mocked(prisma.asset.update).mockResolvedValue(createMockAsset());
 
-    it('revalidates paths after update', async () => {
-      vi.mocked(prisma.asset.update).mockResolvedValue(createMockAsset())
+    await updateAsset('asset-123', { title: 'Updated' });
 
-      await updateAsset('asset-123', { title: 'Updated' })
-
-      expect(revalidatePath).toHaveBeenCalledWith('/dashboard')
-      expect(revalidatePath).toHaveBeenCalledWith('/assets')
-      expect(revalidatePath).toHaveBeenCalledWith('/collections')
-    })
-  })
+    expect(revalidatePath).toHaveBeenCalledWith('/dashboard');
+    expect(revalidatePath).toHaveBeenCalledWith('/assets');
+    expect(revalidatePath).toHaveBeenCalledWith('/collections');
+  });
+});
 ```
 
 - [ ] **Step 2: Add tests for deleteAsset**
@@ -1233,38 +1268,34 @@ Add to `src/app/actions/assets.test.ts` after the getAssets describe block:
 Add after updateAsset tests:
 
 ```typescript
-  describe('deleteAsset', () => {
-    it('deletes asset without file', async () => {
-      vi.mocked(prisma.asset.findUnique).mockResolvedValue(
-        createMockAsset({ filePath: null })
-      )
-      vi.mocked(prisma.asset.delete).mockResolvedValue(createMockAsset())
+describe('deleteAsset', () => {
+  it('deletes asset without file', async () => {
+    vi.mocked(prisma.asset.findUnique).mockResolvedValue(createMockAsset({ filePath: null }));
+    vi.mocked(prisma.asset.delete).mockResolvedValue(createMockAsset());
 
-      await deleteAsset('asset-123')
+    await deleteAsset('asset-123');
 
-      expect(prisma.asset.delete).toHaveBeenCalledWith({
-        where: { id: 'asset-123', userId: 'user-123' },
-      })
-    })
+    expect(prisma.asset.delete).toHaveBeenCalledWith({
+      where: { id: 'asset-123', userId: 'user-123' },
+    });
+  });
 
-    it('throws error when asset not found', async () => {
-      vi.mocked(prisma.asset.findUnique).mockResolvedValue(null)
+  it('throws error when asset not found', async () => {
+    vi.mocked(prisma.asset.findUnique).mockResolvedValue(null);
 
-      await expect(deleteAsset('nonexistent')).rejects.toThrow('Asset not found')
-    })
+    await expect(deleteAsset('nonexistent')).rejects.toThrow('Asset not found');
+  });
 
-    it('revalidates paths after deletion', async () => {
-      vi.mocked(prisma.asset.findUnique).mockResolvedValue(
-        createMockAsset({ filePath: null })
-      )
-      vi.mocked(prisma.asset.delete).mockResolvedValue(createMockAsset())
+  it('revalidates paths after deletion', async () => {
+    vi.mocked(prisma.asset.findUnique).mockResolvedValue(createMockAsset({ filePath: null }));
+    vi.mocked(prisma.asset.delete).mockResolvedValue(createMockAsset());
 
-      await deleteAsset('asset-123')
+    await deleteAsset('asset-123');
 
-      expect(revalidatePath).toHaveBeenCalledWith('/dashboard')
-      expect(revalidatePath).toHaveBeenCalledWith('/assets')
-    })
-  })
+    expect(revalidatePath).toHaveBeenCalledWith('/dashboard');
+    expect(revalidatePath).toHaveBeenCalledWith('/assets');
+  });
+});
 ```
 
 - [ ] **Step 3: Add tests for togglePin**
@@ -1272,53 +1303,47 @@ Add after updateAsset tests:
 Add after deleteAsset tests:
 
 ```typescript
-  describe('togglePin', () => {
-    it('toggles pin from false to true', async () => {
-      vi.mocked(prisma.asset.findUnique).mockResolvedValue(
-        createMockAsset({ pinned: false })
-      )
-      vi.mocked(prisma.asset.update).mockResolvedValue(createMockAsset({ pinned: true }))
+describe('togglePin', () => {
+  it('toggles pin from false to true', async () => {
+    vi.mocked(prisma.asset.findUnique).mockResolvedValue(createMockAsset({ pinned: false }));
+    vi.mocked(prisma.asset.update).mockResolvedValue(createMockAsset({ pinned: true }));
 
-      await togglePin('asset-123')
+    await togglePin('asset-123');
 
-      expect(prisma.asset.update).toHaveBeenCalledWith({
-        where: { id: 'asset-123', userId: 'user-123' },
-        data: { pinned: true },
-      })
-    })
+    expect(prisma.asset.update).toHaveBeenCalledWith({
+      where: { id: 'asset-123', userId: 'user-123' },
+      data: { pinned: true },
+    });
+  });
 
-    it('toggles pin from true to false', async () => {
-      vi.mocked(prisma.asset.findUnique).mockResolvedValue(
-        createMockAsset({ pinned: true })
-      )
-      vi.mocked(prisma.asset.update).mockResolvedValue(createMockAsset({ pinned: false }))
+  it('toggles pin from true to false', async () => {
+    vi.mocked(prisma.asset.findUnique).mockResolvedValue(createMockAsset({ pinned: true }));
+    vi.mocked(prisma.asset.update).mockResolvedValue(createMockAsset({ pinned: false }));
 
-      await togglePin('asset-123')
+    await togglePin('asset-123');
 
-      expect(prisma.asset.update).toHaveBeenCalledWith({
-        where: { id: 'asset-123', userId: 'user-123' },
-        data: { pinned: false },
-      })
-    })
+    expect(prisma.asset.update).toHaveBeenCalledWith({
+      where: { id: 'asset-123', userId: 'user-123' },
+      data: { pinned: false },
+    });
+  });
 
-    it('throws error when asset not found', async () => {
-      vi.mocked(prisma.asset.findUnique).mockResolvedValue(null)
+  it('throws error when asset not found', async () => {
+    vi.mocked(prisma.asset.findUnique).mockResolvedValue(null);
 
-      await expect(togglePin('nonexistent')).rejects.toThrow('Asset not found')
-    })
+    await expect(togglePin('nonexistent')).rejects.toThrow('Asset not found');
+  });
 
-    it('revalidates paths after toggle', async () => {
-      vi.mocked(prisma.asset.findUnique).mockResolvedValue(
-        createMockAsset({ pinned: false })
-      )
-      vi.mocked(prisma.asset.update).mockResolvedValue(createMockAsset({ pinned: true }))
+  it('revalidates paths after toggle', async () => {
+    vi.mocked(prisma.asset.findUnique).mockResolvedValue(createMockAsset({ pinned: false }));
+    vi.mocked(prisma.asset.update).mockResolvedValue(createMockAsset({ pinned: true }));
 
-      await togglePin('asset-123')
+    await togglePin('asset-123');
 
-      expect(revalidatePath).toHaveBeenCalledWith('/dashboard')
-      expect(revalidatePath).toHaveBeenCalledWith('/assets')
-    })
-  })
+    expect(revalidatePath).toHaveBeenCalledWith('/dashboard');
+    expect(revalidatePath).toHaveBeenCalledWith('/assets');
+  });
+});
 ```
 
 - [ ] **Step 4: Add tests for getDashboardData**
@@ -1326,54 +1351,51 @@ Add after deleteAsset tests:
 Add after togglePin tests:
 
 ```typescript
-  describe('getDashboardData', () => {
-    it('returns dashboard data for user', async () => {
-      const pinnedAssets = [createMockAsset({ pinned: true })]
-      const pinnedCollections = [{ id: 'col-1', name: 'Pinned' }]
-      const recentAssets = [createMockAsset()]
+describe('getDashboardData', () => {
+  it('returns dashboard data for user', async () => {
+    const pinnedAssets = [createMockAsset({ pinned: true })];
+    const pinnedCollections = [{ id: 'col-1', name: 'Pinned' }];
+    const recentAssets = [createMockAsset()];
 
-      vi.mocked(prisma.asset.findMany).mockImplementation((args: any) => {
-        if (args?.where?.pinned) return Promise.resolve(pinnedAssets)
-        return Promise.resolve(recentAssets)
-      })
-      vi.mocked(prisma.collection.findMany).mockResolvedValue(pinnedCollections as any)
+    vi.mocked(prisma.asset.findMany).mockImplementation((args: any) => {
+      if (args?.where?.pinned) return Promise.resolve(pinnedAssets);
+      return Promise.resolve(recentAssets);
+    });
+    vi.mocked(prisma.collection.findMany).mockResolvedValue(pinnedCollections as any);
 
-      const result = await getDashboardData()
+    const result = await getDashboardData();
 
-      expect(result).toEqual({
-        pinnedAssets,
-        pinnedCollections,
-        recentAssets,
-      })
-    })
+    expect(result).toEqual({
+      pinnedAssets,
+      pinnedCollections,
+      recentAssets,
+    });
+  });
 
-    it('limits pinned assets to 20', async () => {
-      vi.mocked(prisma.asset.findMany).mockResolvedValue([])
-      vi.mocked(prisma.collection.findMany).mockResolvedValue([])
+  it('limits pinned assets to 20', async () => {
+    vi.mocked(prisma.asset.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.collection.findMany).mockResolvedValue([]);
 
-      await getDashboardData()
+    await getDashboardData();
 
-      expect(prisma.asset.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({ take: 20 })
-      )
-    })
+    expect(prisma.asset.findMany).toHaveBeenCalledWith(expect.objectContaining({ take: 20 }));
+  });
 
-    it('limits recent assets to 10', async () => {
-      vi.mocked(prisma.asset.findMany).mockResolvedValue([])
-      vi.mocked(prisma.collection.findMany).mockResolvedValue([])
+  it('limits recent assets to 10', async () => {
+    vi.mocked(prisma.asset.findMany).mockResolvedValue([]);
+    vi.mocked(prisma.collection.findMany).mockResolvedValue([]);
 
-      await getDashboardData()
+    await getDashboardData();
 
-      expect(prisma.asset.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({ take: 10 })
-      )
-    })
-  })
+    expect(prisma.asset.findMany).toHaveBeenCalledWith(expect.objectContaining({ take: 10 }));
+  });
+});
 ```
 
 - [ ] **Step 5: Run all tests**
 
 Run:
+
 ```bash
 npm run test:run -- src/app/actions/assets.test.ts
 ```
@@ -1398,6 +1420,7 @@ git commit -m "test: add remaining assets action tests
 ### Task 12: Test Collections Actions
 
 **Files:**
+
 - Create: `src/app/actions/collections.test.ts`
 
 **Context:** Collections actions have similar patterns to assets but with different relationships.
@@ -1407,7 +1430,7 @@ git commit -m "test: add remaining assets action tests
 Create `src/app/actions/collections.test.ts`:
 
 ```typescript
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   createCollection,
   updateCollection,
@@ -1417,11 +1440,11 @@ import {
   toggleCollectionPin,
   addAssetToCollection,
   removeAssetFromCollection,
-} from './collections'
-import { prisma } from '@/lib/prisma'
-import { getUser } from '@/lib/session'
-import { revalidatePath } from 'next/cache'
-import { createMockCollection, createMockAsset } from '@/test/utils/test-data'
+} from './collections';
+import { prisma } from '@/lib/prisma';
+import { getUser } from '@/lib/session';
+import { revalidatePath } from 'next/cache';
+import { createMockCollection, createMockAsset } from '@/test/utils/test-data';
 
 vi.mock('@/lib/prisma', () => ({
   prisma: {
@@ -1440,48 +1463,48 @@ vi.mock('@/lib/prisma', () => ({
       delete: vi.fn(),
     },
   },
-}))
+}));
 
 vi.mock('@/lib/session', () => ({
   getUser: vi.fn(),
-}))
+}));
 
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
-}))
+}));
 
 describe('collections actions', () => {
-  const mockUser = { id: 'user-123', email: 'test@example.com' }
+  const mockUser = { id: 'user-123', email: 'test@example.com' };
 
   beforeEach(() => {
-    vi.clearAllMocks()
-    vi.mocked(getUser).mockResolvedValue(mockUser)
-  })
+    vi.clearAllMocks();
+    vi.mocked(getUser).mockResolvedValue(mockUser);
+  });
 
   describe('createCollection', () => {
     it('creates collection with user association', async () => {
-      const mockCollection = createMockCollection()
-      vi.mocked(prisma.collection.create).mockResolvedValue(mockCollection)
+      const mockCollection = createMockCollection();
+      vi.mocked(prisma.collection.create).mockResolvedValue(mockCollection);
 
-      const result = await createCollection({ name: 'New Collection' })
+      const result = await createCollection({ name: 'New Collection' });
 
       expect(prisma.collection.create).toHaveBeenCalledWith({
         data: {
           name: 'New Collection',
           userId: 'user-123',
         },
-      })
-      expect(result).toEqual(mockCollection)
-    })
+      });
+      expect(result).toEqual(mockCollection);
+    });
 
     it('creates collection with all fields', async () => {
-      vi.mocked(prisma.collection.create).mockResolvedValue(createMockCollection())
+      vi.mocked(prisma.collection.create).mockResolvedValue(createMockCollection());
 
       await createCollection({
         name: 'My Collection',
         description: 'Description',
         color: '#ff0000',
-      })
+      });
 
       expect(prisma.collection.create).toHaveBeenCalledWith({
         data: {
@@ -1490,81 +1513,79 @@ describe('collections actions', () => {
           color: '#ff0000',
           userId: 'user-123',
         },
-      })
-    })
+      });
+    });
 
     it('revalidates paths after creation', async () => {
-      vi.mocked(prisma.collection.create).mockResolvedValue(createMockCollection())
+      vi.mocked(prisma.collection.create).mockResolvedValue(createMockCollection());
 
-      await createCollection({ name: 'Test' })
+      await createCollection({ name: 'Test' });
 
-      expect(revalidatePath).toHaveBeenCalledWith('/collections')
-      expect(revalidatePath).toHaveBeenCalledWith('/dashboard')
-    })
-  })
+      expect(revalidatePath).toHaveBeenCalledWith('/collections');
+      expect(revalidatePath).toHaveBeenCalledWith('/dashboard');
+    });
+  });
 
   describe('updateCollection', () => {
     it('updates collection fields', async () => {
-      const mockCollection = createMockCollection({ name: 'Updated' })
-      vi.mocked(prisma.collection.update).mockResolvedValue(mockCollection)
+      const mockCollection = createMockCollection({ name: 'Updated' });
+      vi.mocked(prisma.collection.update).mockResolvedValue(mockCollection);
 
-      const result = await updateCollection('col-123', { name: 'Updated' })
+      const result = await updateCollection('col-123', { name: 'Updated' });
 
       expect(prisma.collection.update).toHaveBeenCalledWith({
         where: { id: 'col-123', userId: 'user-123' },
         data: { name: 'Updated' },
-      })
-      expect(result).toEqual(mockCollection)
-    })
+      });
+      expect(result).toEqual(mockCollection);
+    });
 
     it('revalidates paths after update', async () => {
-      vi.mocked(prisma.collection.update).mockResolvedValue(createMockCollection())
+      vi.mocked(prisma.collection.update).mockResolvedValue(createMockCollection());
 
-      await updateCollection('col-123', { name: 'Updated' })
+      await updateCollection('col-123', { name: 'Updated' });
 
-      expect(revalidatePath).toHaveBeenCalledWith('/collections')
-      expect(revalidatePath).toHaveBeenCalledWith('/dashboard')
-    })
-  })
+      expect(revalidatePath).toHaveBeenCalledWith('/collections');
+      expect(revalidatePath).toHaveBeenCalledWith('/dashboard');
+    });
+  });
 
   describe('deleteCollection', () => {
     it('deletes collection', async () => {
-      vi.mocked(prisma.collection.delete).mockResolvedValue(createMockCollection())
+      vi.mocked(prisma.collection.delete).mockResolvedValue(createMockCollection());
 
-      await deleteCollection('col-123')
+      await deleteCollection('col-123');
 
       expect(prisma.collection.delete).toHaveBeenCalledWith({
         where: { id: 'col-123', userId: 'user-123' },
-      })
-    })
+      });
+    });
 
     it('revalidates paths after deletion', async () => {
-      vi.mocked(prisma.collection.delete).mockResolvedValue(createMockCollection())
+      vi.mocked(prisma.collection.delete).mockResolvedValue(createMockCollection());
 
-      await deleteCollection('col-123')
+      await deleteCollection('col-123');
 
-      expect(revalidatePath).toHaveBeenCalledWith('/collections')
-      expect(revalidatePath).toHaveBeenCalledWith('/dashboard')
-    })
-  })
+      expect(revalidatePath).toHaveBeenCalledWith('/collections');
+      expect(revalidatePath).toHaveBeenCalledWith('/dashboard');
+    });
+  });
 
   describe('getCollections', () => {
     it('returns collections for user with asset counts', async () => {
-      const mockCollections = [
-        { ...createMockCollection(), _count: { assets: 5 } },
-      ]
-      vi.mocked(prisma.collection.findMany).mockResolvedValue(mockCollections as any)
+      const mockCollections = [{ ...createMockCollection(), _count: { assets: 5 } }];
+      vi.mocked(prisma.collection.findMany).mockResolvedValue(mockCollections as any);
 
-      const result = await getCollections()
+      const result = await getCollections();
 
       expect(prisma.collection.findMany).toHaveBeenCalledWith({
         where: { userId: 'user-123' },
         include: { _count: { select: { assets: true } } },
         orderBy: [{ pinned: 'desc' }, { updatedAt: 'desc' }],
-      })
-      expect(result).toEqual(mockCollections)
-    })
-  })
+      });
+      expect(result).toEqual(mockCollections);
+    });
+  });
 
   describe('getCollection', () => {
     it('returns collection with assets', async () => {
@@ -1572,10 +1593,10 @@ describe('collections actions', () => {
         ...createMockCollection(),
         assets: [{ asset: createMockAsset() }],
         _count: { assets: 1 },
-      }
-      vi.mocked(prisma.collection.findUnique).mockResolvedValue(mockCollection as any)
+      };
+      vi.mocked(prisma.collection.findUnique).mockResolvedValue(mockCollection as any);
 
-      const result = await getCollection('col-123')
+      const result = await getCollection('col-123');
 
       expect(prisma.collection.findUnique).toHaveBeenCalledWith({
         where: { id: 'col-123', userId: 'user-123' },
@@ -1586,110 +1607,109 @@ describe('collections actions', () => {
           },
           _count: { select: { assets: true } },
         },
-      })
-      expect(result).toEqual(mockCollection)
-    })
-  })
+      });
+      expect(result).toEqual(mockCollection);
+    });
+  });
 
   describe('toggleCollectionPin', () => {
     it('toggles pin state', async () => {
       vi.mocked(prisma.collection.findUnique).mockResolvedValue(
         createMockCollection({ pinned: false }) as any
-      )
-      vi.mocked(prisma.collection.update).mockResolvedValue(
-        createMockCollection({ pinned: true })
-      )
+      );
+      vi.mocked(prisma.collection.update).mockResolvedValue(createMockCollection({ pinned: true }));
 
-      await toggleCollectionPin('col-123')
+      await toggleCollectionPin('col-123');
 
       expect(prisma.collection.update).toHaveBeenCalledWith({
         where: { id: 'col-123', userId: 'user-123' },
         data: { pinned: true },
-      })
-    })
+      });
+    });
 
     it('throws error when collection not found', async () => {
-      vi.mocked(prisma.collection.findUnique).mockResolvedValue(null)
+      vi.mocked(prisma.collection.findUnique).mockResolvedValue(null);
 
-      await expect(toggleCollectionPin('nonexistent')).rejects.toThrow('Collection not found')
-    })
-  })
+      await expect(toggleCollectionPin('nonexistent')).rejects.toThrow('Collection not found');
+    });
+  });
 
   describe('addAssetToCollection', () => {
     it('adds asset to collection', async () => {
-      vi.mocked(prisma.asset.findUnique).mockResolvedValue(createMockAsset() as any)
-      vi.mocked(prisma.collection.findUnique).mockResolvedValue(createMockCollection() as any)
-      vi.mocked(prisma.assetCollection.upsert).mockResolvedValue({} as any)
+      vi.mocked(prisma.asset.findUnique).mockResolvedValue(createMockAsset() as any);
+      vi.mocked(prisma.collection.findUnique).mockResolvedValue(createMockCollection() as any);
+      vi.mocked(prisma.assetCollection.upsert).mockResolvedValue({} as any);
 
-      await addAssetToCollection('asset-123', 'col-123')
+      await addAssetToCollection('asset-123', 'col-123');
 
       expect(prisma.assetCollection.upsert).toHaveBeenCalledWith({
         where: { assetId_collectionId: { assetId: 'asset-123', collectionId: 'col-123' } },
         create: { assetId: 'asset-123', collectionId: 'col-123' },
         update: {},
-      })
-    })
+      });
+    });
 
     it('throws error when asset not found', async () => {
-      vi.mocked(prisma.asset.findUnique).mockResolvedValue(null)
-      vi.mocked(prisma.collection.findUnique).mockResolvedValue(createMockCollection() as any)
+      vi.mocked(prisma.asset.findUnique).mockResolvedValue(null);
+      vi.mocked(prisma.collection.findUnique).mockResolvedValue(createMockCollection() as any);
 
-      await expect(addAssetToCollection('asset-123', 'col-123')).rejects.toThrow('Not found')
-    })
+      await expect(addAssetToCollection('asset-123', 'col-123')).rejects.toThrow('Not found');
+    });
 
     it('throws error when collection not found', async () => {
-      vi.mocked(prisma.asset.findUnique).mockResolvedValue(createMockAsset() as any)
-      vi.mocked(prisma.collection.findUnique).mockResolvedValue(null)
+      vi.mocked(prisma.asset.findUnique).mockResolvedValue(createMockAsset() as any);
+      vi.mocked(prisma.collection.findUnique).mockResolvedValue(null);
 
-      await expect(addAssetToCollection('asset-123', 'col-123')).rejects.toThrow('Not found')
-    })
+      await expect(addAssetToCollection('asset-123', 'col-123')).rejects.toThrow('Not found');
+    });
 
     it('revalidates paths after adding', async () => {
-      vi.mocked(prisma.asset.findUnique).mockResolvedValue(createMockAsset() as any)
-      vi.mocked(prisma.collection.findUnique).mockResolvedValue(createMockCollection() as any)
-      vi.mocked(prisma.assetCollection.upsert).mockResolvedValue({} as any)
+      vi.mocked(prisma.asset.findUnique).mockResolvedValue(createMockAsset() as any);
+      vi.mocked(prisma.collection.findUnique).mockResolvedValue(createMockCollection() as any);
+      vi.mocked(prisma.assetCollection.upsert).mockResolvedValue({} as any);
 
-      await addAssetToCollection('asset-123', 'col-123')
+      await addAssetToCollection('asset-123', 'col-123');
 
-      expect(revalidatePath).toHaveBeenCalledWith('/collections')
-    })
-  })
+      expect(revalidatePath).toHaveBeenCalledWith('/collections');
+    });
+  });
 
   describe('removeAssetFromCollection', () => {
     it('removes asset from collection', async () => {
-      vi.mocked(prisma.asset.findUnique).mockResolvedValue(createMockAsset() as any)
-      vi.mocked(prisma.collection.findUnique).mockResolvedValue(createMockCollection() as any)
-      vi.mocked(prisma.assetCollection.delete).mockResolvedValue({} as any)
+      vi.mocked(prisma.asset.findUnique).mockResolvedValue(createMockAsset() as any);
+      vi.mocked(prisma.collection.findUnique).mockResolvedValue(createMockCollection() as any);
+      vi.mocked(prisma.assetCollection.delete).mockResolvedValue({} as any);
 
-      await removeAssetFromCollection('asset-123', 'col-123')
+      await removeAssetFromCollection('asset-123', 'col-123');
 
       expect(prisma.assetCollection.delete).toHaveBeenCalledWith({
         where: { assetId_collectionId: { assetId: 'asset-123', collectionId: 'col-123' } },
-      })
-    })
+      });
+    });
 
     it('throws error when asset or collection not found', async () => {
-      vi.mocked(prisma.asset.findUnique).mockResolvedValue(null)
+      vi.mocked(prisma.asset.findUnique).mockResolvedValue(null);
 
-      await expect(removeAssetFromCollection('asset-123', 'col-123')).rejects.toThrow('Not found')
-    })
+      await expect(removeAssetFromCollection('asset-123', 'col-123')).rejects.toThrow('Not found');
+    });
 
     it('revalidates paths after removing', async () => {
-      vi.mocked(prisma.asset.findUnique).mockResolvedValue(createMockAsset() as any)
-      vi.mocked(prisma.collection.findUnique).mockResolvedValue(createMockCollection() as any)
-      vi.mocked(prisma.assetCollection.delete).mockResolvedValue({} as any)
+      vi.mocked(prisma.asset.findUnique).mockResolvedValue(createMockAsset() as any);
+      vi.mocked(prisma.collection.findUnique).mockResolvedValue(createMockCollection() as any);
+      vi.mocked(prisma.assetCollection.delete).mockResolvedValue({} as any);
 
-      await removeAssetFromCollection('asset-123', 'col-123')
+      await removeAssetFromCollection('asset-123', 'col-123');
 
-      expect(revalidatePath).toHaveBeenCalledWith('/collections')
-    })
-  })
-})
+      expect(revalidatePath).toHaveBeenCalledWith('/collections');
+    });
+  });
+});
 ```
 
 - [ ] **Step 2: Run the tests**
 
 Run:
+
 ```bash
 npm run test:run -- src/app/actions/collections.test.ts
 ```
@@ -1718,6 +1738,7 @@ git commit -m "test: add collections action tests
 ### Task 13: Configure Husky and Lint-Staged
 
 **Files:**
+
 - Create: `.husky/pre-commit`
 - Modify: `package.json`
 
@@ -1726,6 +1747,7 @@ git commit -m "test: add collections action tests
 - [ ] **Step 1: Initialize Husky**
 
 Run:
+
 ```bash
 npx husky init
 ```
@@ -1744,6 +1766,7 @@ npx lint-staged
 ```
 
 Make it executable:
+
 ```bash
 chmod +x .husky/pre-commit
 ```
@@ -1755,10 +1778,7 @@ Add to `package.json` root level:
 ```json
 {
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix",
-      "vitest run --reporter=dot"
-    ]
+    "*.{ts,tsx}": ["eslint --fix", "vitest run --reporter=dot"]
   }
 }
 ```
@@ -1793,6 +1813,7 @@ git commit -m "chore: configure pre-commit hooks with husky and lint-staged
 ### Task 14: Run Coverage Report
 
 **Files:**
+
 - None (verification task)
 
 **Context:** Generate coverage report to verify targets are met.
@@ -1800,6 +1821,7 @@ git commit -m "chore: configure pre-commit hooks with husky and lint-staged
 - [ ] **Step 1: Run coverage report**
 
 Run:
+
 ```bash
 npm run test:coverage
 ```
@@ -1809,6 +1831,7 @@ Expected: Coverage report generates in `coverage/` directory.
 - [ ] **Step 2: Check coverage thresholds**
 
 Verify coverage meets or exceeds:
+
 - Lines: 80%
 - Functions: 80%
 - Branches: 70%
@@ -1844,6 +1867,7 @@ git commit -m "chore: add coverage directory to gitignore
 ### Task 15: Update README with Testing Information
 
 **Files:**
+
 - Modify: `README.md`
 
 **Context:** Document testing workflow for other developers.
@@ -1852,7 +1876,7 @@ git commit -m "chore: add coverage directory to gitignore
 
 Add to `README.md` after the Getting Started section:
 
-```markdown
+````markdown
 ## Testing
 
 This project uses [Vitest](https://vitest.dev/) for unit testing.
@@ -1872,6 +1896,7 @@ npm run test:ui
 # Run tests with coverage
 npm run test:coverage
 ```
+````
 
 ### Test Structure
 
@@ -1882,7 +1907,8 @@ npm run test:coverage
 ### Pre-commit Hooks
 
 Tests automatically run on pre-commit via Husky + lint-staged. Commits will be blocked if tests fail.
-```
+
+````
 
 - [ ] **Step 2: Commit documentation**
 
@@ -1893,7 +1919,7 @@ git commit -m "docs: add testing documentation to README
 - Document test commands and usage
 - Explain test file structure
 - Document pre-commit hooks"
-```
+````
 
 ---
 
@@ -1933,6 +1959,7 @@ git commit -m "docs: add testing documentation to README
 ## Self-Review Checklist
 
 ### Spec Coverage
+
 - ✅ Infrastructure setup (Vitest config, setup.ts, mocks)
 - ✅ UI component tests (Button, Card, Input, Tabs)
 - ✅ Server action tests (assets.ts, collections.ts)
@@ -1941,11 +1968,13 @@ git commit -m "docs: add testing documentation to README
 - ✅ Documentation
 
 ### Placeholder Scan
+
 - ✅ No TBD, TODO, or incomplete sections
 - ✅ All code is complete and copy-paste ready
 - ✅ All commands have expected outputs
 
 ### Type Consistency
+
 - ✅ Mock function names consistent
 - ✅ Test data generators use correct types
 - ✅ File paths are correct and consistent

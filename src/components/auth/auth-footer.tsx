@@ -1,5 +1,5 @@
-import { TextLink } from "@/components/ui/text-link";
-import { cn } from "@/lib/utils";
+import { TextLink } from '@/components/ui/text-link';
+import { cn } from '@/lib/utils';
 
 export interface AuthFooterProps {
   prompt: string;
@@ -10,9 +10,8 @@ export interface AuthFooterProps {
 
 export function AuthFooter({ prompt, linkText, linkHref, className }: AuthFooterProps) {
   return (
-    <p className={cn("mt-6 text-center text-xs text-outline", className)}>
-      {prompt}{" "}
-      <TextLink href={linkHref}>{linkText}</TextLink>
+    <p className={cn('mt-6 text-center text-xs text-outline', className)}>
+      {prompt} <TextLink href={linkHref}>{linkText}</TextLink>
     </p>
   );
 }

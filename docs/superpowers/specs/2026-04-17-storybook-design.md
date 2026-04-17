@@ -32,6 +32,7 @@ This document specifies the integration of Storybook 10 into the Cellar Next.js 
 **Selected Framework:** `@storybook/nextjs-vite`
 
 **Rationale:**
+
 - Recommended by Storybook 10 documentation
 - Faster builds than Webpack version
 - Better Vitest addon support
@@ -48,13 +49,13 @@ This document specifies the integration of Storybook 10 into the Cellar Next.js 
 
 **CRITICAL RULE - Testing Division:**
 
-| Test Type | Tool | When to Use |
-|-----------|------|-------------|
-| **Visual states** (all component variants) | Storybook stories | Showing how component looks in different states |
-| **Simple interactions** (click, hover, focus) | Storybook play functions | Visual interaction demos that stakeholders can see |
-| **Complex logic** (validation, API calls, state) | Vitest | Logic verification, bulk test cases, edge cases |
-| **Bulk scenarios** (20+ test cases) | Vitest | Data-driven tests, table-driven validation |
-| **Visual regression** | Storybook Vitest addon | Catching accidental visual changes |
+| Test Type                                        | Tool                     | When to Use                                        |
+| ------------------------------------------------ | ------------------------ | -------------------------------------------------- |
+| **Visual states** (all component variants)       | Storybook stories        | Showing how component looks in different states    |
+| **Simple interactions** (click, hover, focus)    | Storybook play functions | Visual interaction demos that stakeholders can see |
+| **Complex logic** (validation, API calls, state) | Vitest                   | Logic verification, bulk test cases, edge cases    |
+| **Bulk scenarios** (20+ test cases)              | Vitest                   | Data-driven tests, table-driven validation         |
+| **Visual regression**                            | Storybook Vitest addon   | Catching accidental visual changes                 |
 
 **Examples:**
 
@@ -90,6 +91,7 @@ export const ModalOpens: Story = {
 ```
 
 **Testing Redundancy Rule:**
+
 - Do NOT duplicate tests between Vitest and Storybook
 - If a test checks className/render output → use Storybook
 - If a test checks logic/behavior → use Vitest
@@ -104,6 +106,7 @@ export const ModalOpens: Story = {
 **Command:** `npm create storybook@latest`
 
 The CLI will:
+
 1. Detect Next.js project automatically
 2. Offer `@storybook/nextjs-vite` (accept this)
 3. Install all dependencies
@@ -114,14 +117,13 @@ The CLI will:
 ### 3.2 Post-CLI Configuration
 
 **`.storybook/main.ts` (minimal tweaks):**
+
 ```typescript
 import type { StorybookConfig } from '@storybook/nextjs-vite';
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
-  addons: [
-    '@storybook/addon-essentials',
-  ],
+  addons: ['@storybook/addon-essentials'],
   framework: {
     name: '@storybook/nextjs-vite',
     options: {},
@@ -132,14 +134,15 @@ export default config;
 ```
 
 **`.storybook/preview.tsx` (Tailwind + App Router):**
+
 ```typescript
 import type { Preview } from '@storybook/nextjs-vite';
-import '../src/app/globals.css';  // Tailwind CSS
+import '../src/app/globals.css'; // Tailwind CSS
 
 const preview: Preview = {
   parameters: {
     nextjs: {
-      appDirectory: true,  // Required for next/navigation
+      appDirectory: true, // Required for next/navigation
     },
     actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {
@@ -153,7 +156,7 @@ const preview: Preview = {
       values: [
         {
           name: 'cellar-dark',
-          value: '#0f172a',  // Cellar surface-container-low
+          value: '#0f172a', // Cellar surface-container-low
         },
       ],
     },
@@ -164,26 +167,27 @@ export default preview;
 ```
 
 **`.storybook/manager.ts` (Cellar branding):**
+
 ```typescript
 import { create } from '@storybook/theming/create';
 import { addons } from '@storybook/manager-api';
 
 const cellarTheme = create({
   base: 'dark',
-  
+
   brandTitle: 'Cellar',
   brandUrl: '/',
   brandImage: '/cellar-logo.svg',
   brandTarget: '_self',
-  
+
   colorPrimary: '#6366f1',
   colorSecondary: '#94a3b8',
-  
+
   appBg: '#0f172a',
   appContentBg: '#1e293b',
   appBorderColor: 'rgba(255,255,255,0.05)',
   textColor: '#f1f5f9',
-  
+
   barTextColor: '#94a3b8',
   barSelectedColor: '#6366f1',
   barBg: '#0f172a',
@@ -195,6 +199,7 @@ addons.setConfig({
 ```
 
 **`vitest.workspace.ts` (workspace config):**
+
 ```typescript
 import { defineWorkspace } from 'vitest/config';
 
@@ -217,6 +222,7 @@ export default defineWorkspace([
 ### 3.3 npm Scripts
 
 Add to `package.json`:
+
 ```json
 {
   "storybook": "storybook dev -p 6006",
@@ -232,6 +238,7 @@ Add to `package.json`:
 ### 4.1 File Location
 
 **Co-located with components:**
+
 ```
 src/components/ui/
 ├── button.tsx
@@ -240,6 +247,7 @@ src/components/ui/
 ```
 
 **Rationale:**
+
 - Stories next to component they document
 - Easy to find and maintain
 - Matches existing test file pattern
@@ -249,12 +257,14 @@ src/components/ui/
 **CSF 3 (Component Story Format 3)**
 
 **Why CSF 3:**
+
 - Industry standard, stable and well-documented
 - Full TypeScript support
 - Backwards compatible
 - Works with all Storybook 10 features
 
 **Alternative considered:** CSF Factories
+
 - **Status:** Preview (not yet stable)
 - **Decision:** Skip for now, can migrate later when it reaches stable
 
@@ -309,10 +319,12 @@ export const Clickable: Story = {
 ### 4.4 Component Coverage
 
 **Priority 1: All UI components (20+ files)**
+
 - Minimum: 1 story showing default state
 - Tag: `['autodocs']` for automatic documentation
 
 **Priority 2: Complex components**
+
 - Button: All variants (primary, secondary, ghost, danger)
 - Input: States (default, error, disabled, focused)
 - Modal: Open/closed states
@@ -320,6 +332,7 @@ export const Clickable: Story = {
 - Tabs: Active, hover states
 
 **Priority 3: Simple components**
+
 - Separator, Label: Single story sufficient
 - Badge: Variants only
 
@@ -332,6 +345,7 @@ export const Clickable: Story = {
 **Source:** `src/components/layout/sidebar.tsx`
 
 **Brand Elements:**
+
 - **Logo:** Package icon (Lucide) in rounded square with primary container background
 - **Colors:**
   - Background: `surface-container-low` (`#0f172a`)
@@ -345,6 +359,7 @@ export const Clickable: Story = {
 **File:** `public/cellar-logo.svg`
 
 **Design:**
+
 - Package icon from Lucide
 - Rounded container matching sidebar style
 - SVG format for scalability
@@ -356,18 +371,22 @@ export const Clickable: Story = {
 ### 6.1 Common Issues
 
 **Issue 1: Next.js App Router hooks not working**
+
 - **Symptom:** `usePathname`, `useRouter` errors
 - **Fix:** Set `nextjs.appDirectory: true` in preview parameters
 
 **Issue 2: Tailwind styles not applying**
+
 - **Symptom:** Components render without styling
 - **Fix:** Import `globals.css` in `.storybook/preview.tsx`
 
 **Issue 3: Module mocking for Next.js imports**
+
 - **Symptom:** Can't mock `next/navigation`
 - **Fix:** Use `@storybook/nextjs-vite/navigation.mock`
 
 **Issue 4: Path aliases not resolving**
+
 - **Symptom:** `@/components/button` import fails
 - **Fix:** Should work out of box with `@storybook/nextjs-vite`
 
@@ -385,6 +404,7 @@ export const Clickable: Story = {
 ## 7. Implementation Checklist
 
 ### Phase 1: Setup
+
 - [ ] Run `npm create storybook@latest`
 - [ ] Select `@storybook/nextjs-vite` framework
 - [ ] Verify `.storybook/main.ts` created
@@ -394,11 +414,13 @@ export const Clickable: Story = {
 - [ ] Configure dark theme backgrounds
 
 ### Phase 2: Branding
+
 - [ ] Create `public/cellar-logo.svg`
 - [ ] Create `.storybook/manager.ts` with Cellar theme
 - [ ] Test theme renders correctly
 
 ### Phase 3: Stories
+
 - [ ] Button component stories
 - [ ] Input component stories
 - [ ] Card component stories
@@ -406,12 +428,14 @@ export const Clickable: Story = {
 - [ ] All remaining UI components
 
 ### Phase 4: Vitest Integration
+
 - [ ] Create `vitest.workspace.ts`
 - [ ] Add `test-storybook` script
 - [ ] Verify tests run successfully
 - [ ] Test coverage reporting (optional)
 
 ### Phase 5: Cleanup
+
 - [ ] Remove redundant Vitest tests (className/render checks)
 - [ ] Verify Vitest tests still pass for logic
 - [ ] Document Storybook usage in README
@@ -420,14 +444,14 @@ export const Clickable: Story = {
 
 ## 8. Testing Decision Matrix
 
-| Scenario | Tool | Example |
-|----------|------|---------|
-| Component renders correctly in all variants | Storybook stories | Button with primary, secondary, disabled states |
-| Bulk validation logic (20+ cases) | Vitest | Email validation with many edge cases |
-| Visual interaction demo | Storybook play | Modal opens, shows backdrop animation |
-| API integration | Vitest | Form submission calls correct endpoint |
-| Visual regression detection | Storybook Vitest addon | Screenshot comparison in CI |
-| Component appears in design review | Storybook UI | Designer reviews Button variants |
+| Scenario                                    | Tool                   | Example                                         |
+| ------------------------------------------- | ---------------------- | ----------------------------------------------- |
+| Component renders correctly in all variants | Storybook stories      | Button with primary, secondary, disabled states |
+| Bulk validation logic (20+ cases)           | Vitest                 | Email validation with many edge cases           |
+| Visual interaction demo                     | Storybook play         | Modal opens, shows backdrop animation           |
+| API integration                             | Vitest                 | Form submission calls correct endpoint          |
+| Visual regression detection                 | Storybook Vitest addon | Screenshot comparison in CI                     |
+| Component appears in design review          | Storybook UI           | Designer reviews Button variants                |
 
 ---
 
@@ -442,6 +466,7 @@ export const Clickable: Story = {
 ### 9.2 Dependencies
 
 Auto-installed by CLI:
+
 - `@storybook/nextjs-vite`
 - `@storybook/react`
 - `@storybook/addon-essentials`
@@ -449,6 +474,7 @@ Auto-installed by CLI:
 - `storybook`
 
 Manual verification needed:
+
 - `@storybook/addon-vitest` (for Vitest addon)
 
 ---

@@ -7,7 +7,7 @@ const meta: Meta<typeof Modal> = {
   component: Modal,
   title: 'UI/Modal',
   tags: ['autodocs'],
-  parameters: { 
+  parameters: {
     layout: 'centered',
     docs: {
       story: { inline: false, iframeHeight: 300 },
@@ -48,8 +48,12 @@ export const WithActions: Story = {
     ),
     actions: (
       <>
-        <Button variant="ghost" onClick={fn()}>Cancel</Button>
-        <Button variant="danger" onClick={fn()}>Confirm</Button>
+        <Button variant="ghost" onClick={fn()}>
+          Cancel
+        </Button>
+        <Button variant="danger" onClick={fn()}>
+          Confirm
+        </Button>
       </>
     ),
     size: 'md',
@@ -61,11 +65,7 @@ export const Small: Story = {
     open: true,
     onClose: fn(),
     title: 'Small Modal',
-    children: (
-      <p className="text-sm text-on-surface">
-        This is a smaller modal dialog.
-      </p>
-    ),
+    children: <p className="text-sm text-on-surface">This is a smaller modal dialog.</p>,
     size: 'sm',
   },
 };

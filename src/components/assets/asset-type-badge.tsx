@@ -1,5 +1,5 @@
-import { AssetType } from "@/generated/prisma/enums";
-import { TYPE_CONFIG } from "@/lib/asset-types";
+import { AssetType } from '@/generated/prisma/enums';
+import { TYPE_CONFIG } from '@/lib/asset-types';
 
 export interface AssetTypeBadgeProps {
   type: AssetType;
@@ -8,9 +8,11 @@ export interface AssetTypeBadgeProps {
 
 export function AssetTypeBadge({ type, showLabel = false }: AssetTypeBadgeProps) {
   const config = TYPE_CONFIG[type];
-  
+
   return (
-    <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${config.badge}`}>
+    <span
+      className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${config.badge}`}
+    >
       {showLabel ? config.label : type}
     </span>
   );

@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Divider } from "./divider";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { Divider } from './divider';
 
 const meta = {
-  title: "UI/Divider",
+  title: 'UI/Divider',
   component: Divider,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
 } satisfies Meta<typeof Divider>;
 
 export default meta;
@@ -16,12 +16,12 @@ export const Default: Story = {
 
 export const WithText: Story = {
   args: {
-    text: "or",
+    text: 'or',
   },
 };
 
 export const CustomText: Story = {
   args: {
-    text: "AND",
+    text: 'AND',
   },
 };

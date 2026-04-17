@@ -1,9 +1,9 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
 @theme inline {
-  --font-sans: var(--font-inter), "Inter", sans-serif;
-  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  --font-sans: var(--font-inter), 'Inter', sans-serif;
+  --font-mono: var(--font-jetbrains-mono), 'JetBrains Mono', monospace;
 
   --color-background: #0a0e14;
   --color-foreground: #d9e6fd;
@@ -109,11 +109,11 @@ body {
 }
 
 /* Sonner toast customization */
-[data-sonner-toast][data-type="success"] [data-icon] {
+[data-sonner-toast][data-type='success'] [data-icon] {
   color: var(--color-primary);
 }
 
-[data-sonner-toast][data-type="error"] [data-icon] {
+[data-sonner-toast][data-type='error'] [data-icon] {
   color: var(--color-error);
 }
 

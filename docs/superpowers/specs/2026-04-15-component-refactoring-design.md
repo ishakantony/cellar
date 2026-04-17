@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-15  
 **Topic:** Component Structure Refactoring for Reusability  
-**Status:** Approved  
+**Status:** Approved
 
 ## Overview
 
@@ -20,17 +20,17 @@ This document outlines the refactoring of Cellar's React components from inline,
 
 ### Component Inventory
 
-| Component | Lines | Primary Concerns |
-|-----------|-------|------------------|
-| asset-drawer.tsx | 490 | View/edit/create, 6 type renderers, file upload |
-| sidebar.tsx | 211 | Navigation, user profile, sign-out |
-| asset-card.tsx | 177 | Card display, dropdown menu, type icons |
-| collection-card.tsx | 113 | Card display, dropdown menu, color handling |
-| collection-modal.tsx | 145 | Create/edit modal with color picker |
-| file-dropzone.tsx | 105 | File upload with drag-drop |
-| header.tsx | 71 | Search, action buttons |
-| quick-actions.tsx | 61 | Type selection grid |
-| delete-dialog.tsx | 63 | Confirmation dialog |
+| Component            | Lines | Primary Concerns                                |
+| -------------------- | ----- | ----------------------------------------------- |
+| asset-drawer.tsx     | 490   | View/edit/create, 6 type renderers, file upload |
+| sidebar.tsx          | 211   | Navigation, user profile, sign-out              |
+| asset-card.tsx       | 177   | Card display, dropdown menu, type icons         |
+| collection-card.tsx  | 113   | Card display, dropdown menu, color handling     |
+| collection-modal.tsx | 145   | Create/edit modal with color picker             |
+| file-dropzone.tsx    | 105   | File upload with drag-drop                      |
+| header.tsx           | 71    | Search, action buttons                          |
+| quick-actions.tsx    | 61    | Type selection grid                             |
+| delete-dialog.tsx    | 63    | Confirmation dialog                             |
 
 ## Proposed Architecture
 
@@ -88,6 +88,7 @@ src/
 **Purpose:** All button variations with consistent styling
 
 **Props:**
+
 ```typescript
 interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline';
@@ -102,6 +103,7 @@ interface ButtonProps {
 ```
 
 **Variants:**
+
 - `primary`: Main actions (Save, Create) - `bg-primary-container/30 border-primary/30 text-primary`
 - `secondary`: Alternative actions (Cancel) - `bg-surface-container ghost-border`
 - `danger`: Destructive actions (Delete) - `bg-error/20 border-error/30 text-error`
@@ -109,6 +111,7 @@ interface ButtonProps {
 - `outline`: Bordered actions - border only
 
 **Sizes:**
+
 - `sm`: `px-3 py-1.5 text-xs` (header buttons)
 - `md`: `px-4 py-2 text-xs` (default)
 - `lg`: `px-4 py-2.5 text-xs` (auth forms)
@@ -118,6 +121,7 @@ interface ButtonProps {
 **Purpose:** Icon-only buttons for compact actions
 
 **Props:**
+
 ```typescript
 interface IconButtonProps {
   icon: React.ComponentType<{ className?: string }>;
@@ -134,6 +138,7 @@ interface IconButtonProps {
 **Purpose:** Consistent text input styling
 
 **Props:**
+
 ```typescript
 interface InputProps {
   type?: 'text' | 'email' | 'password' | 'url';
@@ -147,8 +152,9 @@ interface InputProps {
 ```
 
 **Default Classes:**
+
 ```
-w-full rounded-lg border-none bg-surface-container px-4 py-2.5 text-sm 
+w-full rounded-lg border-none bg-surface-container px-4 py-2.5 text-sm
 text-on-surface placeholder:text-outline/50 focus:ring-1 focus:ring-primary/50
 ```
 
@@ -157,6 +163,7 @@ text-on-surface placeholder:text-outline/50 focus:ring-1 focus:ring-primary/50
 **Purpose:** Dropdown select inputs
 
 **Props:**
+
 ```typescript
 interface SelectProps<T> {
   value: T;
@@ -168,8 +175,9 @@ interface SelectProps<T> {
 ```
 
 **Default Classes:**
+
 ```
-text-[10px] font-bold uppercase tracking-widest px-2 py-1.5 rounded 
+text-[10px] font-bold uppercase tracking-widest px-2 py-1.5 rounded
 bg-surface-container border-none text-on-surface-variant focus:ring-1 focus:ring-primary/50
 ```
 
@@ -178,6 +186,7 @@ bg-surface-container border-none text-on-surface-variant focus:ring-1 focus:ring
 **Purpose:** Form labels with consistent styling
 
 **Props:**
+
 ```typescript
 interface LabelProps {
   children: React.ReactNode;
@@ -187,6 +196,7 @@ interface LabelProps {
 ```
 
 **Default Classes:**
+
 ```
 mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant
 ```
@@ -196,6 +206,7 @@ mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-var
 **Purpose:** Status/error messages
 
 **Props:**
+
 ```typescript
 interface AlertProps {
   variant: 'error' | 'success';
@@ -205,6 +216,7 @@ interface AlertProps {
 ```
 
 **Default Classes (error):**
+
 ```
 rounded-lg border border-error/30 bg-error/10 px-4 py-2 text-xs text-error
 ```
@@ -214,6 +226,7 @@ rounded-lg border border-error/30 bg-error/10 px-4 py-2 text-xs text-error
 **Purpose:** Divider lines
 
 **Props:**
+
 ```typescript
 interface SeparatorProps {
   orientation?: 'horizontal' | 'vertical';
@@ -222,6 +235,7 @@ interface SeparatorProps {
 ```
 
 **Default Classes:**
+
 ```
 h-px flex-1 bg-outline-variant/30
 ```
@@ -231,6 +245,7 @@ h-px flex-1 bg-outline-variant/30
 **Purpose:** User avatars with fallback initials
 
 **Props:**
+
 ```typescript
 interface AvatarProps {
   src?: string | null;
@@ -241,6 +256,7 @@ interface AvatarProps {
 ```
 
 **Sizes:**
+
 - `sm`: `h-8 w-8` (sidebar)
 - `md`: `h-10 w-10`
 - `lg`: `h-12 w-12`
@@ -250,6 +266,7 @@ interface AvatarProps {
 **Purpose:** Type/status indicators
 
 **Props:**
+
 ```typescript
 interface BadgeProps {
   variant?: 'default' | 'primary' | 'secondary';
@@ -259,6 +276,7 @@ interface BadgeProps {
 ```
 
 **Default Classes:**
+
 ```
 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded
 ```
@@ -268,6 +286,7 @@ text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded
 **Purpose:** Card containers with ghost-border
 
 **Props:**
+
 ```typescript
 interface CardProps {
   children: React.ReactNode;
@@ -279,11 +298,13 @@ interface CardProps {
 ```
 
 **Default Classes:**
+
 ```
 bg-surface-container ghost-border rounded-xl transition-all
 ```
 
 **Hover Classes (when hoverable):**
+
 ```
 hover:bg-surface-bright hover:border-white/20 cursor-pointer
 ```
@@ -293,6 +314,7 @@ hover:bg-surface-bright hover:border-white/20 cursor-pointer
 **Purpose:** Colored icon wrappers for asset/collection types
 
 **Props:**
+
 ```typescript
 interface IconBadgeProps {
   icon: React.ComponentType<{ className?: string }>;
@@ -303,6 +325,7 @@ interface IconBadgeProps {
 ```
 
 **Variant Classes (from TYPE_CONFIG):**
+
 - `snippet`: `bg-primary/10 text-primary`
 - `prompt`: `bg-tertiary-container/20 text-tertiary`
 - `note`: `bg-amber-500/10 text-amber-400`
@@ -311,6 +334,7 @@ interface IconBadgeProps {
 - `file`: `bg-violet-500/10 text-violet-400`
 
 **Sizes:**
+
 - `sm`: `h-7 w-7` with `h-[14px] w-[14px]` icon
 - `md`: `h-9 w-9` with `h-[18px] w-[18px]` icon
 - `lg`: `h-10 w-10` with `h-5 w-5` icon
@@ -320,6 +344,7 @@ interface IconBadgeProps {
 **Purpose:** Slide-out panels
 
 **Props:**
+
 ```typescript
 interface DrawerProps {
   open: boolean;
@@ -332,11 +357,13 @@ interface DrawerProps {
 ```
 
 **Default Classes:**
+
 ```
 fixed inset-y-0 right-0 flex flex-col z-50 bg-surface-container-low shadow-2xl
 ```
 
 **Widths:**
+
 - `md`: `w-full md:w-[480px]`
 - `lg`: `w-full md:w-[680px]`
 
@@ -345,6 +372,7 @@ fixed inset-y-0 right-0 flex flex-col z-50 bg-surface-container-low shadow-2xl
 **Purpose:** Centered dialogs
 
 **Props:**
+
 ```typescript
 interface ModalProps {
   open: boolean;
@@ -357,12 +385,14 @@ interface ModalProps {
 ```
 
 **Default Classes:**
+
 ```
 fixed inset-0 bg-black/60 z-[60] flex items-center justify-center
 bg-surface-container-high rounded-xl shadow-2xl
 ```
 
 **Sizes:**
+
 - `sm`: `w-[360px]` (delete dialog)
 - `md`: `w-[400px]` (collection modal)
 
@@ -371,6 +401,7 @@ bg-surface-container-high rounded-xl shadow-2xl
 **Purpose:** Dropdown menus with items
 
 **Props:**
+
 ```typescript
 interface ActionMenuItem {
   id: string;
@@ -388,12 +419,14 @@ interface ActionMenuProps {
 ```
 
 **Default Classes:**
+
 ```
-absolute mt-1 w-40 bg-surface-container-high rounded-lg shadow-xl 
+absolute mt-1 w-40 bg-surface-container-high rounded-lg shadow-xl
 border border-white/10 py-1 z-50
 ```
 
 **Item Classes:**
+
 ```
 flex items-center gap-2 w-full px-3 py-2 text-xs transition-colors
 ```
@@ -403,6 +436,7 @@ flex items-center gap-2 w-full px-3 py-2 text-xs transition-colors
 **Purpose:** Empty list placeholders
 
 **Props:**
+
 ```typescript
 interface EmptyStateProps {
   message: string;
@@ -415,11 +449,13 @@ interface EmptyStateProps {
 ```
 
 **Default Classes:**
+
 ```
 py-16 text-center
 ```
 
 **Message Classes:**
+
 ```
 text-xs text-outline
 ```
@@ -429,6 +465,7 @@ text-xs text-outline
 **Purpose:** Filter/navigation tabs
 
 **Props:**
+
 ```typescript
 interface TabOption {
   value: string | null;
@@ -444,16 +481,19 @@ interface TabsProps {
 ```
 
 **Default Classes:**
+
 ```
 flex items-center gap-1 overflow-x-auto
 ```
 
 **Tab Classes (active):**
+
 ```
 bg-primary/10 text-primary
 ```
 
 **Tab Classes (inactive):**
+
 ```
 text-outline hover:text-on-surface-variant hover:bg-surface-container
 ```
@@ -465,6 +505,7 @@ text-outline hover:text-on-surface-variant hover:bg-surface-container
 **Purpose:** Display asset in list/grid
 
 **Props:**
+
 ```typescript
 interface AssetCardProps {
   asset: {
@@ -489,6 +530,7 @@ interface AssetCardProps {
 **Purpose:** Type-based icon lookup
 
 **Props:**
+
 ```typescript
 interface AssetIconProps {
   type: AssetType;
@@ -503,6 +545,7 @@ interface AssetIconProps {
 **Purpose:** Type label badge
 
 **Props:**
+
 ```typescript
 interface AssetTypeBadgeProps {
   type: AssetType;
@@ -517,6 +560,7 @@ interface AssetTypeBadgeProps {
 **Purpose:** View/edit/create assets
 
 **Props:**
+
 ```typescript
 interface AssetDrawerProps {
   open: boolean;
@@ -536,6 +580,7 @@ interface AssetDrawerProps {
 **Purpose:** Edit form for each asset type
 
 **Props:**
+
 ```typescript
 interface AssetTypeEditorProps {
   type: AssetType;
@@ -551,6 +596,7 @@ interface AssetTypeEditorProps {
 **Purpose:** Read-only view for each asset type
 
 **Props:**
+
 ```typescript
 interface AssetTypeViewerProps {
   type: AssetType;
@@ -568,6 +614,7 @@ interface AssetTypeViewerProps {
 **Purpose:** Display collection in grid
 
 **Props:**
+
 ```typescript
 interface CollectionCardProps {
   collection: {
@@ -590,15 +637,12 @@ interface CollectionCardProps {
 **Purpose:** Create/edit collection
 
 **Props:**
+
 ```typescript
 interface CollectionModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (data: {
-    name: string;
-    description?: string;
-    color?: string;
-  }) => Promise<void>;
+  onSubmit: (data: { name: string; description?: string; color?: string }) => Promise<void>;
   initialData?: { name: string; description?: string; color?: string };
 }
 ```
@@ -612,6 +656,7 @@ interface CollectionModalProps {
 **Purpose:** Navigation sidebar
 
 **Props:**
+
 ```typescript
 interface SidebarProps {
   collapsed: boolean;
@@ -627,6 +672,7 @@ interface SidebarProps {
 **Purpose:** Top bar with search and actions
 
 **Props:**
+
 ```typescript
 interface HeaderProps {
   onMobileMenuToggle: () => void;
@@ -646,15 +692,17 @@ interface HeaderProps {
 **Purpose:** Detect clicks outside a ref
 
 **Signature:**
+
 ```typescript
 function useClickOutside(
   ref: React.RefObject<HTMLElement>,
   onClickOutside: () => void,
   enabled?: boolean
-): void
+): void;
 ```
 
 **Usage:**
+
 ```typescript
 const menuRef = useRef<HTMLDivElement>(null);
 useClickOutside(menuRef, () => setMenuOpen(false), menuOpen);
@@ -665,6 +713,7 @@ useClickOutside(menuRef, () => setMenuOpen(false), menuOpen);
 **Purpose:** Manage drawer state and selected item
 
 **Signature:**
+
 ```typescript
 interface UseDrawerStateOptions<T> {
   onSaved?: () => void;
@@ -680,10 +729,11 @@ interface DrawerState<T> {
   close: () => void;
 }
 
-function useDrawerState<T>(options?: UseDrawerStateOptions<T>): DrawerState<T>
+function useDrawerState<T>(options?: UseDrawerStateOptions<T>): DrawerState<T>;
 ```
 
 **Usage:**
+
 ```typescript
 const drawer = useDrawerState<Asset>({ onSaved: () => router.refresh() });
 ```
@@ -693,6 +743,7 @@ const drawer = useDrawerState<Asset>({ onSaved: () => router.refresh() });
 **Purpose:** Shared state for pin/delete/refresh patterns
 
 **Signature:**
+
 ```typescript
 interface UseAssetManagementOptions {
   onAction?: () => void;
@@ -711,13 +762,14 @@ function useAssetManagement(
   togglePinFn: (id: string) => Promise<void>,
   deleteFn: (id: string) => Promise<void>,
   options?: UseAssetManagementOptions
-): AssetManagementState
+): AssetManagementState;
 ```
 
 **Usage:**
+
 ```typescript
 const assets = useAssetManagement(togglePin, deleteAsset, {
-  onAction: () => router.refresh()
+  onAction: () => router.refresh(),
 });
 ```
 
@@ -822,6 +874,7 @@ export function getColorClasses(color: string | null | undefined): string {
 ### UI Layer (`components/ui/`)
 
 **Rules:**
+
 - Pure presentational, no business logic
 - Accept all data via props
 - No direct imports from `app/` or `generated/`
@@ -831,6 +884,7 @@ export function getColorClasses(color: string | null | undefined): string {
 ### Domain Layer (`components/assets/`, `components/collections/`)
 
 **Rules:**
+
 - Business logic for their domain
 - Can import from `lib/`, `hooks/`, `generated/`
 - Can import from `components/ui/`
@@ -840,6 +894,7 @@ export function getColorClasses(color: string | null | undefined): string {
 ### Layout Layer (`components/layout/`)
 
 **Rules:**
+
 - Shell components
 - Handle navigation and routing
 - Can import from all other layers
@@ -848,22 +903,26 @@ export function getColorClasses(color: string | null | undefined): string {
 ## Migration Strategy
 
 ### Phase 1: Foundation
+
 1. Create `lib/asset-types.ts` and `lib/colors.ts`
 2. Create `hooks/use-click-outside.ts`
 3. Create basic UI primitives: `Button`, `IconButton`, `Input`
 
 ### Phase 2: Core UI
+
 4. Create remaining UI primitives
 5. Refactor `ActionMenu` and replace inline dropdowns
 6. Create `IconBadge` and replace TYPE_CONFIG lookups
 
 ### Phase 3: Domain Components
+
 7. Refactor `AssetCard` to use new primitives
 8. Refactor `CollectionCard` to use new primitives
 9. Split `AssetDrawer` into smaller components
 10. Refactor `CollectionModal` to use `Modal` primitive
 
 ### Phase 4: Layout & Cleanup
+
 11. Refactor `Sidebar` and `Header`
 12. Create shared hooks for client pages
 13. Update client pages to use new hooks

@@ -33,7 +33,8 @@ export const WithAction: Story = {
 
 export const LongMessage: Story = {
   args: {
-    message: 'There are no results matching your search criteria. Try adjusting your filters or search terms.',
+    message:
+      'There are no results matching your search criteria. Try adjusting your filters or search terms.',
     action: {
       label: 'Clear Filters',
       onClick: fn(),

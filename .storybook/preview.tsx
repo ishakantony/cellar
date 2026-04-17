@@ -1,5 +1,5 @@
 import type { Preview } from '@storybook/nextjs-vite';
-import '../src/app/globals.css';  // Tailwind CSS
+import '../src/app/globals.css'; // Tailwind CSS
 import { ThemedDocsContainer } from './ThemedDocsContainer';
 
 const preview: Preview = {
@@ -8,13 +8,15 @@ const preview: Preview = {
       // Apply theme-based background to story canvas
       const themeId = context.globals.theme || 'dark';
       const isDark = themeId === 'dark';
-      
+
       return (
-        <div style={{ 
-          backgroundColor: isDark ? '#1e293b' : '#ffffff',
-          padding: '20px',
-          minHeight: '100%',
-        }}>
+        <div
+          style={{
+            backgroundColor: isDark ? '#1e293b' : '#ffffff',
+            padding: '20px',
+            minHeight: '100%',
+          }}
+        >
           <Story />
         </div>
       );
@@ -22,7 +24,7 @@ const preview: Preview = {
   ],
   parameters: {
     nextjs: {
-      appDirectory: true,  // Required for next/navigation
+      appDirectory: true, // Required for next/navigation
     },
     controls: {
       matchers: {
@@ -43,7 +45,7 @@ const preview: Preview = {
       // 'todo' - show a11y violations in the test UI only
       // 'error' - fail CI on a11y violations
       // 'off' - skip a11y checks entirely
-      test: 'todo'
+      test: 'todo',
     },
     docs: {
       container: ThemedDocsContainer,

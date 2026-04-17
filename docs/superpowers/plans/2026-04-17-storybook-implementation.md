@@ -13,6 +13,7 @@
 ## File Structure
 
 **New Files:**
+
 - `.storybook/main.ts` - Storybook configuration
 - `.storybook/preview.tsx` - Global decorators and parameters
 - `.storybook/manager.ts` - Cellar branding theme
@@ -22,6 +23,7 @@
 - (20+ additional `.stories.tsx` files for UI components)
 
 **Modified Files:**
+
 - `package.json` - Add Storybook npm scripts
 - `.gitignore` - Ignore Storybook build output
 
@@ -32,17 +34,20 @@
 ### Task 1: Install Storybook via CLI
 
 **Files:**
+
 - Create: Multiple files via CLI
 - Modify: `package.json`
 
 - [ ] **Step 1: Run Storybook CLI installer**
 
 Run:
+
 ```bash
 npm create storybook@latest
 ```
 
 When prompted:
+
 - Accept automatic detection of Next.js
 - Choose `@storybook/nextjs-vite` framework
 - Select "Yes" for onboarding tour (or "No" if experienced)
@@ -51,17 +56,20 @@ When prompted:
 - [ ] **Step 2: Verify installation completed**
 
 Check these files were created:
+
 ```bash
 ls -la .storybook/
 ```
 
 Expected output shows:
+
 - `.storybook/main.ts`
 - `.storybook/preview.ts` (or `.tsx`)
 
 - [ ] **Step 3: Verify npm scripts added**
 
 Check `package.json` contains:
+
 ```json
 {
   "scripts": {
@@ -74,6 +82,7 @@ Check `package.json` contains:
 - [ ] **Step 4: Run Storybook to verify it works**
 
 Run:
+
 ```bash
 npm run storybook
 ```
@@ -83,6 +92,7 @@ Expected: Storybook dev server starts on http://localhost:6006
 - [ ] **Step 5: Stop Storybook and commit**
 
 Press `Ctrl+C` to stop, then:
+
 ```bash
 git add .
 git commit -m "chore: install Storybook 10 with Next.js Vite framework"
@@ -95,6 +105,7 @@ git commit -m "chore: install Storybook 10 with Next.js Vite framework"
 ### Task 2: Configure Storybook Main Config
 
 **Files:**
+
 - Modify: `.storybook/main.ts`
 
 - [ ] **Step 1: Update main.ts with proper story patterns**
@@ -124,6 +135,7 @@ export default config;
 - [ ] **Step 2: Verify configuration is valid**
 
 Run:
+
 ```bash
 npm run storybook
 ```
@@ -142,16 +154,19 @@ git commit -m "config: update Storybook main config for Next.js Vite"
 ### Task 3: Configure Storybook Preview (Tailwind + App Router)
 
 **Files:**
+
 - Modify: `.storybook/preview.ts` (or rename to `.tsx`)
 
 - [ ] **Step 1: Check if preview.ts exists and rename if needed**
 
 Run:
+
 ```bash
 ls .storybook/preview*
 ```
 
 If `.storybook/preview.ts` exists:
+
 ```bash
 mv .storybook/preview.ts .storybook/preview.tsx
 ```
@@ -194,6 +209,7 @@ export default preview;
 - [ ] **Step 3: Verify globals.css exists at the path**
 
 Run:
+
 ```bash
 ls src/app/globals.css
 ```
@@ -203,6 +219,7 @@ Expected: File exists
 - [ ] **Step 4: Run Storybook to verify Tailwind styles work**
 
 Run:
+
 ```bash
 npm run storybook
 ```
@@ -221,6 +238,7 @@ git commit -m "config: add Tailwind CSS and App Router support to Storybook prev
 ### Task 4: Create Cellar Branding Theme
 
 **Files:**
+
 - Create: `.storybook/manager.ts`
 - Create: `public/cellar-logo.svg`
 
@@ -234,20 +252,20 @@ import { addons } from '@storybook/manager-api';
 
 const cellarTheme = create({
   base: 'dark',
-  
+
   brandTitle: 'Cellar',
   brandUrl: '/',
   brandImage: '/cellar-logo.svg',
   brandTarget: '_self',
-  
+
   colorPrimary: '#6366f1',
   colorSecondary: '#94a3b8',
-  
+
   appBg: '#0f172a',
   appContentBg: '#1e293b',
   appBorderColor: 'rgba(255,255,255,0.05)',
   textColor: '#f1f5f9',
-  
+
   barTextColor: '#94a3b8',
   barSelectedColor: '#6366f1',
   barBg: '#0f172a',
@@ -274,11 +292,13 @@ Create `public/cellar-logo.svg` with:
 - [ ] **Step 3: Run Storybook to verify branding**
 
 Run:
+
 ```bash
 npm run storybook
 ```
 
 Verify:
+
 - Cellar logo appears in top-left
 - Dark theme is active
 - Colors match Cellar branding (indigo accents)
@@ -297,6 +317,7 @@ git commit -m "feat: add Cellar branding to Storybook UI"
 ### Task 5: Create Button Component Stories
 
 **Files:**
+
 - Create: `src/components/ui/button.stories.tsx`
 
 - [ ] **Step 1: Read existing Button component**
@@ -413,11 +434,13 @@ export const Clickable: Story = {
 - [ ] **Step 3: Verify button stories work**
 
 Run:
+
 ```bash
 npm run storybook
 ```
 
 Navigate to UI/Button stories and verify:
+
 - All variants render correctly
 - Controls work (change variant, size, disabled)
 - Clickable story shows interaction
@@ -434,6 +457,7 @@ git commit -m "feat: add Button component stories"
 ### Task 6: Create Input Component Stories
 
 **Files:**
+
 - Create: `src/components/ui/input.stories.tsx`
 
 - [ ] **Step 1: Read existing Input component**
@@ -536,6 +560,7 @@ npm run storybook
 ```
 
 Verify Input stories work, then:
+
 ```bash
 git add src/components/ui/input.stories.tsx
 git commit -m "feat: add Input component stories"
@@ -546,9 +571,11 @@ git commit -m "feat: add Input component stories"
 ### Task 7: Create Stories for All Remaining UI Components
 
 **Files:**
+
 - Create: Multiple `.stories.tsx` files
 
 List of components to create stories for:
+
 - `icon-badge.tsx` → `icon-badge.stories.tsx`
 - `tabs.tsx` → `tabs.stories.tsx`
 - `card.tsx` → `card.stories.tsx`
@@ -571,6 +598,7 @@ For each component:
 - [ ] **Step 2: Create minimal stories showing key variants**
 
 Template:
+
 ```tsx
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
 import { ComponentName } from './component-name';
@@ -612,6 +640,7 @@ git commit -m "feat: add stories for all UI components"
 ### Task 8: Configure Vitest Workspace
 
 **Files:**
+
 - Create: `vitest.workspace.ts`
 
 - [ ] **Step 1: Check existing vitest.config.ts**
@@ -628,7 +657,7 @@ import { defineWorkspace } from 'vitest/config';
 export default defineWorkspace([
   // Default Vitest config for unit tests
   'vitest.config.ts',
-  
+
   // Storybook tests
   {
     test: {
@@ -647,6 +676,7 @@ export default defineWorkspace([
 - [ ] **Step 3: Add test-storybook script to package.json**
 
 Modify `package.json` scripts section, add:
+
 ```json
 {
   "scripts": {
@@ -658,6 +688,7 @@ Modify `package.json` scripts section, add:
 - [ ] **Step 4: Install Playwright if not present**
 
 Run:
+
 ```bash
 npm list @playwright/test || npm install --save-dev @playwright/test
 ```
@@ -665,6 +696,7 @@ npm list @playwright/test || npm install --save-dev @playwright/test
 - [ ] **Step 5: Verify workspace config works**
 
 Run:
+
 ```bash
 npm run test-storybook
 ```
@@ -685,6 +717,7 @@ git commit -m "config: add Vitest workspace for Storybook testing"
 ### Task 9: Remove Redundant Vitest Tests
 
 **Files:**
+
 - Modify: `src/components/ui/button.test.tsx`
 - Modify: Other `.test.tsx` files
 
@@ -695,11 +728,13 @@ Read `src/components/ui/button.test.tsx` and identify tests to remove.
 - [ ] **Step 2: Identify redundant tests**
 
 Tests to REMOVE (now covered by Storybook):
+
 - Tests checking className/render output
 - Tests checking component structure
 - Visual state tests
 
 Tests to KEEP (logic testing):
+
 - Tests checking onClick behavior
 - Tests checking complex interactions
 
@@ -716,7 +751,7 @@ describe('Button', () => {
   it('calls onClick when clicked', async () => {
     const onClick = vi.fn();
     render(<Button onClick={onClick}>Click me</Button>);
-    
+
     await userEvent.click(screen.getByRole('button'));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
@@ -726,6 +761,7 @@ describe('Button', () => {
 - [ ] **Step 4: Verify tests still pass**
 
 Run:
+
 ```bash
 npm run test
 ```
@@ -742,6 +778,7 @@ git commit -m "refactor: remove redundant visual tests from Vitest (now in Story
 - [ ] **Step 6: Repeat for other test files**
 
 Clean up these test files similarly:
+
 - `input.test.tsx`
 - `card.test.tsx`
 - `tabs.test.tsx`
@@ -749,6 +786,7 @@ Clean up these test files similarly:
 - [ ] **Step 7: Final test verification**
 
 Run:
+
 ```bash
 npm run test
 ```
@@ -767,11 +805,13 @@ git commit -m "refactor: clean up redundant tests across all UI components"
 ### Task 10: Update .gitignore
 
 **Files:**
+
 - Modify: `.gitignore`
 
 - [ ] **Step 1: Add Storybook build output to gitignore**
 
 Add to `.gitignore`:
+
 ```
 # Storybook
 storybook-static
@@ -812,6 +852,7 @@ npm run storybook
 ```
 
 Verify:
+
 - All 20+ components have stories
 - Cellar branding is visible
 - Dark theme is active
@@ -828,6 +869,7 @@ git commit --allow-empty -m "feat: complete Storybook 10 integration"
 ## Summary
 
 **Completed Deliverables:**
+
 1. Storybook 10 with `@storybook/nextjs-vite` framework
 2. Cellar-branded dark theme (manager.ts, logo)
 3. Co-located CSF 3 stories for all 20+ UI components
@@ -836,6 +878,7 @@ git commit --allow-empty -m "feat: complete Storybook 10 integration"
 6. npm scripts: `storybook`, `build-storybook`, `test-storybook`
 
 **Files Created:**
+
 - `.storybook/main.ts`
 - `.storybook/preview.tsx`
 - `.storybook/manager.ts`
@@ -844,6 +887,7 @@ git commit --allow-empty -m "feat: complete Storybook 10 integration"
 - `src/components/ui/*.stories.tsx` (20+ files)
 
 **Files Modified:**
+
 - `package.json` (scripts added)
 - `.gitignore` (Storybook build ignored)
 - `src/components/ui/*.test.tsx` (redundant tests removed)

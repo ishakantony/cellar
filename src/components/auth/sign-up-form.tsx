@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { signUpSchema, type SignUpData } from "@/schemas/auth";
-import { FormField } from "@/components/ui/form-field";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Alert } from "@/components/ui/alert";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signUpSchema, type SignUpData } from '@/schemas/auth';
+import { FormField } from '@/components/ui/form-field';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Alert } from '@/components/ui/alert';
 
 export interface SignUpFormProps {
   onSubmit?: (data: SignUpData) => Promise<void>;
@@ -24,37 +24,35 @@ export function SignUpForm({ onSubmit, defaultValues }: SignUpFormProps) {
   } = useForm<SignUpData>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
+      name: '',
+      email: '',
+      password: '',
       ...defaultValues,
     },
   });
 
   const handleFormSubmit = async (data: SignUpData) => {
     try {
-      clearErrors("root");
+      clearErrors('root');
       await onSubmit?.(data);
     } catch (error) {
-      setError("root", {
-        message: error instanceof Error ? error.message : "An unexpected error occurred",
+      setError('root', {
+        message: error instanceof Error ? error.message : 'An unexpected error occurred',
       });
     }
   };
 
   // Get current values for controlled inputs
   // eslint-disable-next-line react-hooks/incompatible-library
-  const name = watch("name") || "";
-   
-  const email = watch("email") || "";
-   
-  const password = watch("password") || "";
+  const name = watch('name') || '';
+
+  const email = watch('email') || '';
+
+  const password = watch('password') || '';
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-      {errors.root && (
-        <Alert variant="error">{errors.root.message}</Alert>
-      )}
+      {errors.root && <Alert variant="error">{errors.root.message}</Alert>}
 
       <FormField label="Name" error={errors.name?.message}>
         <Input
@@ -63,7 +61,7 @@ export function SignUpForm({ onSubmit, defaultValues }: SignUpFormProps) {
           disabled={isSubmitting}
           error={errors.name?.message}
           value={name}
-          onChange={(val) => setValue("name", val)}
+          onChange={val => setValue('name', val)}
         />
       </FormField>
 
@@ -74,7 +72,7 @@ export function SignUpForm({ onSubmit, defaultValues }: SignUpFormProps) {
           disabled={isSubmitting}
           error={errors.email?.message}
           value={email}
-          onChange={(val) => setValue("email", val)}
+          onChange={val => setValue('email', val)}
         />
       </FormField>
 
@@ -85,7 +83,7 @@ export function SignUpForm({ onSubmit, defaultValues }: SignUpFormProps) {
           disabled={isSubmitting}
           error={errors.password?.message}
           value={password}
-          onChange={(val) => setValue("password", val)}
+          onChange={val => setValue('password', val)}
         />
       </FormField>
 

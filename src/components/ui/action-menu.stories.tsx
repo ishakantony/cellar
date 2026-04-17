@@ -26,7 +26,11 @@ const defaultItems = [
 
 export const Default: Story = {
   args: {
-    trigger: <Button variant="ghost" size="sm"><MoreHorizontal className="h-4 w-4" /></Button>,
+    trigger: (
+      <Button variant="ghost" size="sm">
+        <MoreHorizontal className="h-4 w-4" />
+      </Button>
+    ),
     items: defaultItems,
     align: 'right',
   },
@@ -34,7 +38,11 @@ export const Default: Story = {
 
 export const AlignLeft: Story = {
   args: {
-    trigger: <Button variant="ghost" size="sm">Menu</Button>,
+    trigger: (
+      <Button variant="ghost" size="sm">
+        Menu
+      </Button>
+    ),
     items: defaultItems,
     align: 'left',
   },
@@ -42,17 +50,23 @@ export const AlignLeft: Story = {
 
 export const SingleItem: Story = {
   args: {
-    trigger: <Button variant="secondary" size="sm">Options</Button>,
-    items: [
-      { id: 'action', label: 'Perform Action', onClick: fn() },
-    ],
+    trigger: (
+      <Button variant="secondary" size="sm">
+        Options
+      </Button>
+    ),
+    items: [{ id: 'action', label: 'Perform Action', onClick: fn() }],
     align: 'right',
   },
 };
 
 export const DangerOnly: Story = {
   args: {
-    trigger: <Button variant="danger" size="sm">Delete Options</Button>,
+    trigger: (
+      <Button variant="danger" size="sm">
+        Delete Options
+      </Button>
+    ),
     items: [
       { id: 'remove', label: 'Remove', icon: Trash, variant: 'danger', onClick: fn() },
       { id: 'purge', label: 'Purge All', icon: Trash, variant: 'danger', onClick: fn() },

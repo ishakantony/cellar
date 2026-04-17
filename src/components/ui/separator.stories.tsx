@@ -19,7 +19,7 @@ export const Horizontal: Story = {
     orientation: 'horizontal',
   },
   decorators: [
-    (Story) => (
+    Story => (
       <div className="w-64">
         <Story />
       </div>
@@ -32,7 +32,7 @@ export const Vertical: Story = {
     orientation: 'vertical',
   },
   decorators: [
-    (Story) => (
+    Story => (
       <div className="h-20 flex items-center justify-center">
         <Story />
       </div>

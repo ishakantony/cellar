@@ -13,14 +13,17 @@
 ## File Structure
 
 ### New Dependencies
+
 - `package.json` - Add react-hook-form and @hookform/resolvers
 
 ### New UI Components (src/components/ui/)
+
 - `divider.tsx` + `divider.stories.tsx` - Horizontal line separator
 - `text-link.tsx` + `text-link.stories.tsx` - Styled link component
 - `form-field.tsx` + `form-field.stories.tsx` - Label + Input molecule
 
 ### New Auth Components (src/components/auth/)
+
 - `logo-icon.tsx` + `logo-icon.stories.tsx` - Brand logo atom
 - `auth-header.tsx` + `auth-header.stories.tsx` - Header molecule
 - `auth-footer.tsx` + `auth-footer.stories.tsx` - Footer molecule
@@ -30,10 +33,12 @@
 - `auth-template.tsx` + `auth-template.stories.tsx` - Page template
 
 ### Schemas & Tests
+
 - `src/schemas/auth.ts` - Zod validation schemas
 - `src/schemas/auth.test.ts` - Vitest tests for schemas
 
 ### Refactored Pages
+
 - `src/app/(auth)/sign-in/page.tsx` - Reduced from 129 to ~15 lines
 - `src/app/(auth)/sign-up/page.tsx` - Reduced from 146 to ~15 lines
 
@@ -42,12 +47,14 @@
 ## Task 1: Install Dependencies
 
 **Files:**
+
 - Modify: `package.json`
 - Test: Verify installation
 
 - [ ] **Step 1: Add dependencies to package.json**
 
 Add to dependencies section:
+
 ```json
 "react-hook-form": "^7.55.0",
 "@hookform/resolvers": "^4.0.0"
@@ -81,6 +88,7 @@ git commit -m "deps: add react-hook-form and @hookform/resolvers for form manage
 ## Task 2: Create Zod Schemas
 
 **Files:**
+
 - Create: `src/schemas/auth.ts`
 - Create: `src/schemas/auth.test.ts`
 
@@ -205,6 +213,7 @@ git commit -m "feat: add Zod validation schemas for auth forms with tests"
 ## Task 3: Create Divider Component
 
 **Files:**
+
 - Create: `src/components/ui/divider.tsx`
 - Create: `src/components/ui/divider.stories.tsx`
 
@@ -242,13 +251,13 @@ export function Divider({ text, className }: DividerProps) {
 
 ```typescript
 // src/components/ui/divider.stories.tsx
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { Divider } from "./divider";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { Divider } from './divider';
 
 const meta = {
-  title: "UI/Divider",
+  title: 'UI/Divider',
   component: Divider,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
 } satisfies Meta<typeof Divider>;
 
 export default meta;
@@ -260,13 +269,13 @@ export const Default: Story = {
 
 export const WithText: Story = {
   args: {
-    text: "or",
+    text: 'or',
   },
 };
 
 export const CustomText: Story = {
   args: {
-    text: "AND",
+    text: 'AND',
   },
 };
 ```
@@ -291,6 +300,7 @@ git commit -m "feat: add Divider component with Storybook stories"
 ## Task 4: Create TextLink Component
 
 **Files:**
+
 - Create: `src/components/ui/text-link.tsx`
 - Create: `src/components/ui/text-link.stories.tsx`
 
@@ -326,13 +336,13 @@ export function TextLink({ href, children, className }: TextLinkProps) {
 
 ```typescript
 // src/components/ui/text-link.stories.tsx
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { TextLink } from "./text-link";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { TextLink } from './text-link';
 
 const meta = {
-  title: "UI/TextLink",
+  title: 'UI/TextLink',
   component: TextLink,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
 } satisfies Meta<typeof TextLink>;
 
 export default meta;
@@ -340,15 +350,15 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    href: "/sign-up",
-    children: "Sign up",
+    href: '/sign-up',
+    children: 'Sign up',
   },
 };
 
 export const LongText: Story = {
   args: {
-    href: "/forgot-password",
-    children: "Forgot your password?",
+    href: '/forgot-password',
+    children: 'Forgot your password?',
   },
 };
 ```
@@ -369,6 +379,7 @@ git commit -m "feat: add TextLink component with Storybook stories"
 ## Task 5: Create FormField Molecule
 
 **Files:**
+
 - Create: `src/components/ui/form-field.tsx`
 - Create: `src/components/ui/form-field.stories.tsx`
 
@@ -449,6 +460,7 @@ git commit -m "feat: add FormField molecule with Storybook stories"
 ## Task 6: Create LogoIcon Atom
 
 **Files:**
+
 - Create: `src/components/auth/logo-icon.tsx`
 - Create: `src/components/auth/logo-icon.stories.tsx`
 
@@ -481,13 +493,13 @@ export function LogoIcon({ className }: LogoIconProps) {
 
 ```typescript
 // src/components/auth/logo-icon.stories.tsx
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { LogoIcon } from "./logo-icon";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { LogoIcon } from './logo-icon';
 
 const meta = {
-  title: "Auth/LogoIcon",
+  title: 'Auth/LogoIcon',
   component: LogoIcon,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
 } satisfies Meta<typeof LogoIcon>;
 
 export default meta;
@@ -514,6 +526,7 @@ git commit -m "feat: add LogoIcon auth atom with Storybook stories"
 ## Task 7: Create AuthHeader Molecule
 
 **Files:**
+
 - Create: `src/components/auth/auth-header.tsx`
 - Create: `src/components/auth/auth-header.stories.tsx`
 
@@ -546,13 +559,13 @@ export function AuthHeader({ subtitle, className }: AuthHeaderProps) {
 
 ```typescript
 // src/components/auth/auth-header.stories.tsx
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { AuthHeader } from "./auth-header";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { AuthHeader } from './auth-header';
 
 const meta = {
-  title: "Auth/AuthHeader",
+  title: 'Auth/AuthHeader',
   component: AuthHeader,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
 } satisfies Meta<typeof AuthHeader>;
 
 export default meta;
@@ -560,13 +573,13 @@ type Story = StoryObj<typeof meta>;
 
 export const SignIn: Story = {
   args: {
-    subtitle: "Sign in to your vault",
+    subtitle: 'Sign in to your vault',
   },
 };
 
 export const SignUp: Story = {
   args: {
-    subtitle: "Create your vault",
+    subtitle: 'Create your vault',
   },
 };
 ```
@@ -587,6 +600,7 @@ git commit -m "feat: add AuthHeader molecule with Storybook stories"
 ## Task 8: Create AuthFooter Molecule
 
 **Files:**
+
 - Create: `src/components/auth/auth-footer.tsx`
 - Create: `src/components/auth/auth-footer.stories.tsx`
 
@@ -618,13 +632,13 @@ export function AuthFooter({ prompt, linkText, linkHref, className }: AuthFooter
 
 ```typescript
 // src/components/auth/auth-footer.stories.tsx
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { AuthFooter } from "./auth-footer";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { AuthFooter } from './auth-footer';
 
 const meta = {
-  title: "Auth/AuthFooter",
+  title: 'Auth/AuthFooter',
   component: AuthFooter,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
 } satisfies Meta<typeof AuthFooter>;
 
 export default meta;
@@ -633,16 +647,16 @@ type Story = StoryObj<typeof meta>;
 export const SignIn: Story = {
   args: {
     prompt: "Don't have an account?",
-    linkText: "Sign up",
-    linkHref: "/sign-up",
+    linkText: 'Sign up',
+    linkHref: '/sign-up',
   },
 };
 
 export const SignUp: Story = {
   args: {
-    prompt: "Already have an account?",
-    linkText: "Sign in",
-    linkHref: "/sign-in",
+    prompt: 'Already have an account?',
+    linkText: 'Sign in',
+    linkHref: '/sign-in',
   },
 };
 ```
@@ -663,6 +677,7 @@ git commit -m "feat: add AuthFooter molecule with Storybook stories"
 ## Task 9: Create SignInForm Organism
 
 **Files:**
+
 - Create: `src/components/auth/sign-in-form.tsx`
 - Create: `src/components/auth/sign-in-form.stories.tsx`
 
@@ -746,14 +761,14 @@ export function SignInForm({ onSubmit, defaultValues }: SignInFormProps) {
 
 ```typescript
 // src/components/auth/sign-in-form.stories.tsx
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { userEvent, within } from "@storybook/test";
-import { SignInForm } from "./sign-in-form";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { userEvent, within } from '@storybook/test';
+import { SignInForm } from './sign-in-form';
 
 const meta = {
-  title: "Auth/SignInForm",
+  title: 'Auth/SignInForm',
   component: SignInForm,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
 } satisfies Meta<typeof SignInForm>;
 
 export default meta;
@@ -766,14 +781,14 @@ export const Default: Story = {
 export const Loading: Story = {
   args: {
     onSubmit: async () => {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.type(canvas.getByLabelText("Email"), "test@example.com");
-    await userEvent.type(canvas.getByLabelText("Password"), "password123");
-    await userEvent.click(canvas.getByRole("button", { name: /sign in/i }));
+    await userEvent.type(canvas.getByLabelText('Email'), 'test@example.com');
+    await userEvent.type(canvas.getByLabelText('Password'), 'password123');
+    await userEvent.click(canvas.getByRole('button', { name: /sign in/i }));
   },
 };
 
@@ -781,30 +796,30 @@ export const WithValidationError: Story = {
   args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.type(canvas.getByLabelText("Email"), "invalid-email");
-    await userEvent.click(canvas.getByRole("button", { name: /sign in/i }));
+    await userEvent.type(canvas.getByLabelText('Email'), 'invalid-email');
+    await userEvent.click(canvas.getByRole('button', { name: /sign in/i }));
   },
 };
 
 export const WithServerError: Story = {
   args: {
     onSubmit: async () => {
-      throw new Error("Invalid credentials");
+      throw new Error('Invalid credentials');
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.type(canvas.getByLabelText("Email"), "test@example.com");
-    await userEvent.type(canvas.getByLabelText("Password"), "wrongpassword");
-    await userEvent.click(canvas.getByRole("button", { name: /sign in/i }));
+    await userEvent.type(canvas.getByLabelText('Email'), 'test@example.com');
+    await userEvent.type(canvas.getByLabelText('Password'), 'wrongpassword');
+    await userEvent.click(canvas.getByRole('button', { name: /sign in/i }));
   },
 };
 
 export const PreFilled: Story = {
   args: {
     defaultValues: {
-      email: "user@example.com",
-      password: "password123",
+      email: 'user@example.com',
+      password: 'password123',
     },
   },
 };
@@ -813,6 +828,7 @@ export const PreFilled: Story = {
 - [ ] **Step 3: Verify in Storybook**
 
 Navigate to Auth/SignInForm and verify all stories:
+
 - Default: Empty form renders
 - Loading: Click submit, see spinner
 - WithValidationError: Click submit without valid email, see error
@@ -831,6 +847,7 @@ git commit -m "feat: add SignInForm organism with Storybook stories"
 ## Task 10: Create SignUpForm Organism
 
 **Files:**
+
 - Create: `src/components/auth/sign-up-form.tsx`
 - Create: `src/components/auth/sign-up-form.stories.tsx`
 
@@ -924,14 +941,14 @@ export function SignUpForm({ onSubmit, defaultValues }: SignUpFormProps) {
 
 ```typescript
 // src/components/auth/sign-up-form.stories.tsx
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { userEvent, within } from "@storybook/test";
-import { SignUpForm } from "./sign-up-form";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { userEvent, within } from '@storybook/test';
+import { SignUpForm } from './sign-up-form';
 
 const meta = {
-  title: "Auth/SignUpForm",
+  title: 'Auth/SignUpForm',
   component: SignUpForm,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
 } satisfies Meta<typeof SignUpForm>;
 
 export default meta;
@@ -944,15 +961,15 @@ export const Default: Story = {
 export const Loading: Story = {
   args: {
     onSubmit: async () => {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.type(canvas.getByLabelText("Name"), "John Doe");
-    await userEvent.type(canvas.getByLabelText("Email"), "john@example.com");
-    await userEvent.type(canvas.getByLabelText("Password"), "password123");
-    await userEvent.click(canvas.getByRole("button", { name: /create account/i }));
+    await userEvent.type(canvas.getByLabelText('Name'), 'John Doe');
+    await userEvent.type(canvas.getByLabelText('Email'), 'john@example.com');
+    await userEvent.type(canvas.getByLabelText('Password'), 'password123');
+    await userEvent.click(canvas.getByRole('button', { name: /create account/i }));
   },
 };
 
@@ -960,24 +977,24 @@ export const WithValidationError: Story = {
   args: {},
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.type(canvas.getByLabelText("Email"), "invalid-email");
-    await userEvent.type(canvas.getByLabelText("Password"), "short");
-    await userEvent.click(canvas.getByRole("button", { name: /create account/i }));
+    await userEvent.type(canvas.getByLabelText('Email'), 'invalid-email');
+    await userEvent.type(canvas.getByLabelText('Password'), 'short');
+    await userEvent.click(canvas.getByRole('button', { name: /create account/i }));
   },
 };
 
 export const WithServerError: Story = {
   args: {
     onSubmit: async () => {
-      throw new Error("Email already registered");
+      throw new Error('Email already registered');
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.type(canvas.getByLabelText("Name"), "John Doe");
-    await userEvent.type(canvas.getByLabelText("Email"), "existing@example.com");
-    await userEvent.type(canvas.getByLabelText("Password"), "password123");
-    await userEvent.click(canvas.getByRole("button", { name: /create account/i }));
+    await userEvent.type(canvas.getByLabelText('Name'), 'John Doe');
+    await userEvent.type(canvas.getByLabelText('Email'), 'existing@example.com');
+    await userEvent.type(canvas.getByLabelText('Password'), 'password123');
+    await userEvent.click(canvas.getByRole('button', { name: /create account/i }));
   },
 };
 ```
@@ -998,6 +1015,7 @@ git commit -m "feat: add SignUpForm organism with Storybook stories"
 ## Task 11: Create SocialLoginSection Organism
 
 **Files:**
+
 - Create: `src/components/auth/social-login-section.tsx`
 - Create: `src/components/auth/social-login-section.stories.tsx`
 
@@ -1033,7 +1051,7 @@ export function SocialLoginSection({ onGitHubClick, className }: SocialLoginSect
   return (
     <div className={cn("my-6 space-y-4", className)}>
       <Divider text="or" />
-      
+
       <Button
         variant="secondary"
         loading={isLoading}
@@ -1052,14 +1070,14 @@ export function SocialLoginSection({ onGitHubClick, className }: SocialLoginSect
 
 ```typescript
 // src/components/auth/social-login-section.stories.tsx
-import type { Meta, StoryObj } from "@storybook/nextjs-vite";
-import { userEvent, within } from "@storybook/test";
-import { SocialLoginSection } from "./social-login-section";
+import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+import { userEvent, within } from '@storybook/test';
+import { SocialLoginSection } from './social-login-section';
 
 const meta = {
-  title: "Auth/SocialLoginSection",
+  title: 'Auth/SocialLoginSection',
   component: SocialLoginSection,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
 } satisfies Meta<typeof SocialLoginSection>;
 
 export default meta;
@@ -1072,12 +1090,12 @@ export const Default: Story = {
 export const Loading: Story = {
   args: {
     onGitHubClick: async () => {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByRole("button", { name: /continue with github/i }));
+    await userEvent.click(canvas.getByRole('button', { name: /continue with github/i }));
   },
 };
 ```
@@ -1098,6 +1116,7 @@ git commit -m "feat: add SocialLoginSection organism with Storybook stories"
 ## Task 12: Create AuthTemplate
 
 **Files:**
+
 - Create: `src/components/auth/auth-template.tsx`
 - Create: `src/components/auth/auth-template.stories.tsx`
 
@@ -1211,6 +1230,7 @@ git commit -m "feat: add AuthTemplate with Storybook stories"
 ## Task 13: Refactor SignInPage
 
 **Files:**
+
 - Modify: `src/app/(auth)/sign-in/page.tsx`
 
 - [ ] **Step 1: Backup and read current page**
@@ -1268,6 +1288,7 @@ npm run dev
 
 Navigate to http://localhost:3000/sign-in
 Test:
+
 1. Page loads without errors
 2. Can enter email and password
 3. Submit button shows loading state
@@ -1286,6 +1307,7 @@ git commit -m "refactor: simplify SignInPage using AuthTemplate and SignInForm"
 ## Task 14: Refactor SignUpPage
 
 **Files:**
+
 - Modify: `src/app/(auth)/sign-up/page.tsx`
 
 - [ ] **Step 1: Backup and read current page**
@@ -1343,6 +1365,7 @@ npm run dev
 
 Navigate to http://localhost:3000/sign-up
 Test:
+
 1. Page loads without errors
 2. Can enter name, email, and password
 3. Password validation enforces 8+ characters
@@ -1361,6 +1384,7 @@ git commit -m "refactor: simplify SignUpPage using AuthTemplate and SignUpForm"
 ## Task 15: Cleanup and Final Verification
 
 **Files:**
+
 - Delete: `src/app/(auth)/sign-in/page.tsx.backup`
 - Delete: `src/app/(auth)/sign-up/page.tsx.backup`
 
@@ -1398,6 +1422,7 @@ Expected: All auth flows work correctly
 - [ ] **Step 5: Verify no visual regressions**
 
 Manually compare:
+
 - Sign-in page layout matches original
 - Sign-up page layout matches original
 - Colors, spacing, typography unchanged
@@ -1415,6 +1440,7 @@ git commit -m "chore: cleanup backup files and finalize auth refactor"
 ## Verification Checklist
 
 ### Functionality
+
 - [ ] Sign-in page works end-to-end
 - [ ] Sign-up page works end-to-end
 - [ ] GitHub OAuth works
@@ -1423,18 +1449,21 @@ git commit -m "chore: cleanup backup files and finalize auth refactor"
 - [ ] Loading states work
 
 ### Code Quality
+
 - [ ] All new components have TypeScript types
 - [ ] No TypeScript errors
 - [ ] ESLint passes
 - [ ] No console errors in browser
 
 ### Testing
+
 - [ ] Schema tests pass (Vitest)
 - [ ] All Storybook stories render
 - [ ] Storybook interaction tests pass
 - [ ] E2E tests pass
 
 ### Documentation
+
 - [ ] All components have Storybook stories
 - [ ] Spec document matches implementation
 - [ ] No TODO or TBD comments in code
@@ -1444,7 +1473,9 @@ git commit -m "chore: cleanup backup files and finalize auth refactor"
 ## Self-Review
 
 ### Spec Coverage Check
+
 ✅ All design spec requirements are covered:
+
 - Atomic Design hierarchy implemented
 - React Hook Form + Zod validation working
 - 14+ Storybook stories created
@@ -1452,34 +1483,39 @@ git commit -m "chore: cleanup backup files and finalize auth refactor"
 - Test strategy followed (Vitest for logic, Storybook for visual)
 
 ### Placeholder Scan
+
 ✅ No placeholders found:
+
 - No TBD or TODO comments
 - No "implement later" or "fill in details"
 - All code blocks are complete and runnable
 - All file paths are exact
 
 ### Type Consistency
+
 ✅ All types consistent:
+
 - `SignInData` and `SignUpData` from schemas
 - Props interfaces match usage
 - Component names consistent across files
 
 ### Gap Analysis
+
 ✅ No gaps identified - all spec requirements have implementing tasks
 
 ---
 
 ## Success Criteria Verification
 
-| Criteria | Status | Verification Method |
-|----------|--------|-------------------|
-| Sign-in/sign-up pages work identically | ✅ | E2E tests |
-| 14+ new components have Storybook stories | ✅ | Storybook build |
-| Form validation with instant feedback | ✅ | Storybook interaction tests |
-| Error messages display correctly | ✅ | Storybook stories |
-| Zod schemas have Vitest coverage | ✅ | `npm test` |
-| Pages reduced from ~130 to ~15 lines | ✅ | File comparison |
-| No visual regressions | ✅ | Manual QA |
+| Criteria                                  | Status | Verification Method         |
+| ----------------------------------------- | ------ | --------------------------- |
+| Sign-in/sign-up pages work identically    | ✅     | E2E tests                   |
+| 14+ new components have Storybook stories | ✅     | Storybook build             |
+| Form validation with instant feedback     | ✅     | Storybook interaction tests |
+| Error messages display correctly          | ✅     | Storybook stories           |
+| Zod schemas have Vitest coverage          | ✅     | `npm test`                  |
+| Pages reduced from ~130 to ~15 lines      | ✅     | File comparison             |
+| No visual regressions                     | ✅     | Manual QA                   |
 
 ---
 

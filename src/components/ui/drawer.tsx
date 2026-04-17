@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { IconButton } from "./icon-button";
+import { X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { IconButton } from './icon-button';
 
 export interface DrawerProps {
   open: boolean;
@@ -10,34 +10,27 @@ export interface DrawerProps {
   title?: React.ReactNode;
   children: React.ReactNode;
   footer?: React.ReactNode;
-  width?: "md" | "lg";
+  width?: 'md' | 'lg';
 }
 
 const widthClasses: Record<string, string> = {
-  md: "w-full md:w-[480px]",
-  lg: "w-full md:w-[680px]",
+  md: 'w-full md:w-[480px]',
+  lg: 'w-full md:w-[680px]',
 };
 
-export function Drawer({
-  open,
-  onClose,
-  title,
-  children,
-  footer,
-  width = "lg",
-}: DrawerProps) {
+export function Drawer({ open, onClose, title, children, footer, width = 'lg' }: DrawerProps) {
   if (!open) return null;
 
   return (
     <>
       <div
         className="fixed inset-0 bg-black/50 z-40"
-        style={{ backdropFilter: "blur(2px)" }}
+        style={{ backdropFilter: 'blur(2px)' }}
         onClick={onClose}
       />
       <div
         className={cn(
-          "fixed inset-y-0 right-0 flex flex-col z-50 bg-surface-container-low shadow-2xl",
+          'fixed inset-y-0 right-0 flex flex-col z-50 bg-surface-container-low shadow-2xl',
           widthClasses[width]
         )}
       >

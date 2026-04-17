@@ -1,17 +1,13 @@
-"use server";
+'use server';
 
-import { prisma } from "@/lib/prisma";
-import { AssetType } from "@/generated/prisma/enums";
-import { Prisma } from "@/generated/prisma/client";
-import { revalidatePath } from "next/cache";
-import { unlink } from "fs/promises";
-import { join } from "path";
-import { getUser } from "@/lib/session";
-import {
-  CreateAssetSchema,
-  UpdateAssetSchema,
-  formatZodError,
-} from "@/lib/validation";
+import { prisma } from '@/lib/prisma';
+import { AssetType } from '@/generated/prisma/enums';
+import { Prisma } from '@/generated/prisma/client';
+import { revalidatePath } from 'next/cache';
+import { unlink } from 'fs/promises';
+import { join } from 'path';
+import { getUser } from '@/lib/session';
+import { CreateAssetSchema, UpdateAssetSchema, formatZodError } from '@/lib/validation';
 
 export async function createAsset(data: {
   type: AssetType;
@@ -38,8 +34,8 @@ export async function createAsset(data: {
       userId: user.id,
     },
   });
-  revalidatePath("/dashboard");
-  revalidatePath("/assets");
+  revalidatePath('/dashboard');
+  revalidatePath('/assets');
   return asset;
 }
 
@@ -64,9 +60,9 @@ export async function updateAsset(
     where: { id, userId: user.id },
     data: validated.data,
   });
-  revalidatePath("/dashboard");
-  revalidatePath("/assets");
-  revalidatePath("/collections");
+  revalidatePath('/dashboard');
+  revalidatePath('/assets');
+  revalidatePath('/collections');
   return asset;
 }
 
@@ -75,27 +71,27 @@ export async function deleteAsset(id: string) {
   const asset = await prisma.asset.findUnique({
     where: { id, userId: user.id },
   });
-  if (!asset) throw new Error("Resource not found or access denied");
+  if (!asset) throw new Error('Resource not found or access denied');
 
   // Remove file from disk if it's an image or file type
   if (asset.filePath) {
-    const uploadDir = process.env.UPLOAD_DIR || "./uploads";
+    const uploadDir = process.env.UPLOAD_DIR || './uploads';
     const uploadsRoot = join(process.cwd(), uploadDir);
     const fullPath = join(uploadsRoot, asset.filePath);
     // Prevent path traversal: ensure the resolved path stays within uploads
-    if (fullPath.startsWith(uploadsRoot + "/") || fullPath.startsWith(uploadsRoot + "\\")) {
+    if (fullPath.startsWith(uploadsRoot + '/') || fullPath.startsWith(uploadsRoot + '\\')) {
       await unlink(fullPath).catch(() => {});
     }
   }
 
   await prisma.asset.delete({ where: { id, userId: user.id } });
-  revalidatePath("/dashboard");
-  revalidatePath("/assets");
+  revalidatePath('/dashboard');
+  revalidatePath('/assets');
 }
 
 export async function getAssets(filters?: {
   type?: AssetType;
-  sort?: "newest" | "oldest" | "az" | "za";
+  sort?: 'newest' | 'oldest' | 'az' | 'za';
   q?: string;
 }) {
   const user = await getUser();
@@ -131,13 +127,13 @@ export async function getAssets(filters?: {
   }
 
   const orderBy: Prisma.AssetOrderByWithRelationInput =
-    filters?.sort === "oldest"
-      ? { createdAt: "asc" }
-      : filters?.sort === "az"
-        ? { title: "asc" }
-        : filters?.sort === "za"
-          ? { title: "desc" }
-          : { updatedAt: "desc" };
+    filters?.sort === 'oldest'
+      ? { createdAt: 'asc' }
+      : filters?.sort === 'az'
+        ? { title: 'asc' }
+        : filters?.sort === 'za'
+          ? { title: 'desc' }
+          : { updatedAt: 'desc' };
 
   return prisma.asset.findMany({
     where: {
@@ -165,13 +161,13 @@ export async function togglePin(id: string) {
   const asset = await prisma.asset.findUnique({
     where: { id, userId: user.id },
   });
-  if (!asset) throw new Error("Resource not found or access denied");
+  if (!asset) throw new Error('Resource not found or access denied');
   await prisma.asset.update({
     where: { id, userId: user.id },
     data: { pinned: !asset.pinned },
   });
-  revalidatePath("/dashboard");
-  revalidatePath("/assets");
+  revalidatePath('/dashboard');
+  revalidatePath('/assets');
 }
 
 export async function getDashboardData() {
@@ -180,18 +176,18 @@ export async function getDashboardData() {
   const [pinnedAssets, pinnedCollections, recentAssets] = await Promise.all([
     prisma.asset.findMany({
       where: { userId: user.id, pinned: true },
-      orderBy: { updatedAt: "desc" },
+      orderBy: { updatedAt: 'desc' },
       take: 20,
     }),
     prisma.collection.findMany({
       where: { userId: user.id, pinned: true },
       include: { _count: { select: { assets: true } } },
-      orderBy: { updatedAt: "desc" },
+      orderBy: { updatedAt: 'desc' },
       take: 20,
     }),
     prisma.asset.findMany({
       where: { userId: user.id },
-      orderBy: { updatedAt: "desc" },
+      orderBy: { updatedAt: 'desc' },
       take: 10,
     }),
   ]);

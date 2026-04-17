@@ -24,7 +24,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cellar} -d ${POSTGRES_DB:-cellar}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-cellar} -d ${POSTGRES_DB:-cellar}']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -36,13 +36,13 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    restart: "no"
+    restart: 'no'
 
   app:
     image: ishakantony/cellar:latest
     restart: unless-stopped
     ports:
-      - "${PORT:-3000}:3000"
+      - '${PORT:-3000}:3000'
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-cellar}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-cellar}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Set BETTER_AUTH_SECRET in .env}

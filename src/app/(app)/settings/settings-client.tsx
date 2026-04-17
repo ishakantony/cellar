@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { authClient } from "@/lib/auth-client";
-import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { authClient } from '@/lib/auth-client';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function SettingsClient({
   user,
@@ -18,9 +18,9 @@ export function SettingsClient({
     setSaving(true);
     try {
       await authClient.updateUser({ name });
-      toast.success("Profile updated successfully");
+      toast.success('Profile updated successfully');
     } catch {
-      toast.error("Failed to update profile");
+      toast.error('Failed to update profile');
     } finally {
       setSaving(false);
     }
@@ -29,12 +29,8 @@ export function SettingsClient({
   return (
     <div className="max-w-lg space-y-8">
       <div>
-        <h2 className="text-xl font-bold tracking-tight text-slate-100">
-          Settings
-        </h2>
-        <p className="text-xs text-outline mt-1">
-          Manage your profile and account.
-        </p>
+        <h2 className="text-xl font-bold tracking-tight text-slate-100">Settings</h2>
+        <p className="text-xs text-outline mt-1">Manage your profile and account.</p>
       </div>
 
       <section>
@@ -43,19 +39,25 @@ export function SettingsClient({
         </h3>
         <form onSubmit={handleSave} className="space-y-4">
           <div>
-            <label htmlFor="name" className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+            <label
+              htmlFor="name"
+              className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant"
+            >
               Name
             </label>
             <input
               id="name"
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={e => setName(e.target.value)}
               className="w-full rounded-lg border-none bg-surface-container px-4 py-2.5 text-sm text-on-surface focus:ring-1 focus:ring-primary/50"
             />
           </div>
           <div>
-            <label htmlFor="email" className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+            <label
+              htmlFor="email"
+              className="mb-1.5 block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant"
+            >
               Email
             </label>
             <input

@@ -58,12 +58,10 @@ export const Examples: Story = {
           <div className="font-medium text-xs text-on-surface-variant">Small</div>
           <div className="font-medium text-xs text-on-surface-variant">Medium</div>
           <div className="font-medium text-xs text-on-surface-variant">Large</div>
-          {allButtonVariants.map((variant) => (
+          {allButtonVariants.map(variant => (
             <div key={variant} className="contents">
-              <div className="flex items-center text-sm capitalize text-on-surface">
-                {variant}
-              </div>
-              {allButtonSizes.map((size) => (
+              <div className="flex items-center text-sm capitalize text-on-surface">{variant}</div>
+              {allButtonSizes.map(size => (
                 <div key={`${variant}-${size}`} className="flex items-center">
                   <Button variant={variant} size={size}>
                     Button
@@ -79,7 +77,7 @@ export const Examples: Story = {
       <div className="flex flex-col gap-4">
         <h3 className="text-sm font-semibold text-on-surface">Disabled States</h3>
         <div className="flex flex-wrap gap-3">
-          {allButtonVariants.map((variant) => (
+          {allButtonVariants.map(variant => (
             <Button key={`${variant}-disabled`} variant={variant} disabled>
               {variant}
             </Button>
@@ -91,7 +89,7 @@ export const Examples: Story = {
       <div className="flex flex-col gap-4">
         <h3 className="text-sm font-semibold text-on-surface">Loading States</h3>
         <div className="flex flex-wrap gap-3">
-          {allButtonVariants.map((variant) => (
+          {allButtonVariants.map(variant => (
             <Button key={`${variant}-loading`} variant={variant} loading>
               {variant}
             </Button>
@@ -112,7 +110,7 @@ export const Examples: Story = {
           <Button variant="outline">Archive</Button>
         </div>
         <div className="flex flex-wrap gap-3">
-          {allButtonVariants.map((variant) => (
+          {allButtonVariants.map(variant => (
             <Button key={`${variant}-row`} variant={variant} size="sm">
               {variant}
             </Button>
@@ -134,7 +132,8 @@ export const Basic: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Interactive playground. Use the controls panel to experiment with different prop combinations.',
+        story:
+          'Interactive playground. Use the controls panel to experiment with different prop combinations.',
       },
     },
   },

@@ -16,45 +16,45 @@ A multi-user developer vault for storing snippets, notes, prompts, images, files
 
 ### Asset (single table, type discriminator)
 
-| Field | Type | Notes |
-|-------|------|-------|
-| id | String (cuid) | PK |
-| userId | String | FK → User.id |
-| type | Enum | SNIPPET, PROMPT, NOTE, LINK, IMAGE, FILE |
-| title | String | Required |
-| description | String? | Optional |
-| pinned | Boolean | Default false |
-| content | String? | Text body for SNIPPET, PROMPT, NOTE |
-| language | String? | Programming language for SNIPPET |
-| url | String? | URL for LINK |
-| filePath | String? | Disk path for IMAGE, FILE |
-| fileName | String? | Original filename for IMAGE, FILE |
-| mimeType | String? | MIME type for IMAGE, FILE |
-| fileSize | Int? | Bytes for IMAGE, FILE |
-| searchVector | tsvector | Generated from title (A) + content (B) + description (C) |
-| createdAt | DateTime | Auto |
-| updatedAt | DateTime | Auto |
+| Field        | Type          | Notes                                                    |
+| ------------ | ------------- | -------------------------------------------------------- |
+| id           | String (cuid) | PK                                                       |
+| userId       | String        | FK → User.id                                             |
+| type         | Enum          | SNIPPET, PROMPT, NOTE, LINK, IMAGE, FILE                 |
+| title        | String        | Required                                                 |
+| description  | String?       | Optional                                                 |
+| pinned       | Boolean       | Default false                                            |
+| content      | String?       | Text body for SNIPPET, PROMPT, NOTE                      |
+| language     | String?       | Programming language for SNIPPET                         |
+| url          | String?       | URL for LINK                                             |
+| filePath     | String?       | Disk path for IMAGE, FILE                                |
+| fileName     | String?       | Original filename for IMAGE, FILE                        |
+| mimeType     | String?       | MIME type for IMAGE, FILE                                |
+| fileSize     | Int?          | Bytes for IMAGE, FILE                                    |
+| searchVector | tsvector      | Generated from title (A) + content (B) + description (C) |
+| createdAt    | DateTime      | Auto                                                     |
+| updatedAt    | DateTime      | Auto                                                     |
 
 GIN index on `searchVector`. All queries scoped by `userId`.
 
 ### Collection
 
-| Field | Type | Notes |
-|-------|------|-------|
-| id | String (cuid) | PK |
-| userId | String | FK → User.id |
-| name | String | Required |
-| description | String? | Optional |
-| color | String? | Hex color for UI icon tint |
-| pinned | Boolean | Default false |
-| createdAt | DateTime | Auto |
-| updatedAt | DateTime | Auto |
+| Field       | Type          | Notes                      |
+| ----------- | ------------- | -------------------------- |
+| id          | String (cuid) | PK                         |
+| userId      | String        | FK → User.id               |
+| name        | String        | Required                   |
+| description | String?       | Optional                   |
+| color       | String?       | Hex color for UI icon tint |
+| pinned      | Boolean       | Default false              |
+| createdAt   | DateTime      | Auto                       |
+| updatedAt   | DateTime      | Auto                       |
 
 ### AssetCollection (join table)
 
-| Field | Type | Notes |
-|-------|------|-------|
-| assetId | String | FK → Asset.id |
+| Field        | Type   | Notes              |
+| ------------ | ------ | ------------------ |
+| assetId      | String | FK → Asset.id      |
 | collectionId | String | FK → Collection.id |
 
 Composite PK on (assetId, collectionId). Many-to-many: an asset can belong to multiple collections.
@@ -122,15 +122,15 @@ Slide-out panel from the right, 680px wide (full on mobile). Not a separate rout
 
 ## Components
 
-| Component | Purpose |
-|-----------|---------|
-| `sidebar.tsx` | Navigation + collections list in sidebar |
-| `header.tsx` | Search bar + "New Collection" + "Add Item" buttons |
-| `asset-drawer.tsx` | Slide-out view/edit panel |
-| `monaco-editor.tsx` | Lazy-loaded Monaco wrapper via next/dynamic |
-| `asset-card.tsx` | Asset list row (icon, title, subtitle, hover actions) |
-| `collection-card.tsx` | Collection grid card (icon, name, count) |
-| `quick-actions.tsx` | 6 create-type buttons on dashboard |
+| Component             | Purpose                                               |
+| --------------------- | ----------------------------------------------------- |
+| `sidebar.tsx`         | Navigation + collections list in sidebar              |
+| `header.tsx`          | Search bar + "New Collection" + "Add Item" buttons    |
+| `asset-drawer.tsx`    | Slide-out view/edit panel                             |
+| `monaco-editor.tsx`   | Lazy-loaded Monaco wrapper via next/dynamic           |
+| `asset-card.tsx`      | Asset list row (icon, title, subtitle, hover actions) |
+| `collection-card.tsx` | Collection grid card (icon, name, count)              |
+| `quick-actions.tsx`   | 6 create-type buttons on dashboard                    |
 
 ## Server Actions (`src/app/actions/`)
 

@@ -9,7 +9,7 @@ export async function cleanupTestUser(email: string): Promise<void> {
   const { config } = await import('dotenv');
   const { default: path } = await import('path');
   config({ path: path.resolve(process.cwd(), '.env.test'), override: true });
-  
+
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) {
     console.log(`Note: DATABASE_URL not set, skipping cleanup for ${email}`);
@@ -17,7 +17,7 @@ export async function cleanupTestUser(email: string): Promise<void> {
   }
 
   const client = new Client({ connectionString: databaseUrl });
-  
+
   try {
     await client.connect();
     // Delete user by email (cascade will handle related records)

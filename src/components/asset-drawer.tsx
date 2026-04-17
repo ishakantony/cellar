@@ -1,17 +1,7 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import {
-  X,
-  Pencil,
-  Trash2,
-  Save,
-  Copy,
-  ExternalLink,
-  Eye,
-  Code,
-  Download,
-} from "lucide-react";
+import { useState, useEffect } from 'react';
+import { X, Pencil, Trash2, Save, Copy, ExternalLink, Eye, Code, Download } from 'lucide-react';
 import {
   Terminal,
   Link as LinkIcon,
@@ -19,12 +9,12 @@ import {
   Image as ImageIcon,
   FileText,
   Braces,
-} from "lucide-react";
-import { AssetType } from "@/generated/prisma/enums";
-import { MonacoEditor } from "./monaco-editor";
-import { MarkdownPreview } from "./markdown-preview";
-import { FileDropzone } from "./file-dropzone";
-import { createAsset, updateAsset } from "@/app/actions/assets";
+} from 'lucide-react';
+import { AssetType } from '@/generated/prisma/enums';
+import { MonacoEditor } from './monaco-editor';
+import { MarkdownPreview } from './markdown-preview';
+import { FileDropzone } from './file-dropzone';
+import { createAsset, updateAsset } from '@/app/actions/assets';
 
 const TYPE_CONFIG: Record<
   AssetType,
@@ -37,39 +27,39 @@ const TYPE_CONFIG: Record<
 > = {
   SNIPPET: {
     icon: Braces,
-    badge: "text-primary bg-primary/10",
-    iconWrap: "bg-primary/10 text-primary",
-    defaultLanguage: "javascript",
+    badge: 'text-primary bg-primary/10',
+    iconWrap: 'bg-primary/10 text-primary',
+    defaultLanguage: 'javascript',
   },
   PROMPT: {
     icon: Terminal,
-    badge: "text-tertiary bg-tertiary/10",
-    iconWrap: "bg-tertiary-container/20 text-tertiary",
-    defaultLanguage: "markdown",
+    badge: 'text-tertiary bg-tertiary/10',
+    iconWrap: 'bg-tertiary-container/20 text-tertiary',
+    defaultLanguage: 'markdown',
   },
   NOTE: {
     icon: StickyNote,
-    badge: "text-amber-400 bg-amber-500/10",
-    iconWrap: "bg-amber-500/10 text-amber-400",
-    defaultLanguage: "markdown",
+    badge: 'text-amber-400 bg-amber-500/10',
+    iconWrap: 'bg-amber-500/10 text-amber-400',
+    defaultLanguage: 'markdown',
   },
   LINK: {
     icon: LinkIcon,
-    badge: "text-cyan-400 bg-cyan-500/10",
-    iconWrap: "bg-cyan-500/10 text-cyan-400",
-    defaultLanguage: "plaintext",
+    badge: 'text-cyan-400 bg-cyan-500/10',
+    iconWrap: 'bg-cyan-500/10 text-cyan-400',
+    defaultLanguage: 'plaintext',
   },
   IMAGE: {
     icon: ImageIcon,
-    badge: "text-rose-400 bg-rose-500/10",
-    iconWrap: "bg-rose-500/10 text-rose-400",
-    defaultLanguage: "plaintext",
+    badge: 'text-rose-400 bg-rose-500/10',
+    iconWrap: 'bg-rose-500/10 text-rose-400',
+    defaultLanguage: 'plaintext',
   },
   FILE: {
     icon: FileText,
-    badge: "text-violet-400 bg-violet-500/10",
-    iconWrap: "bg-violet-500/10 text-violet-400",
-    defaultLanguage: "plaintext",
+    badge: 'text-violet-400 bg-violet-500/10',
+    iconWrap: 'bg-violet-500/10 text-violet-400',
+    defaultLanguage: 'plaintext',
   },
 };
 
@@ -100,19 +90,17 @@ export function AssetDrawer({
   open: boolean;
   onClose: () => void;
   asset?: Asset | null;
-  mode: "view" | "edit" | "create";
+  mode: 'view' | 'edit' | 'create';
   defaultType?: AssetType;
   onSaved?: () => void;
   onDelete?: () => void;
 }) {
-  const [editing, setEditing] = useState(mode === "edit" || mode === "create");
-  const [title, setTitle] = useState(asset?.title ?? "");
-  const [content, setContent] = useState(asset?.content ?? "");
-  const [language, setLanguage] = useState(asset?.language ?? "javascript");
-  const [url, setUrl] = useState(asset?.url ?? "");
-  const [type, setType] = useState<AssetType>(
-    asset?.type ?? defaultType ?? "SNIPPET"
-  );
+  const [editing, setEditing] = useState(mode === 'edit' || mode === 'create');
+  const [title, setTitle] = useState(asset?.title ?? '');
+  const [content, setContent] = useState(asset?.content ?? '');
+  const [language, setLanguage] = useState(asset?.language ?? 'javascript');
+  const [url, setUrl] = useState(asset?.url ?? '');
+  const [type, setType] = useState<AssetType>(asset?.type ?? defaultType ?? 'SNIPPET');
   const [showPreview, setShowPreview] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -128,19 +116,19 @@ export function AssetDrawer({
   useEffect(() => {
     if (asset) {
       setTitle(asset.title);
-      setContent(asset.content ?? "");
-      setLanguage(asset.language ?? "javascript");
-      setUrl(asset.url ?? "");
+      setContent(asset.content ?? '');
+      setLanguage(asset.language ?? 'javascript');
+      setUrl(asset.url ?? '');
       setType(asset.type);
     } else {
-      setTitle("");
-      setContent("");
-      setLanguage("javascript");
-      setUrl("");
-      setType(defaultType ?? "SNIPPET");
+      setTitle('');
+      setContent('');
+      setLanguage('javascript');
+      setUrl('');
+      setType(defaultType ?? 'SNIPPET');
       setFileData(null);
     }
-    setEditing(mode === "edit" || mode === "create");
+    setEditing(mode === 'edit' || mode === 'create');
     setShowPreview(false);
   }, [asset, mode, defaultType]);
 
@@ -148,15 +136,13 @@ export function AssetDrawer({
     setSaving(true);
     setSaveError(null);
     try {
-      if (mode === "create") {
+      if (mode === 'create') {
         await createAsset({
           type,
           title,
-          content: ["SNIPPET", "PROMPT", "NOTE"].includes(type)
-            ? content
-            : undefined,
-          language: type === "SNIPPET" ? language : undefined,
-          url: type === "LINK" ? url : undefined,
+          content: ['SNIPPET', 'PROMPT', 'NOTE'].includes(type) ? content : undefined,
+          language: type === 'SNIPPET' ? language : undefined,
+          url: type === 'LINK' ? url : undefined,
           filePath: fileData?.filePath,
           fileName: fileData?.fileName,
           mimeType: fileData?.mimeType,
@@ -165,31 +151,29 @@ export function AssetDrawer({
       } else if (asset) {
         await updateAsset(asset.id, {
           title,
-          content: ["SNIPPET", "PROMPT", "NOTE"].includes(type)
-            ? content
-            : undefined,
-          language: type === "SNIPPET" ? language : undefined,
-          url: type === "LINK" ? url : undefined,
+          content: ['SNIPPET', 'PROMPT', 'NOTE'].includes(type) ? content : undefined,
+          language: type === 'SNIPPET' ? language : undefined,
+          url: type === 'LINK' ? url : undefined,
         });
       }
       setEditing(false);
       onSaved?.();
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Failed to save");
+      setSaveError(err instanceof Error ? err.message : 'Failed to save');
     } finally {
       setSaving(false);
     }
   }
 
   function handleCancel() {
-    if (mode === "create") {
+    if (mode === 'create') {
       onClose();
     } else {
       setEditing(false);
-      setTitle(asset?.title ?? "");
-      setContent(asset?.content ?? "");
-      setLanguage(asset?.language ?? "javascript");
-      setUrl(asset?.url ?? "");
+      setTitle(asset?.title ?? '');
+      setContent(asset?.content ?? '');
+      setLanguage(asset?.language ?? 'javascript');
+      setUrl(asset?.url ?? '');
     }
   }
 
@@ -197,19 +181,18 @@ export function AssetDrawer({
 
   const config = TYPE_CONFIG[type];
   const Icon = config.icon;
-  const isTextType = ["SNIPPET", "PROMPT", "NOTE"].includes(type);
-  const isFileType = ["IMAGE", "FILE"].includes(type);
-  const isLink = type === "LINK";
-  const isMarkdown = type === "PROMPT" || type === "NOTE";
-  const editorLanguage =
-    type === "SNIPPET" ? language : isMarkdown ? "markdown" : "plaintext";
+  const isTextType = ['SNIPPET', 'PROMPT', 'NOTE'].includes(type);
+  const isFileType = ['IMAGE', 'FILE'].includes(type);
+  const isLink = type === 'LINK';
+  const isMarkdown = type === 'PROMPT' || type === 'NOTE';
+  const editorLanguage = type === 'SNIPPET' ? language : isMarkdown ? 'markdown' : 'plaintext';
 
   return (
     <>
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/50 z-40"
-        style={{ backdropFilter: "blur(2px)" }}
+        style={{ backdropFilter: 'blur(2px)' }}
         onClick={onClose}
       />
 
@@ -227,7 +210,7 @@ export function AssetDrawer({
               {editing ? (
                 <input
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={e => setTitle(e.target.value)}
                   className="w-full bg-transparent text-base font-bold text-slate-100 border-none focus:ring-0 focus:outline-none p-0 placeholder:text-outline/50"
                   placeholder="Asset title..."
                   autoFocus
@@ -238,10 +221,10 @@ export function AssetDrawer({
                 </h2>
               )}
               <div className="flex items-center gap-2 mt-2 flex-wrap">
-                {mode === "create" ? (
+                {mode === 'create' ? (
                   <select
                     value={type}
-                    onChange={(e) => setType(e.target.value as AssetType)}
+                    onChange={e => setType(e.target.value as AssetType)}
                     className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-surface-container border-none text-on-surface-variant focus:ring-1 focus:ring-primary/50"
                   >
                     <option value="SNIPPET">Snippet</option>
@@ -258,15 +241,15 @@ export function AssetDrawer({
                     {type}
                   </span>
                 )}
-                {type === "SNIPPET" && editing && (
+                {type === 'SNIPPET' && editing && (
                   <input
                     value={language}
-                    onChange={(e) => setLanguage(e.target.value)}
+                    onChange={e => setLanguage(e.target.value)}
                     className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-surface-container border border-white/5 text-outline w-24 focus:ring-1 focus:ring-primary/50"
                     placeholder="language"
                   />
                 )}
-                {type === "SNIPPET" && !editing && asset?.language && (
+                {type === 'SNIPPET' && !editing && asset?.language && (
                   <span className="text-[10px] font-bold uppercase tracking-widest text-outline bg-surface-container px-2 py-0.5 rounded border border-white/5">
                     {asset.language}
                   </span>
@@ -275,7 +258,7 @@ export function AssetDrawer({
             </div>
           </div>
           <div className="flex items-center gap-1 ml-4 shrink-0">
-            {mode !== "create" && !editing && (
+            {mode !== 'create' && !editing && (
               <button
                 onClick={() => setEditing(true)}
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:text-slate-100 hover:bg-surface-bright rounded transition-all border border-transparent hover:border-white/10"
@@ -284,7 +267,7 @@ export function AssetDrawer({
                 Edit
               </button>
             )}
-            {mode !== "create" && onDelete && (
+            {mode !== 'create' && onDelete && (
               <button
                 onClick={onDelete}
                 className="p-1.5 text-outline hover:text-error hover:bg-error/10 rounded transition-all"
@@ -312,8 +295,8 @@ export function AssetDrawer({
                     onClick={() => setShowPreview(false)}
                     className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-all ${
                       !showPreview
-                        ? "text-primary bg-primary/10"
-                        : "text-outline hover:text-on-surface-variant"
+                        ? 'text-primary bg-primary/10'
+                        : 'text-outline hover:text-on-surface-variant'
                     }`}
                   >
                     <Code className="h-3 w-3" />
@@ -323,8 +306,8 @@ export function AssetDrawer({
                     onClick={() => setShowPreview(true)}
                     className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-all ${
                       showPreview
-                        ? "text-primary bg-primary/10"
-                        : "text-outline hover:text-on-surface-variant"
+                        ? 'text-primary bg-primary/10'
+                        : 'text-outline hover:text-on-surface-variant'
                     }`}
                   >
                     <Eye className="h-3 w-3" />
@@ -344,11 +327,9 @@ export function AssetDrawer({
                     <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]/70" />
                   </div>
                   <span className="flex-1 text-center text-[11px] text-outline font-mono">
-                    {title || "untitled"}
+                    {title || 'untitled'}
                   </span>
-                  <span className="text-[10px] text-outline/60 font-mono">
-                    {editorLanguage}
-                  </span>
+                  <span className="text-[10px] text-outline/60 font-mono">{editorLanguage}</span>
                 </div>
                 <div className="flex-1 overflow-hidden rounded-b-xl bg-surface-container-lowest">
                   {showPreview && isMarkdown ? (
@@ -378,7 +359,7 @@ export function AssetDrawer({
                 {editing ? (
                   <input
                     value={url}
-                    onChange={(e) => setUrl(e.target.value)}
+                    onChange={e => setUrl(e.target.value)}
                     className="w-full bg-surface-container ghost-border rounded-lg px-4 py-3 text-sm font-mono text-slate-200 focus:ring-1 focus:ring-primary/50 border-none"
                     placeholder="https://example.com"
                   />
@@ -416,14 +397,14 @@ export function AssetDrawer({
 
           {isFileType && (
             <div className="flex-1 flex flex-col items-center justify-center p-10 gap-6">
-              {mode === "create" || (!asset?.filePath && editing) ? (
+              {mode === 'create' || (!asset?.filePath && editing) ? (
                 <FileDropzone
                   onUpload={setFileData}
-                  accept={type === "IMAGE" ? "image/*" : undefined}
+                  accept={type === 'IMAGE' ? 'image/*' : undefined}
                 />
               ) : asset?.filePath ? (
                 <>
-                  {type === "IMAGE" && asset.mimeType?.startsWith("image/") ? (
+                  {type === 'IMAGE' && asset.mimeType?.startsWith('image/') ? (
                     // eslint-disable-next-line @next/next/no-img-element -- Dynamic image from internal API
                     <img
                       src={`/api/files/${asset.filePath}`}
@@ -436,13 +417,10 @@ export function AssetDrawer({
                     </div>
                   )}
                   <div className="text-center space-y-1">
-                    <p className="text-sm font-semibold text-slate-200">
-                      {asset.fileName}
-                    </p>
+                    <p className="text-sm font-semibold text-slate-200">{asset.fileName}</p>
                     <p className="text-[10px] text-outline">
                       {asset.mimeType}
-                      {asset.fileSize &&
-                        ` • ${(asset.fileSize / 1024).toFixed(1)} KB`}
+                      {asset.fileSize && ` • ${(asset.fileSize / 1024).toFixed(1)} KB`}
                     </p>
                   </div>
                   <a
@@ -462,11 +440,7 @@ export function AssetDrawer({
         {/* Edit/Create footer */}
         {editing && (
           <div className="flex items-center justify-between px-6 py-4 border-t border-white/5 shrink-0 gap-2">
-            {saveError ? (
-              <p className="text-xs text-error">{saveError}</p>
-            ) : (
-              <div />
-            )}
+            {saveError ? <p className="text-xs text-error">{saveError}</p> : <div />}
             <div className="flex items-center gap-2">
               <button
                 onClick={handleCancel}
@@ -480,7 +454,7 @@ export function AssetDrawer({
                 className="flex items-center gap-1.5 px-4 py-1.5 bg-primary-container/30 hover:bg-primary-container/50 border border-primary/30 hover:border-primary/50 rounded text-xs font-bold uppercase tracking-widest text-primary transition-all disabled:opacity-50"
               >
                 <Save className="h-3.5 w-3.5" />
-                {saving ? "Saving..." : "Save"}
+                {saving ? 'Saving...' : 'Save'}
               </button>
             </div>
           </div>

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, RefObject } from "react";
+import { useEffect, RefObject } from 'react';
 
 export function useClickOutside(
   ref: RefObject<HTMLElement | null>,
@@ -16,7 +16,7 @@ export function useClickOutside(
       }
     }
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [ref, onClickOutside, enabled]);
 }

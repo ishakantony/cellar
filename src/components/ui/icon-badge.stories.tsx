@@ -1,5 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { Code, FileText, Image as ImageIcon, Link as LinkIcon, Lightbulb, Folder } from 'lucide-react';
+import {
+  Code,
+  FileText,
+  Image as ImageIcon,
+  Link as LinkIcon,
+  Lightbulb,
+  Folder,
+} from 'lucide-react';
 import { IconBadge } from './icon-badge';
 
 const meta: Meta<typeof IconBadge> = {
@@ -8,9 +15,9 @@ const meta: Meta<typeof IconBadge> = {
   tags: ['autodocs'],
   parameters: { layout: 'centered' },
   argTypes: {
-    variant: { 
-      control: 'select', 
-      options: ['snippet', 'prompt', 'note', 'link', 'image', 'file', 'collection'] 
+    variant: {
+      control: 'select',
+      options: ['snippet', 'prompt', 'note', 'link', 'image', 'file', 'collection'],
     },
     size: { control: 'select', options: ['sm', 'md', 'lg'] },
     color: { control: 'text' },

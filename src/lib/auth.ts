@@ -1,19 +1,19 @@
-import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import { prisma } from "./prisma";
+import { betterAuth } from 'better-auth';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { prisma } from './prisma';
 
 // Security: Validate auth secret on startup
 if (!process.env.BETTER_AUTH_SECRET || process.env.BETTER_AUTH_SECRET.length < 32) {
   throw new Error(
     'FATAL: BETTER_AUTH_SECRET must be set and at least 32 characters. ' +
-    'Generate with: openssl rand -base64 32'
+      'Generate with: openssl rand -base64 32'
   );
 }
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   database: prismaAdapter(prisma, {
-    provider: "postgresql",
+    provider: 'postgresql',
   }),
   emailAndPassword: {
     enabled: true,

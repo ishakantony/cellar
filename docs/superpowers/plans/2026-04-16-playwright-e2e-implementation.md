@@ -12,21 +12,22 @@
 
 ## File Structure Overview
 
-| File | Purpose |
-|------|---------|
-| `.env.test` | Test environment variables |
-| `playwright.config.ts` | Playwright configuration with setup project and browsers |
-| `scripts/setup-test-db.ts` | Creates test database and runs migrations |
-| `e2e/auth.setup.ts` | Setup project - authenticates and saves session state |
-| `e2e/specs/auth.spec.ts` | Sign-up and sign-in flow tests |
-| `e2e/specs/protected-routes.spec.ts` | Protected route redirect and access tests |
-| `e2e/utils/db.ts` | Database cleanup utilities |
+| File                                 | Purpose                                                  |
+| ------------------------------------ | -------------------------------------------------------- |
+| `.env.test`                          | Test environment variables                               |
+| `playwright.config.ts`               | Playwright configuration with setup project and browsers |
+| `scripts/setup-test-db.ts`           | Creates test database and runs migrations                |
+| `e2e/auth.setup.ts`                  | Setup project - authenticates and saves session state    |
+| `e2e/specs/auth.spec.ts`             | Sign-up and sign-in flow tests                           |
+| `e2e/specs/protected-routes.spec.ts` | Protected route redirect and access tests                |
+| `e2e/utils/db.ts`                    | Database cleanup utilities                               |
 
 ---
 
 ## Task 1: Install Playwright Dependency
 
 **Files:**
+
 - Modify: `package.json` (add devDependency)
 
 - [ ] **Step 1: Install @playwright/test**
@@ -47,6 +48,7 @@ git commit -m "chore: add @playwright/test dependency"
 ## Task 2: Create Test Environment File
 
 **Files:**
+
 - Create: `.env.test`
 
 - [ ] **Step 1: Create .env.test with test database configuration**
@@ -87,6 +89,7 @@ git commit -m "chore: add test environment configuration"
 ## Task 3: Create Test Database Setup Script
 
 **Files:**
+
 - Create: `scripts/setup-test-db.ts`
 - Create: `e2e/utils/` (directory)
 
@@ -109,7 +112,7 @@ config({ path: path.resolve(process.cwd(), '.env.test'), override: true });
 
 async function setupTestDatabase() {
   const databaseUrl = process.env.DATABASE_URL;
-  
+
   if (!databaseUrl) {
     console.error('Error: DATABASE_URL environment variable is required');
     console.error('Make sure .env.test exists and contains DATABASE_URL');
@@ -120,21 +123,18 @@ async function setupTestDatabase() {
   const url = new URL(databaseUrl);
   const dbName = url.pathname.slice(1); // Remove leading slash
   const baseUrl = `${url.protocol}//${url.username}:${url.password}@${url.host}`;
-  
+
   console.log(`Setting up test database: ${dbName}`);
   console.log(`Base connection: ${baseUrl}`);
 
   const client = new Client({ connectionString: baseUrl });
-  
+
   try {
     await client.connect();
-    
+
     // Check if test database exists
-    const result = await client.query(
-      'SELECT 1 FROM pg_database WHERE datname = $1',
-      [dbName]
-    );
-    
+    const result = await client.query('SELECT 1 FROM pg_database WHERE datname = $1', [dbName]);
+
     if (result.rowCount === 0) {
       console.log(`Creating database: ${dbName}...`);
       // PostgreSQL doesn't allow parameterized queries for CREATE DATABASE
@@ -143,16 +143,16 @@ async function setupTestDatabase() {
     } else {
       console.log(`Database ${dbName} already exists`);
     }
-    
+
     await client.end();
-    
+
     // Run Prisma migrations on test database
     console.log('Running Prisma migrations...');
     execSync('npx prisma migrate deploy', {
       env: process.env,
       stdio: 'inherit',
     });
-    
+
     console.log('✅ Test database setup complete!');
   } catch (error) {
     console.error('❌ Failed to setup test database:', error);
@@ -175,6 +175,7 @@ git commit -m "chore: add test database setup script"
 ## Task 4: Create Database Cleanup Utilities
 
 **Files:**
+
 - Create: `e2e/utils/db.ts`
 
 - [ ] **Step 1: Create database cleanup utilities**
@@ -227,6 +228,7 @@ git commit -m "chore: add e2e database utilities"
 ## Task 5: Create Playwright Configuration
 
 **Files:**
+
 - Create: `playwright.config.ts`
 
 - [ ] **Step 1: Create playwright.config.ts**
@@ -244,30 +246,30 @@ process.env.NODE_ENV = 'test';
  */
 export default defineConfig({
   testDir: './e2e',
-  
+
   /* Run tests in files in parallel */
   fullyParallel: true,
-  
+
   /* Fail the build on CI if you accidentally left test.only in the source code */
   forbidOnly: !!process.env.CI,
-  
+
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  
+
   /* Opt out of parallel tests on CI */
   workers: process.env.CI ? 1 : undefined,
-  
+
   /* Reporter to use */
   reporter: 'html',
-  
+
   /* Shared settings for all the projects below */
   use: {
     /* Base URL to use in actions like `await page.goto('/')` */
     baseURL: 'http://localhost:3000',
-    
+
     /* Collect trace when retrying the failed test */
     trace: 'on-first-retry',
-    
+
     /* Screenshot on failure */
     screenshot: 'only-on-failure',
   },
@@ -275,15 +277,15 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     // Setup project - runs first to authenticate
-    { 
-      name: 'setup', 
+    {
+      name: 'setup',
       testMatch: /.*\.setup\.ts/,
     },
-    
+
     // Main test projects - reuse auth state from setup
     {
       name: 'chromium',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         storageState: 'playwright/.auth/user.json',
       },
@@ -291,7 +293,7 @@ export default defineConfig({
     },
     {
       name: 'firefox',
-      use: { 
+      use: {
         ...devices['Desktop Firefox'],
         storageState: 'playwright/.auth/user.json',
       },
@@ -299,7 +301,7 @@ export default defineConfig({
     },
     {
       name: 'webkit',
-      use: { 
+      use: {
         ...devices['Desktop Safari'],
         storageState: 'playwright/.auth/user.json',
       },
@@ -341,6 +343,7 @@ git commit -m "chore: add Playwright configuration with setup project"
 ## Task 6: Create Authentication Setup Project
 
 **Files:**
+
 - Create: `e2e/auth.setup.ts`
 - Create: `e2e/specs/` (directory)
 
@@ -369,27 +372,27 @@ setup('authenticate', async ({ page }) => {
 
   // Navigate to sign-up page
   await page.goto('/sign-up');
-  
+
   // Verify we're on the sign-up page
   await expect(page.getByRole('heading', { name: /Cellar/i })).toBeVisible();
-  
+
   // Fill out the sign-up form
   await page.getByLabel(/Name/i).fill(name);
   await page.getByLabel(/Email/i).fill(testEmail);
   await page.getByLabel(/Password/i).fill(password);
-  
+
   // Submit the form
   await page.getByRole('button', { name: /Create Account/i }).click();
-  
+
   // Wait for successful redirect to dashboard
   await page.waitForURL('/dashboard');
   await expect(page.getByRole('heading', { name: /Dashboard/i })).toBeVisible();
-  
+
   // Save the authentication state
   await page.context().storageState({ path: authFile });
-  
+
   console.log(`✅ Authenticated as ${testEmail}`);
-  
+
   // Cleanup: Remove the test user
   await cleanupTestUser(testEmail);
 });
@@ -407,6 +410,7 @@ git commit -m "test(e2e): add authentication setup project"
 ## Task 7: Create Auth Flow Tests
 
 **Files:**
+
 - Create: `e2e/specs/auth.spec.ts`
 
 - [ ] **Step 1: Create sign-up and sign-in tests**
@@ -419,7 +423,7 @@ import { cleanupTestUser, generateTestEmail, TEST_USER_CREDENTIALS } from '../ut
 test.describe('Authentication Flows', () => {
   // Note: Tests in this file don't use the shared auth state
   // They test the actual UI flows end-to-end
-  
+
   test('user can sign up with email and password', async ({ page }) => {
     const testEmail = generateTestEmail('signup');
     const { name, password } = TEST_USER_CREDENTIALS;
@@ -428,23 +432,23 @@ test.describe('Authentication Flows', () => {
     await cleanupTestUser(testEmail);
 
     await page.goto('/sign-up');
-    
+
     // Verify sign-up page loaded
     await expect(page.getByRole('heading', { name: /Cellar/i })).toBeVisible();
     await expect(page.getByText(/Create your vault/i)).toBeVisible();
-    
+
     // Fill the sign-up form
     await page.getByLabel(/Name/i).fill(name);
     await page.getByLabel(/Email/i).fill(testEmail);
     await page.getByLabel(/Password/i).fill(password);
-    
+
     // Submit the form
     await page.getByRole('button', { name: /Create Account/i }).click();
-    
+
     // Verify redirect to dashboard
     await expect(page).toHaveURL('/dashboard');
     await expect(page.getByRole('heading', { name: /Dashboard/i })).toBeVisible();
-    
+
     // Cleanup after test
     await cleanupTestUser(testEmail);
   });
@@ -462,46 +466,46 @@ test.describe('Authentication Flows', () => {
     await page.getByLabel(/Email/i).fill(testEmail);
     await page.getByLabel(/Password/i).fill(password);
     await page.getByRole('button', { name: /Create Account/i }).click();
-    
+
     // Wait for redirect to dashboard
     await page.waitForURL('/dashboard');
-    
+
     // Sign out by navigating to sign-out API endpoint
     await page.goto('/api/auth/signout');
     await page.waitForURL('/sign-in');
-    
+
     // Now test sign in
     await page.goto('/sign-in');
-    
+
     // Verify sign-in page loaded
     await expect(page.getByRole('heading', { name: /Cellar/i })).toBeVisible();
     await expect(page.getByText(/Sign in to your vault/i)).toBeVisible();
-    
+
     // Fill the sign-in form
     await page.getByLabel(/Email/i).fill(testEmail);
     await page.getByLabel(/Password/i).fill(password);
-    
+
     // Submit the form
     await page.getByRole('button', { name: /Sign In/i }).click();
-    
+
     // Verify redirect to dashboard
     await expect(page).toHaveURL('/dashboard');
     await expect(page.getByRole('heading', { name: /Dashboard/i })).toBeVisible();
-    
+
     // Cleanup after test
     await cleanupTestUser(testEmail);
   });
 
   test('sign in shows error for invalid credentials', async ({ page }) => {
     await page.goto('/sign-in');
-    
+
     // Fill with non-existent credentials
     await page.getByLabel(/Email/i).fill('nonexistent@example.com');
     await page.getByLabel(/Password/i).fill('WrongPassword123!');
-    
+
     // Submit the form
     await page.getByRole('button', { name: /Sign In/i }).click();
-    
+
     // Should stay on sign-in page and show error
     await expect(page).toHaveURL('/sign-in');
     await expect(page.getByText(/Invalid/i).or(page.getByText(/incorrect/i))).toBeVisible();
@@ -521,6 +525,7 @@ git commit -m "test(e2e): add authentication flow tests"
 ## Task 8: Create Protected Routes Tests
 
 **Files:**
+
 - Create: `e2e/specs/protected-routes.spec.ts`
 
 - [ ] **Step 1: Create protected routes tests**
@@ -530,50 +535,56 @@ git commit -m "test(e2e): add authentication flow tests"
 import { test, expect } from '@playwright/test';
 
 test.describe('Protected Routes', () => {
-  test('redirects to sign-in when accessing dashboard while unauthenticated', async ({ browser }) => {
+  test('redirects to sign-in when accessing dashboard while unauthenticated', async ({
+    browser,
+  }) => {
     // Create a fresh context without auth state
     const context = await browser.newContext({ storageState: undefined });
     const page = await context.newPage();
-    
+
     // Try to access dashboard without authentication
     await page.goto('/dashboard');
-    
+
     // Should redirect to sign-in
     await expect(page).toHaveURL('/sign-in');
     await expect(page.getByRole('heading', { name: /Cellar/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /Sign In/i })).toBeVisible();
-    
+
     await context.close();
   });
 
-  test('redirects to sign-in when accessing collections while unauthenticated', async ({ browser }) => {
+  test('redirects to sign-in when accessing collections while unauthenticated', async ({
+    browser,
+  }) => {
     const context = await browser.newContext({ storageState: undefined });
     const page = await context.newPage();
-    
+
     await page.goto('/collections');
-    
+
     await expect(page).toHaveURL('/sign-in');
     await expect(page.getByRole('heading', { name: /Cellar/i })).toBeVisible();
-    
+
     await context.close();
   });
 
-  test('redirects to sign-in when accessing settings while unauthenticated', async ({ browser }) => {
+  test('redirects to sign-in when accessing settings while unauthenticated', async ({
+    browser,
+  }) => {
     const context = await browser.newContext({ storageState: undefined });
     const page = await context.newPage();
-    
+
     await page.goto('/settings');
-    
+
     await expect(page).toHaveURL('/sign-in');
     await expect(page.getByRole('heading', { name: /Cellar/i })).toBeVisible();
-    
+
     await context.close();
   });
 
   test('authenticated user can access dashboard', async ({ page }) => {
     // This test uses the shared auth state from setup project
     await page.goto('/dashboard');
-    
+
     // Should stay on dashboard
     await expect(page).toHaveURL('/dashboard');
     await expect(page.getByRole('heading', { name: /Dashboard/i })).toBeVisible();
@@ -581,14 +592,14 @@ test.describe('Protected Routes', () => {
 
   test('authenticated user can access collections', async ({ page }) => {
     await page.goto('/collections');
-    
+
     await expect(page).toHaveURL('/collections');
     await expect(page.getByRole('heading', { name: /Collections/i })).toBeVisible();
   });
 
   test('authenticated user can access settings', async ({ page }) => {
     await page.goto('/settings');
-    
+
     await expect(page).toHaveURL('/settings');
     await expect(page.getByRole('heading', { name: /Settings/i })).toBeVisible();
   });
@@ -607,6 +618,7 @@ git commit -m "test(e2e): add protected routes tests"
 ## Task 9: Add NPM Scripts
 
 **Files:**
+
 - Modify: `package.json` (scripts section)
 
 - [ ] **Step 1: Add e2e test scripts to package.json**
@@ -647,6 +659,7 @@ git commit -m "chore: add e2e test npm scripts"
 ## Task 10: Install Playwright Browser Binaries
 
 **Files:**
+
 - None (installs browsers globally)
 
 - [ ] **Step 1: Install browser binaries**
@@ -654,6 +667,7 @@ git commit -m "chore: add e2e test npm scripts"
 Run: `npx playwright install`
 
 Expected output:
+
 ```
 Downloading Chromium...
 Downloading Firefox...
@@ -680,6 +694,7 @@ git diff --quiet || git commit -m "chore: install Playwright browser binaries"
 ## Task 11: Verify End-to-End Setup
 
 **Files:**
+
 - All files created above
 
 - [ ] **Step 1: Ensure Docker Compose is running**
@@ -689,6 +704,7 @@ Run: `docker compose ps` or `docker-compose ps`
 Expected: Postgres service running on port 5432
 
 If not running:
+
 ```bash
 docker compose up -d
 ```
@@ -698,6 +714,7 @@ docker compose up -d
 Run: `npm run e2e:setup`
 
 Expected output:
+
 ```
 Setting up test database: cellar_test
 Base connection: postgresql://cellar:cellar@localhost:5432
@@ -751,6 +768,7 @@ npm run e2e -- --project=chromium
 ```
 
 **Expected Test Results:**
+
 - ✅ Setup project authenticates successfully
 - ✅ Sign-up test passes
 - ✅ Sign-in test passes
@@ -765,21 +783,26 @@ npm run e2e -- --project=chromium
 ### Troubleshooting
 
 **Issue: DATABASE_URL not found**
+
 - Solution: Ensure `.env.test` exists and has `DATABASE_URL` defined
 - Run: `cat .env.test | grep DATABASE_URL`
 
 **Issue: Postgres connection refused**
+
 - Solution: Ensure Docker Compose is running
 - Run: `docker compose up -d`
 
 **Issue: Prisma schema not found**
+
 - Solution: Run `npx prisma generate` to ensure Prisma client is generated
 
 **Issue: Tests timeout waiting for server**
+
 - Solution: Ensure dev server can start manually
 - Run: `npm run dev` and verify it starts on port 3000
 
 **Issue: Auth state not saved**
+
 - Solution: Ensure `playwright/.auth/` directory exists
 - Run: `mkdir -p playwright/.auth`
 
