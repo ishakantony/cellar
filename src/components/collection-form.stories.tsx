@@ -4,7 +4,7 @@ import { CollectionForm } from './collection-form';
 
 const meta: Meta<typeof CollectionForm> = {
   component: CollectionForm,
-  title: 'CollectionForm',
+  title: 'Collections/CollectionForm',
   tags: ['autodocs'],
   parameters: {
     layout: 'padded',
