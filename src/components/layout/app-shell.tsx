@@ -1,23 +1,13 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
-import { Sidebar, SidebarCollapsedToggle } from '@/components/layout/sidebar';
-import { Header } from '@/components/layout/header';
+import { createCollection } from '@/app/actions/collections';
 import { AssetDrawer } from '@/components/asset-drawer';
 import { CollectionModal } from '@/components/collection-modal';
-import { createCollection } from '@/app/actions/collections';
+import { Header } from '@/components/layout/header';
+import { Sidebar, SidebarCollapsedToggle } from '@/components/layout/sidebar';
 import { AssetType } from '@/generated/prisma/enums';
-import { LayoutDashboard, Package, Folder, Settings, Plus } from 'lucide-react';
-
-const mobileNavLinks = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Dash' },
-  { href: '/assets', icon: Package, label: 'Items' },
-  null, // placeholder for the center FAB
-  { href: '/collections', icon: Folder, label: 'Collections' },
-  { href: '/settings', icon: Settings, label: 'Settings' },
-] as const;
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export function AppShell({
   children,
@@ -27,7 +17,6 @@ export function AppShell({
   user: { name: string; email: string; image?: string | null };
 }) {
   const router = useRouter();
-  const pathname = usePathname();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [collectionModalOpen, setCollectionModalOpen] = useState(false);
@@ -79,36 +68,6 @@ export function AppShell({
           router.refresh();
         }}
       />
-
-      {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-background/90 backdrop-blur-xl border-t border-white/5 flex md:hidden items-center justify-around px-4 z-50">
-        {mobileNavLinks.map(item =>
-          item === null ? (
-            <div key="fab" className="-mt-8">
-              <button
-                onClick={handleAddItem}
-                className="flex h-12 w-12 items-center justify-center rounded-full btn-gradient shadow-xl shadow-primary-container/40 text-on-primary"
-                aria-label="Add item"
-              >
-                <Plus className="h-5 w-5" />
-              </button>
-            </div>
-          ) : (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex flex-col items-center gap-1 transition-colors ${
-                pathname === item.href || pathname.startsWith(item.href + '/')
-                  ? 'text-primary'
-                  : 'text-outline'
-              }`}
-            >
-              <item.icon className="h-5 w-5" />
-              <span className="text-[9px] font-bold uppercase tracking-tighter">{item.label}</span>
-            </Link>
-          )
-        )}
-      </nav>
     </div>
   );
 }
