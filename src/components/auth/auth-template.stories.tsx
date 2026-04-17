@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/nextjs-vite";
+import { userEvent, within } from "@storybook/test";
 import { AuthTemplate } from "./auth-template";
 import { SignInForm } from "./sign-in-form";
 import { SignUpForm } from "./sign-up-form";
@@ -22,6 +23,12 @@ export const WithSignInForm: Story = {
     footerLinkText: "Sign up",
     footerLinkHref: "/sign-up",
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.type(canvas.getByLabelText("Email"), "test@example.com");
+    await userEvent.type(canvas.getByLabelText("Password"), "password123");
+    await userEvent.click(canvas.getByRole("button", { name: /sign in/i }));
+  },
 };
 
 export const WithSignUpForm: Story = {
@@ -33,6 +40,13 @@ export const WithSignUpForm: Story = {
     footerLinkText: "Sign in",
     footerLinkHref: "/sign-in",
   },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.type(canvas.getByLabelText("Name"), "John Doe");
+    await userEvent.type(canvas.getByLabelText("Email"), "john@example.com");
+    await userEvent.type(canvas.getByLabelText("Password"), "password123");
+    await userEvent.click(canvas.getByRole("button", { name: /create account/i }));
+  },
 };
 
 export const WithoutSocialLogin: Story = {
@@ -42,5 +56,11 @@ export const WithoutSocialLogin: Story = {
     footerPrompt: "Don't have an account?",
     footerLinkText: "Sign up",
     footerLinkHref: "/sign-up",
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.type(canvas.getByLabelText("Email"), "test@example.com");
+    await userEvent.type(canvas.getByLabelText("Password"), "password123");
+    await userEvent.click(canvas.getByRole("button", { name: /sign in/i }));
   },
 };
