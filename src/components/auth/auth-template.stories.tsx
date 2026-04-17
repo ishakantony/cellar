@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { userEvent, within } from '@storybook/test';
+import { userEvent, within } from 'storybook/test';
 import { AuthTemplate } from './auth-template';
 import { SignInForm } from './sign-in-form';
 import { SignUpForm } from './sign-up-form';
