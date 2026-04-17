@@ -1,9 +1,8 @@
-export function register() {
+export async function register() {
   if (process.env.NEXT_RUNTIME !== 'nodejs') {
     return;
   }
 
-  void import('@/lib/startup-report').then(({ logStartupReportOnce }) => {
-    logStartupReportOnce();
-  });
+  const { logStartupReportOnce } = await import('@/lib/startup-report');
+  logStartupReportOnce();
 }
