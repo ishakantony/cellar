@@ -30,12 +30,18 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test-storybook": "vitest --project=storybook --run",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "check:all": "npm run lint && npm run test:run && npm run test-storybook && npm run test:e2e && npm run build"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
+    "*.{ts,tsx,js,jsx}": [
+      "prettier --write",
       "eslint --fix",
       "vitest run --reporter=dot --passWithNoTests"
+    ],
+    "*.{json,md,css,scss,yml,yaml}": [
+      "prettier --write"
     ]
   },
   "dependencies": {
@@ -83,11 +89,13 @@
     "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.3",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-storybook": "^10.3.5",
     "happy-dom": "^20.9.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "playwright": "^1.59.1",
+    "prettier": "^3.8.3",
     "prisma": "^7.7.0",
     "storybook": "^10.3.5",
     "tailwindcss": "^4",
