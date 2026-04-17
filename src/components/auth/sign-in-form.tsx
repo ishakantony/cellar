@@ -21,7 +21,6 @@ export function SignInForm({ onSubmit, defaultValues }: SignInFormProps) {
     clearErrors,
     watch,
     setValue,
-    trigger,
   } = useForm<SignInData>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -59,9 +58,7 @@ export function SignInForm({ onSubmit, defaultValues }: SignInFormProps) {
           disabled={isSubmitting}
           error={errors.email?.message}
           value={email}
-          onChange={(val) => {
-            setValue("email", val, { shouldValidate: true });
-          }}
+          onChange={(val) => setValue("email", val)}
         />
       </FormField>
 
@@ -72,9 +69,7 @@ export function SignInForm({ onSubmit, defaultValues }: SignInFormProps) {
           disabled={isSubmitting}
           error={errors.password?.message}
           value={password}
-          onChange={(val) => {
-            setValue("password", val, { shouldValidate: true });
-          }}
+          onChange={(val) => setValue("password", val)}
         />
       </FormField>
 
