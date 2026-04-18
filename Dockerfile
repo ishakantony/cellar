@@ -7,7 +7,7 @@ WORKDIR /app
 # ── deps: install all dependencies (cached layer) ─────────────────────
 FROM base AS deps
 COPY package.json package-lock.json* ./
-RUN npm ci --frozen-lockfile
+RUN npm ci
 
 # ── builder: generate prisma client + next build ──────────────────────
 FROM base AS builder
@@ -16,6 +16,8 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+# Placeholder secret for build-time only (real value at runtime)
+ENV BETTER_AUTH_SECRET=dummy-secret-for-build-time-only-32-characters-long
 
 RUN npm run build
 
@@ -26,6 +28,34 @@ COPY prisma ./prisma
 COPY prisma.config.ts .
 
 CMD ["npx", "prisma", "migrate", "deploy"]
+
+# ── storybook-builder: build static storybook files ────────────────────
+FROM base AS storybook-builder
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+
+RUN npm run build-storybook
+
+# ── storybook: serve static storybook with serve ──────────────────────
+FROM node:24-slim AS storybook
+WORKDIR /app
+
+# Copy built storybook files
+COPY --from=storybook-builder /app/storybook-static ./
+
+RUN npm i -g http-server
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+EXPOSE 3000
+
+USER node
+
+CMD ["http-server", "-p", "3000"]
 
 # ── runner: lean production image (standalone output only) ────────────
 FROM node:24-slim AS runner
