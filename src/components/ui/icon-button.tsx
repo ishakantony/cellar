@@ -9,6 +9,7 @@ export interface IconButtonProps {
   onClick?: (e: React.MouseEvent) => void;
   className?: string;
   label?: string;
+  disabled?: boolean;
 }
 
 const variantClasses: Record<string, string> = {
@@ -34,14 +35,16 @@ export function IconButton({
   onClick,
   className,
   label,
+  disabled = false,
 }: IconButtonProps) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={label}
+      disabled={disabled}
       className={cn(
-        'rounded transition-all',
+        'rounded cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed',
         variantClasses[variant],
         sizeClasses[size],
         className
