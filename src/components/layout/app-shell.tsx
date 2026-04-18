@@ -1,11 +1,9 @@
 'use client';
 
 import { createCollection } from '@/app/actions/collections';
-import { AssetDrawer } from '@/components/asset-drawer';
 import { CollectionModal } from '@/components/collection-modal';
 import { Header } from '@/components/layout/header';
 import { Sidebar, SidebarCollapsedToggle } from '@/components/layout/sidebar';
-import { AssetType } from '@/generated/prisma/enums';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -19,12 +17,7 @@ export function AppShell({
 }) {
   const router = useRouter();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [collectionModalOpen, setCollectionModalOpen] = useState(false);
-
-  function handleAddItem() {
-    setDrawerOpen(true);
-  }
 
   function handleAddCollection() {
     setCollectionModalOpen(true);
@@ -42,23 +35,10 @@ export function AppShell({
           onMobileMenuToggle={() => {}}
           sidebarCollapsed={sidebarCollapsed}
           sidebarToggle={<SidebarCollapsedToggle onToggle={() => setSidebarCollapsed(false)} />}
-          onAddItem={handleAddItem}
           onAddCollection={handleAddCollection}
         />
         <div className="flex-1 overflow-y-auto p-8 pb-20 md:pb-8">{children}</div>
       </main>
-
-      {/* Global "Add Item" drawer from header */}
-      <AssetDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        mode="create"
-        defaultType={'SNIPPET' as AssetType}
-        onSaved={() => {
-          setDrawerOpen(false);
-          router.refresh();
-        }}
-      />
 
       {/* Global "New Collection" modal from header */}
       <CollectionModal
