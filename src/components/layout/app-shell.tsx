@@ -8,6 +8,7 @@ import { Sidebar, SidebarCollapsedToggle } from '@/components/layout/sidebar';
 import { AssetType } from '@/generated/prisma/enums';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 export function AppShell({
   children,
@@ -64,8 +65,13 @@ export function AppShell({
         open={collectionModalOpen}
         onClose={() => setCollectionModalOpen(false)}
         onSubmit={async data => {
-          await createCollection(data);
-          router.refresh();
+          try {
+            await createCollection(data);
+            toast.success(`Collection "${data.name}" created`);
+            router.refresh();
+          } catch {
+            toast.error('Failed to create collection');
+          }
         }}
       />
     </div>
