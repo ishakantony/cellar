@@ -3,7 +3,8 @@
 import { createCollection } from '@/app/actions/collections';
 import { CollectionModal } from '@/components/collection-modal';
 import { Header } from '@/components/layout/header';
-import { Sidebar, SidebarCollapsedToggle } from '@/components/layout/sidebar';
+import { Sidebar } from '@/components/layout/sidebar';
+import { SidebarToggle } from '@/components/layout/sidebar-toggle';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -25,16 +26,18 @@ export function AppShell({
 
   return (
     <div className="flex h-full">
-      <Sidebar
-        collapsed={sidebarCollapsed}
-        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-        user={user}
-      />
+      <Sidebar collapsed={sidebarCollapsed} user={user} />
       <main className="flex-1 flex flex-col min-w-0 bg-surface h-full">
         <Header
           onMobileMenuToggle={() => {}}
           sidebarCollapsed={sidebarCollapsed}
-          sidebarToggle={<SidebarCollapsedToggle onToggle={() => setSidebarCollapsed(false)} />}
+          sidebarToggle={
+            <SidebarToggle
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              collapsed={sidebarCollapsed}
+              className="hidden md:flex"
+            />
+          }
           onAddCollection={handleAddCollection}
         />
         <div className="flex-1 overflow-y-auto p-8 pb-20 md:pb-8">{children}</div>

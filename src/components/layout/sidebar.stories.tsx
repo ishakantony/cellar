@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn } from 'storybook/test';
 import { Sidebar } from './sidebar';
 
 const meta: Meta<typeof Sidebar> = {
@@ -26,7 +25,6 @@ const mockUser = {
 export const Default: Story = {
   args: {
     collapsed: false,
-    onToggle: fn(),
     user: mockUser,
   },
   parameters: {
@@ -41,7 +39,6 @@ export const Default: Story = {
 export const Collapsed: Story = {
   args: {
     collapsed: true,
-    onToggle: fn(),
     user: mockUser,
   },
   parameters: {
@@ -56,7 +53,6 @@ export const Collapsed: Story = {
 export const AssetsActive: Story = {
   args: {
     collapsed: false,
-    onToggle: fn(),
     user: mockUser,
   },
   parameters: {
@@ -72,7 +68,6 @@ export const AssetsActive: Story = {
 export const Mobile: Story = {
   args: {
     collapsed: false,
-    onToggle: fn(),
     user: mockUser,
   },
   parameters: {

@@ -13,7 +13,6 @@ export interface HeaderProps {
 
 export function Header({
   onMobileMenuToggle,
-  sidebarCollapsed,
   sidebarToggle,
   onAddCollection,
   className,
@@ -25,7 +24,7 @@ export function Header({
       {/* Left section */}
       <div className="flex items-center gap-4 flex-1">
         <MobileMenuToggle onClick={onMobileMenuToggle} className="md:hidden" />
-        {sidebarCollapsed && sidebarToggle}
+        {sidebarToggle}
       </div>
 
       {/* Center - spacer */}
