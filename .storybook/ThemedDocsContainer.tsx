@@ -9,7 +9,7 @@ const createCellarTheme = (base: 'dark' | 'light' = 'dark') => {
 
     brandTitle: 'Cellar',
     brandUrl: '/',
-    brandImage: '/cellar-logo.svg',
+    brandImage: '/cellar-storybook-logo.svg',
     brandTarget: '_self',
 
     colorPrimary: '#6366f1',
