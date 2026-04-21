@@ -13,6 +13,7 @@ export interface InputProps {
   className?: string;
   id?: string;
   name?: string;
+  autoFocus?: boolean;
   onBlur?: (e?: React.FocusEvent<HTMLInputElement>) => void;
 }
 
@@ -27,6 +28,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     className,
     id,
     name,
+    autoFocus,
     onBlur,
   },
   ref
@@ -42,6 +44,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       onBlur={onBlur}
       placeholder={placeholder}
       disabled={disabled}
+      autoFocus={autoFocus}
       className={cn(
         'w-full rounded-lg border-none bg-surface-container px-4 py-2.5 text-sm text-on-surface placeholder:text-outline/50 focus:ring-1 focus:ring-primary/50 transition-all',
         disabled && 'cursor-not-allowed opacity-60',

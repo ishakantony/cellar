@@ -70,6 +70,7 @@ export function CollectionForm({
           error={errors.name?.message}
           value={name}
           onChange={val => setValue('name', val)}
+          autoFocus
         />
       </FormField>
 
