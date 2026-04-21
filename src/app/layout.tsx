@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
-import { Toaster } from 'sonner';
+import { Toaster } from '@/components/ui/sonner';
 import './globals.css';
 
 const inter = Inter({
@@ -29,18 +29,7 @@ export default function RootLayout({
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans h-full overflow-hidden`}
       >
         {children}
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            style: {
-              background: 'var(--color-surface-container-high)',
-              border: '1px solid var(--color-outline-variant)',
-              color: 'var(--color-on-surface)',
-              fontSize: '13px',
-              borderRadius: '6px',
-            },
-          }}
-        />
+        <Toaster />
       </body>
     </html>
   );
