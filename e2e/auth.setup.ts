@@ -28,7 +28,7 @@ setup('authenticate', async ({ page }) => {
 
   // Wait for successful redirect to dashboard
   await page.waitForURL('/dashboard');
-  await expect(page.getByRole('heading', { name: /Quick Actions/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Cellar/i })).toBeVisible();
 
   // Save the authentication state
   await page.context().storageState({ path: authFile });

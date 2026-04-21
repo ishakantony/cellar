@@ -1,18 +1,18 @@
 export const COLLECTION_COLORS: Record<string, string> = {
-  '#3b82f6': 'bg-blue-500/15 text-blue-400',
-  '#a855f7': 'bg-purple-500/15 text-purple-400',
+  '#f97316': 'bg-orange-500/15 text-orange-400',
+  '#84cc16': 'bg-lime-500/15 text-lime-400',
   '#10b981': 'bg-emerald-500/15 text-emerald-400',
-  '#f59e0b': 'bg-amber-500/15 text-amber-400',
-  '#ef4444': 'bg-red-500/15 text-red-400',
+  '#3b82f6': 'bg-blue-500/15 text-blue-400',
+  '#d946ef': 'bg-fuchsia-500/15 text-fuchsia-400',
   '#ec4899': 'bg-pink-500/15 text-pink-400',
 };
 
 export const COLOR_OPTIONS = [
+  { value: '#f97316', label: 'Orange', className: 'bg-orange-500' },
+  { value: '#84cc16', label: 'Lime', className: 'bg-lime-500' },
+  { value: '#10b981', label: 'Emerald', className: 'bg-emerald-500' },
   { value: '#3b82f6', label: 'Blue', className: 'bg-blue-500' },
-  { value: '#a855f7', label: 'Purple', className: 'bg-purple-500' },
-  { value: '#10b981', label: 'Green', className: 'bg-emerald-500' },
-  { value: '#f59e0b', label: 'Amber', className: 'bg-amber-500' },
-  { value: '#ef4444', label: 'Red', className: 'bg-red-500' },
+  { value: '#d946ef', label: 'Fuchsia', className: 'bg-fuchsia-500' },
   { value: '#ec4899', label: 'Pink', className: 'bg-pink-500' },
 ];
 

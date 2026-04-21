@@ -53,7 +53,7 @@ test.describe('Protected Routes', () => {
 
     // Should stay on dashboard
     await expect(page).toHaveURL('/dashboard');
-    await expect(page.getByRole('heading', { name: /Quick Actions/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Dashboard/i })).toBeVisible();
   });
 
   test('authenticated user can access collections', async ({ page }) => {
