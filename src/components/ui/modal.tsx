@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { IconButton } from './icon-button';
@@ -28,6 +29,17 @@ export function Modal({
   size = 'md',
   ariaLabel,
 }: ModalProps) {
+  useEffect(() => {
+    if (!open) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   return (
