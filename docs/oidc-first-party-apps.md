@@ -29,3 +29,19 @@ Bootstrap flow:
 2. Run `npm run auth:sync-clients`.
 
 Consumer apps must use a standard OIDC client library and integrate against Cellar discovery, authorization, token, userinfo, JWKS, and end-session endpoints. Do not share Cellar cookies directly across apps.
+
+## Local OIDC Dummy App
+
+Cellar includes a static first-party client for the local test app:
+
+- `clientId`: `oidc-dummy-app`
+- `redirect_uri`: `http://localhost:3001/auth/callback`
+- `secret env var`: `OIDC_DUMMY_APP_OIDC_SECRET`
+
+Local bootstrap flow:
+
+1. Set `OIDC_DUMMY_APP_OIDC_SECRET` in the Cellar root `.env`.
+2. Run `npm run auth:sync-clients`.
+3. Start Cellar on `http://localhost:3000`.
+4. Start `oidc-dummy-app` on `http://localhost:3001`.
+5. Use the dummy app landing page to exercise the authorization-code + PKCE flow.

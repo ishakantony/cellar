@@ -2,13 +2,23 @@ import { describe, expect, it } from 'vitest';
 
 import {
   firstPartyClients,
+  getFirstPartyClientOrigins,
   resolveFirstPartyClients,
   type FirstPartyClientManifestEntry,
 } from './first-party-clients';
 
 describe('firstPartyClients', () => {
-  it('defaults to an empty manifest', () => {
-    expect(firstPartyClients).toEqual([]);
+  it('defaults to a manifest containing the oidc dummy app', () => {
+    expect(firstPartyClients).toEqual([
+      {
+        clientId: 'oidc-dummy-app',
+        name: 'OIDC Dummy App',
+        type: 'web',
+        redirectUrls: ['http://localhost:3001/auth/callback'],
+        secretEnvVar: 'OIDC_DUMMY_APP_OIDC_SECRET',
+        skipConsent: true,
+      },
+    ]);
   });
 
   it('resolves manifest entries from env and marks them trusted for silent SSO', () => {
@@ -84,5 +94,29 @@ describe('firstPartyClients', () => {
     expect(() => resolveFirstPartyClients({}, manifest)).toThrow(
       'Missing required OIDC client secret env var MISSING_SECRET for client app-missing-secret'
     );
+  });
+
+  it('includes the local oidc dummy app client', () => {
+    const clients = resolveFirstPartyClients(
+      {
+        OIDC_DUMMY_APP_OIDC_SECRET: 'oidc-dummy-app-secret',
+      },
+      firstPartyClients
+    );
+
+    expect(clients).toContainEqual({
+      clientId: 'oidc-dummy-app',
+      name: 'OIDC Dummy App',
+      type: 'web',
+      redirectUrls: ['http://localhost:3001/auth/callback'],
+      clientSecret: 'oidc-dummy-app-secret',
+      skipConsent: true,
+      disabled: false,
+      metadata: {
+        firstParty: true,
+      },
+    });
+
+    expect(getFirstPartyClientOrigins(firstPartyClients)).toContain('http://localhost:3001');
   });
 });

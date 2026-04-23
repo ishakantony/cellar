@@ -58,3 +58,9 @@ next-env.d.ts
 
 # Storybook
 storybook-static
+
+# OIDC Dummy App
+/oidc-dummy-app/node_modules
+/oidc-dummy-app/.next
+/oidc-dummy-app/.env*
+!/oidc-dummy-app/.env.example

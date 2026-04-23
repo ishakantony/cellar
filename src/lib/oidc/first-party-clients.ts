@@ -21,7 +21,16 @@ export type ResolvedFirstPartyClient = {
   };
 };
 
-export const firstPartyClients: FirstPartyClientManifestEntry[] = [];
+export const firstPartyClients: FirstPartyClientManifestEntry[] = [
+  {
+    clientId: 'oidc-dummy-app',
+    name: 'OIDC Dummy App',
+    type: 'web',
+    redirectUrls: ['http://localhost:3001/auth/callback'],
+    secretEnvVar: 'OIDC_DUMMY_APP_OIDC_SECRET',
+    skipConsent: true,
+  },
+];
 
 export function resolveFirstPartyClients(
   env: Record<string, string | undefined>,
