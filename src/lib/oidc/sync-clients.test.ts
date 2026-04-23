@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { upsert, updateMany } = vi.hoisted(() => {
@@ -9,7 +10,7 @@ const { upsert, updateMany } = vi.hoisted(() => {
 
 vi.mock('@/lib/prisma', () => ({
   prisma: {
-    oAuthApplication: {
+    oAuthClient: {
       upsert,
       updateMany,
     },
@@ -19,6 +20,10 @@ vi.mock('@/lib/prisma', () => ({
 import { syncFirstPartyClients } from './sync-clients';
 import type { FirstPartyClientManifestEntry } from './first-party-clients';
 
+function hashSecret(secret: string): string {
+  return createHash('sha256').update(secret).digest('base64url');
+}
+
 describe('syncFirstPartyClients', () => {
   beforeEach(() => {
     upsert.mockReset();
@@ -27,13 +32,13 @@ describe('syncFirstPartyClients', () => {
     updateMany.mockResolvedValue({ count: 0 });
   });
 
-  it('upserts every manifest client into oauthApplication storage', async () => {
+  it('upserts every manifest client into oauthClient storage', async () => {
     const manifest: FirstPartyClientManifestEntry[] = [
       {
         clientId: 'app-web',
         name: 'App Web',
         type: 'web',
-        redirectUrls: ['https://app.example.com/api/auth/callback/cellar'],
+        redirectUris: ['https://app.example.com/api/auth/callback/cellar'],
         secretEnvVar: 'APP_WEB_OIDC_SECRET',
         skipConsent: true,
       },
@@ -52,18 +57,25 @@ describe('syncFirstPartyClients', () => {
       },
       create: expect.objectContaining({
         clientId: 'app-web',
-        clientSecret: 'super-secret',
-        redirectUrls: 'https://app.example.com/api/auth/callback/cellar',
+        clientSecret: hashSecret('super-secret'),
+        redirectUris: ['https://app.example.com/api/auth/callback/cellar'],
         metadata: JSON.stringify({
           firstParty: true,
           secretEnvVar: 'APP_WEB_OIDC_SECRET',
           skipConsent: true,
         }),
         disabled: false,
+        skipConsent: true,
+        tokenEndpointAuthMethod: 'client_secret_basic',
+        grantTypes: ['authorization_code'],
+        responseTypes: ['code'],
+        scopes: ['openid', 'profile', 'email'],
+        requirePKCE: true,
+        public: false,
       }),
       update: expect.objectContaining({
         name: 'App Web',
-        clientSecret: 'super-secret',
+        clientSecret: hashSecret('super-secret'),
         disabled: false,
       }),
     });
@@ -80,7 +92,7 @@ describe('syncFirstPartyClients', () => {
         clientId: 'app-web',
         name: 'App Web',
         type: 'web',
-        redirectUrls: ['https://app.example.com/api/auth/callback/cellar'],
+        redirectUris: ['https://app.example.com/api/auth/callback/cellar'],
         secretEnvVar: 'APP_WEB_OIDC_SECRET',
         skipConsent: true,
       },

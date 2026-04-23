@@ -8,20 +8,20 @@ datasource db {
 }
 
 model User {
-  id                String             @id @default(cuid())
-  name              String
-  email             String             @unique
-  emailVerified     Boolean            @default(false)
-  image             String?
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-  accounts          Account[]
-  assets            Asset[]
-  collections       Collection[]
-  oauthApplications OAuthApplication[]
-  oauthConsents     OAuthConsent[]
-  oauthTokens       OAuthAccessToken[]
-  sessions          Session[]
+  id            String           @id @default(cuid())
+  name          String
+  email         String           @unique
+  emailVerified Boolean          @default(false)
+  image         String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  accounts      Account[]
+  assets        Asset[]
+  collections   Collection[]
+  oauthClients  OAuthClient[]
+  oauthConsents OAuthConsent[]
+  oauthTokens   OAuthAccessToken[]
+  sessions      Session[]
 }
 
 model Session {
@@ -112,19 +112,37 @@ model AssetCollection {
   @@id([assetId, collectionId])
 }
 
-model OAuthApplication {
+model OAuthClient {
   id           String             @id @default(cuid())
-  name         String
-  icon         String?
-  metadata     String?
   clientId     String             @unique
   clientSecret String?
-  redirectUrls String
-  type         String
+  name         String?
+  icon         String?
+  metadata     Json?
+  redirectUris String[]
+  postLogoutRedirectUris String[]
+  type         String?
   disabled     Boolean            @default(false)
+  skipConsent  Boolean?
+  enableEndSession Boolean?
+  subjectType  String?
+  scopes       String[]
   userId       String?
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
+  uri          String?
+  contacts     String[]
+  tos          String?
+  policy       String?
+  softwareId   String?
+  softwareVersion String?
+  softwareStatement String?
+  tokenEndpointAuthMethod String?
+  grantTypes   String[]
+  responseTypes String[]
+  public       Boolean?
+  requirePKCE  Boolean?
+  referenceId  String?
   user         User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
   consents     OAuthConsent[]
   tokens       OAuthAccessToken[]
@@ -133,33 +151,49 @@ model OAuthApplication {
 }
 
 model OAuthAccessToken {
-  id                    String           @id @default(cuid())
-  accessToken           String           @unique
-  refreshToken          String           @unique
-  accessTokenExpiresAt  DateTime
-  refreshTokenExpiresAt DateTime
-  clientId              String
-  userId                String?
-  scopes                String
-  createdAt             DateTime         @default(now())
-  updatedAt             DateTime         @updatedAt
-  client                OAuthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
-  user                  User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String      @id @default(cuid())
+  token      String      @unique
+  clientId   String
+  sessionId  String?
+  userId     String?
+  referenceId String?
+  refreshId  String?
+  scopes     String[]
+  expiresAt  DateTime
+  createdAt  DateTime    @default(now())
+  client     OAuthClient @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  user       User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@index([userId])
+}
+
+model OAuthRefreshToken {
+  id          String   @id @default(cuid())
+  token       String
+  clientId    String
+  sessionId   String?
+  userId      String
+  referenceId String?
+  scopes      String[]
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  revoked     DateTime?
 
   @@index([clientId])
   @@index([userId])
 }
 
 model OAuthConsent {
-  id           String           @id @default(cuid())
-  clientId     String
-  userId       String
-  scopes       String
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  consentGiven Boolean
-  client       OAuthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
-  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String      @id @default(cuid())
+  clientId  String
+  userId    String?
+  referenceId String?
+  scopes    String[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  client    OAuthClient @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  user      User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([clientId])
   @@index([userId])

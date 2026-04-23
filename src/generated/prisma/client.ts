@@ -77,15 +77,20 @@ export type Collection = Prisma.CollectionModel
  */
 export type AssetCollection = Prisma.AssetCollectionModel
 /**
- * Model OAuthApplication
+ * Model OAuthClient
  * 
  */
-export type OAuthApplication = Prisma.OAuthApplicationModel
+export type OAuthClient = Prisma.OAuthClientModel
 /**
  * Model OAuthAccessToken
  * 
  */
 export type OAuthAccessToken = Prisma.OAuthAccessTokenModel
+/**
+ * Model OAuthRefreshToken
+ * 
+ */
+export type OAuthRefreshToken = Prisma.OAuthRefreshTokenModel
 /**
  * Model OAuthConsent
  * 

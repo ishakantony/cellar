@@ -1,11 +1,10 @@
-import { oidcProvider } from 'better-auth/plugins/oidc-provider';
+import { oauthProvider } from '@better-auth/oauth-provider';
 import { jwt } from 'better-auth/plugins/jwt';
 import type { BetterAuthOptions } from 'better-auth';
 
 import {
   firstPartyClients,
   getFirstPartyClientOrigins,
-  resolveFirstPartyClients,
   type FirstPartyClientManifestEntry,
 } from './oidc/first-party-clients';
 
@@ -67,7 +66,6 @@ export function buildAuthOptions({
   manifest = firstPartyClients,
 }: BuildAuthOptionsInput): BetterAuthOptions {
   const issuer = getCanonicalAuthIssuer(env);
-  const trustedClients = resolveFirstPartyClients(env, manifest);
 
   return {
     baseURL: env.BETTER_AUTH_URL,
@@ -99,54 +97,27 @@ export function buildAuthOptions({
           },
         },
       }),
-      oidcProvider({
+      oauthProvider({
         loginPage: '/sign-in',
-        trustedClients,
-        useJWTPlugin: true,
-        allowDynamicClientRegistration: false,
-        requirePKCE: true,
-        allowPlainCodeChallengeMethod: false,
+        consentPage: '/consent',
         scopes: ['openid', 'profile', 'email'],
-        defaultScope: 'openid',
-        metadata: {
-          issuer,
-          jwks_uri: `${issuer}/jwks`,
-          authorization_endpoint: `${issuer}/oauth2/authorize`,
-          token_endpoint: `${issuer}/oauth2/token`,
-          userinfo_endpoint: `${issuer}/oauth2/userinfo`,
-          end_session_endpoint: `${issuer}/oauth2/endsession`,
-          registration_endpoint: undefined,
-          scopes_supported: ['openid', 'profile', 'email'],
-          response_types_supported: ['code'],
-          grant_types_supported: ['authorization_code'],
-          code_challenge_methods_supported: ['S256'],
-          token_endpoint_auth_methods_supported: [
-            'client_secret_basic',
-            'client_secret_post',
-            'none',
-          ],
-          claims_supported: [
-            'sub',
-            'iss',
-            'aud',
-            'exp',
-            'nbf',
-            'iat',
-            'jti',
-            'email',
-            'email_verified',
-            'name',
-          ],
+        cachedTrustedClients: new Set(manifest.map(c => c.clientId)),
+        silenceWarnings: {
+          oauthAuthServerConfig: true,
+          openidConfig: true,
         },
         schema: {
-          oauthApplication: {
-            modelName: 'oAuthApplication',
+          oauthClient: {
+            modelName: 'oAuthClient',
           },
           oauthAccessToken: {
             modelName: 'oAuthAccessToken',
           },
           oauthConsent: {
             modelName: 'oAuthConsent',
+          },
+          oauthRefreshToken: {
+            modelName: 'oAuthRefreshToken',
           },
         },
       }),

@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import { prisma } from '@/lib/prisma';
 
 import {
@@ -11,6 +13,10 @@ type SyncFirstPartyClientsOptions = {
   manifest?: readonly FirstPartyClientManifestEntry[];
   disableMissing?: boolean;
 };
+
+function hashClientSecret(secret: string): string {
+  return createHash('sha256').update(secret).digest('base64url');
+}
 
 export async function syncFirstPartyClients({
   env = process.env,
@@ -28,33 +34,47 @@ export async function syncFirstPartyClients({
       skipConsent: client.skipConsent,
     });
 
-    await prisma.oAuthApplication.upsert({
+    await prisma.oAuthClient.upsert({
       where: {
         clientId: client.clientId,
       },
       create: {
         clientId: client.clientId,
-        clientSecret: client.clientSecret,
+        clientSecret: client.clientSecret ? hashClientSecret(client.clientSecret) : null,
         type: client.type,
         name: client.name,
-        redirectUrls: client.redirectUrls.join(','),
+        redirectUris: client.redirectUris,
         metadata,
         disabled: client.disabled,
+        skipConsent: true,
+        tokenEndpointAuthMethod: 'client_secret_basic',
+        grantTypes: ['authorization_code'],
+        responseTypes: ['code'],
+        scopes: client.scopes,
+        requirePKCE: true,
+        public: false,
       },
       update: {
-        clientSecret: client.clientSecret,
+        clientSecret: client.clientSecret ? hashClientSecret(client.clientSecret) : null,
         type: client.type,
         name: client.name,
-        redirectUrls: client.redirectUrls.join(','),
+        redirectUris: client.redirectUris,
         metadata,
         disabled: client.disabled,
+        skipConsent: true,
+        tokenEndpointAuthMethod: 'client_secret_basic',
+        grantTypes: ['authorization_code'],
+        responseTypes: ['code'],
+        scopes: client.scopes,
+        requirePKCE: true,
+        public: false,
       },
     });
   }
 
   let disabledCount = 0;
   if (disableMissing) {
-    const result = await prisma.oAuthApplication.updateMany({
+    const result = await prisma.oAuthClient.updateMany({
       where: {
         clientId: {
           notIn: clients.map(client => client.clientId),

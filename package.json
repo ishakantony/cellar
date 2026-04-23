@@ -46,12 +46,13 @@
     ]
   },
   "dependencies": {
+    "@better-auth/oauth-provider": "^1.6.8",
     "@hookform/resolvers": "^5.2.2",
     "@monaco-editor/react": "^4.7.0",
     "@prisma/adapter-pg": "^7.7.0",
     "@prisma/client": "^7.7.0",
     "@tailwindcss/typography": "^0.5.19",
-    "better-auth": "^1.6.2",
+    "better-auth": "^1.6.8",
     "clsx": "^2.1.1",
     "lottie-react": "^2.4.1",
     "lucide-react": "^1.8.0",

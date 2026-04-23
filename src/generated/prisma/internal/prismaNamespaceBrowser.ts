@@ -58,8 +58,9 @@ export const ModelName = {
   Asset: 'Asset',
   Collection: 'Collection',
   AssetCollection: 'AssetCollection',
-  OAuthApplication: 'OAuthApplication',
+  OAuthClient: 'OAuthClient',
   OAuthAccessToken: 'OAuthAccessToken',
+  OAuthRefreshToken: 'OAuthRefreshToken',
   OAuthConsent: 'OAuthConsent',
   Jwks: 'Jwks'
 } as const
@@ -181,48 +182,82 @@ export const AssetCollectionScalarFieldEnum = {
 export type AssetCollectionScalarFieldEnum = (typeof AssetCollectionScalarFieldEnum)[keyof typeof AssetCollectionScalarFieldEnum]
 
 
-export const OAuthApplicationScalarFieldEnum = {
+export const OAuthClientScalarFieldEnum = {
   id: 'id',
+  clientId: 'clientId',
+  clientSecret: 'clientSecret',
   name: 'name',
   icon: 'icon',
   metadata: 'metadata',
-  clientId: 'clientId',
-  clientSecret: 'clientSecret',
-  redirectUrls: 'redirectUrls',
+  redirectUris: 'redirectUris',
+  postLogoutRedirectUris: 'postLogoutRedirectUris',
   type: 'type',
   disabled: 'disabled',
+  skipConsent: 'skipConsent',
+  enableEndSession: 'enableEndSession',
+  subjectType: 'subjectType',
+  scopes: 'scopes',
   userId: 'userId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  uri: 'uri',
+  contacts: 'contacts',
+  tos: 'tos',
+  policy: 'policy',
+  softwareId: 'softwareId',
+  softwareVersion: 'softwareVersion',
+  softwareStatement: 'softwareStatement',
+  tokenEndpointAuthMethod: 'tokenEndpointAuthMethod',
+  grantTypes: 'grantTypes',
+  responseTypes: 'responseTypes',
+  public: 'public',
+  requirePKCE: 'requirePKCE',
+  referenceId: 'referenceId'
 } as const
 
-export type OAuthApplicationScalarFieldEnum = (typeof OAuthApplicationScalarFieldEnum)[keyof typeof OAuthApplicationScalarFieldEnum]
+export type OAuthClientScalarFieldEnum = (typeof OAuthClientScalarFieldEnum)[keyof typeof OAuthClientScalarFieldEnum]
 
 
 export const OAuthAccessTokenScalarFieldEnum = {
   id: 'id',
-  accessToken: 'accessToken',
-  refreshToken: 'refreshToken',
-  accessTokenExpiresAt: 'accessTokenExpiresAt',
-  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
+  token: 'token',
   clientId: 'clientId',
+  sessionId: 'sessionId',
   userId: 'userId',
+  referenceId: 'referenceId',
+  refreshId: 'refreshId',
   scopes: 'scopes',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
 } as const
 
 export type OAuthAccessTokenScalarFieldEnum = (typeof OAuthAccessTokenScalarFieldEnum)[keyof typeof OAuthAccessTokenScalarFieldEnum]
+
+
+export const OAuthRefreshTokenScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  clientId: 'clientId',
+  sessionId: 'sessionId',
+  userId: 'userId',
+  referenceId: 'referenceId',
+  scopes: 'scopes',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  revoked: 'revoked'
+} as const
+
+export type OAuthRefreshTokenScalarFieldEnum = (typeof OAuthRefreshTokenScalarFieldEnum)[keyof typeof OAuthRefreshTokenScalarFieldEnum]
 
 
 export const OAuthConsentScalarFieldEnum = {
   id: 'id',
   clientId: 'clientId',
   userId: 'userId',
+  referenceId: 'referenceId',
   scopes: 'scopes',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  consentGiven: 'consentGiven'
+  updatedAt: 'updatedAt'
 } as const
 
 export type OAuthConsentScalarFieldEnum = (typeof OAuthConsentScalarFieldEnum)[keyof typeof OAuthConsentScalarFieldEnum]
@@ -247,6 +282,14 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -261,4 +304,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

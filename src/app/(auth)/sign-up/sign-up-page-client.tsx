@@ -1,7 +1,7 @@
 'use client';
 
 import { signIn, signUp } from '@/lib/auth-client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthTemplate } from '@/components/auth/auth-template';
 import { SignUpForm } from '@/components/auth/sign-up-form';
 import { SocialLoginSection } from '@/components/auth/social-login-section';
@@ -13,6 +13,12 @@ type SignUpPageClientProps = {
 
 export function SignUpPageClient({ callbackURL }: SignUpPageClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const footerLinkHref = (() => {
+    const query = searchParams.toString();
+    return query ? `/sign-in?${query}` : '/sign-in';
+  })();
 
   const handleSubmit = async (data: SignUpData) => {
     const result = await signUp.email({
@@ -45,7 +51,7 @@ export function SignUpPageClient({ callbackURL }: SignUpPageClientProps) {
       socialLogin={<SocialLoginSection onGitHubClick={handleGitHub} />}
       footerPrompt="Already have an account?"
       footerLinkText="Sign in"
-      footerLinkHref="/sign-in"
+      footerLinkHref={footerLinkHref}
     />
   );
 }
