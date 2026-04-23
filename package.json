@@ -19,6 +19,7 @@
     "e2e:setup": "tsx scripts/setup-test-db.ts",
     "test:e2e": "npm run e2e:setup && playwright test",
     "test:e2e:ui": "npm run e2e:setup && playwright test --ui",
+    "auth:sync-clients": "tsx scripts/sync-oidc-clients.ts",
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate:prod": "prisma migrate deploy",
     "db:migrate:reset": "prisma migrate reset --force",

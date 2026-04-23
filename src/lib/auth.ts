@@ -1,6 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { prisma } from './prisma';
+import { buildAuthOptions } from './auth-config';
 
 // Security: Validate auth secret on startup
 if (!process.env.BETTER_AUTH_SECRET || process.env.BETTER_AUTH_SECRET.length < 32) {
@@ -10,26 +11,13 @@ if (!process.env.BETTER_AUTH_SECRET || process.env.BETTER_AUTH_SECRET.length < 3
   );
 }
 
-export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL,
-  database: prismaAdapter(prisma, {
-    provider: 'postgresql',
-  }),
-  emailAndPassword: {
-    enabled: true,
-  },
-  socialProviders: {
-    github: {
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    },
-  },
-  advanced: {
-    // Disable secure cookies in test environment for e2e testing
-    disableCSRFCheck: process.env.E2E_TEST_MODE === 'true',
-    cookiePrefix: process.env.E2E_TEST_MODE === 'true' ? 'cellar-test' : 'cellar',
-  },
-});
+export const auth = betterAuth(
+  buildAuthOptions({
+    database: prismaAdapter(prisma, {
+      provider: 'postgresql',
+    }),
+  })
+);
 
 // Security warning for test mode
 if (process.env.E2E_TEST_MODE === 'true') {

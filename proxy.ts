@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { AUTH_BASE_PATH, getAuthSessionCookieNames } from './src/lib/auth-config';
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Public routes — skip auth check
-  const publicPaths = ['/sign-in', '/sign-up', '/api/auth'];
+  const publicPaths = ['/sign-in', '/sign-up', AUTH_BASE_PATH];
   if (publicPaths.some(p => pathname.startsWith(p))) {
     return NextResponse.next();
   }
 
-  // Check for Better Auth session cookie (includes __Secure- prefix variant for HTTPS)
-  const sessionToken =
-    request.cookies.get('better-auth.session_token') ??
-    request.cookies.get('__Secure-better-auth.session_token');
+  const sessionToken = getAuthSessionCookieNames().find(cookieName =>
+    request.cookies.get(cookieName)
+  );
   if (!sessionToken) {
     const signInUrl = new URL('/sign-in', request.url);
     return NextResponse.redirect(signInUrl);

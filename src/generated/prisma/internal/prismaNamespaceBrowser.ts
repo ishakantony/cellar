@@ -57,7 +57,11 @@ export const ModelName = {
   Verification: 'Verification',
   Asset: 'Asset',
   Collection: 'Collection',
-  AssetCollection: 'AssetCollection'
+  AssetCollection: 'AssetCollection',
+  OAuthApplication: 'OAuthApplication',
+  OAuthAccessToken: 'OAuthAccessToken',
+  OAuthConsent: 'OAuthConsent',
+  Jwks: 'Jwks'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -175,6 +179,64 @@ export const AssetCollectionScalarFieldEnum = {
 } as const
 
 export type AssetCollectionScalarFieldEnum = (typeof AssetCollectionScalarFieldEnum)[keyof typeof AssetCollectionScalarFieldEnum]
+
+
+export const OAuthApplicationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  icon: 'icon',
+  metadata: 'metadata',
+  clientId: 'clientId',
+  clientSecret: 'clientSecret',
+  redirectUrls: 'redirectUrls',
+  type: 'type',
+  disabled: 'disabled',
+  userId: 'userId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OAuthApplicationScalarFieldEnum = (typeof OAuthApplicationScalarFieldEnum)[keyof typeof OAuthApplicationScalarFieldEnum]
+
+
+export const OAuthAccessTokenScalarFieldEnum = {
+  id: 'id',
+  accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  accessTokenExpiresAt: 'accessTokenExpiresAt',
+  refreshTokenExpiresAt: 'refreshTokenExpiresAt',
+  clientId: 'clientId',
+  userId: 'userId',
+  scopes: 'scopes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OAuthAccessTokenScalarFieldEnum = (typeof OAuthAccessTokenScalarFieldEnum)[keyof typeof OAuthAccessTokenScalarFieldEnum]
+
+
+export const OAuthConsentScalarFieldEnum = {
+  id: 'id',
+  clientId: 'clientId',
+  userId: 'userId',
+  scopes: 'scopes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  consentGiven: 'consentGiven'
+} as const
+
+export type OAuthConsentScalarFieldEnum = (typeof OAuthConsentScalarFieldEnum)[keyof typeof OAuthConsentScalarFieldEnum]
+
+
+export const JwksScalarFieldEnum = {
+  id: 'id',
+  publicKey: 'publicKey',
+  privateKey: 'privateKey',
+  createdAt: 'createdAt',
+  expiresAt: 'expiresAt'
+} as const
+
+export type JwksScalarFieldEnum = (typeof JwksScalarFieldEnum)[keyof typeof JwksScalarFieldEnum]
 
 
 export const SortOrder = {

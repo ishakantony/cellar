@@ -8,17 +8,20 @@ datasource db {
 }
 
 model User {
-  id            String       @id @default(cuid())
-  name          String
-  email         String       @unique
-  emailVerified Boolean      @default(false)
-  image         String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  accounts      Account[]
-  assets        Asset[]
-  collections   Collection[]
-  sessions      Session[]
+  id                String             @id @default(cuid())
+  name              String
+  email             String             @unique
+  emailVerified     Boolean            @default(false)
+  image             String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  accounts          Account[]
+  assets            Asset[]
+  collections       Collection[]
+  oauthApplications OAuthApplication[]
+  oauthConsents     OAuthConsent[]
+  oauthTokens       OAuthAccessToken[]
+  sessions          Session[]
 }
 
 model Session {
@@ -107,6 +110,67 @@ model AssetCollection {
   collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
 
   @@id([assetId, collectionId])
+}
+
+model OAuthApplication {
+  id           String             @id @default(cuid())
+  name         String
+  icon         String?
+  metadata     String?
+  clientId     String             @unique
+  clientSecret String?
+  redirectUrls String
+  type         String
+  disabled     Boolean            @default(false)
+  userId       String?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  user         User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  consents     OAuthConsent[]
+  tokens       OAuthAccessToken[]
+
+  @@index([userId])
+}
+
+model OAuthAccessToken {
+  id                    String           @id @default(cuid())
+  accessToken           String           @unique
+  refreshToken          String           @unique
+  accessTokenExpiresAt  DateTime
+  refreshTokenExpiresAt DateTime
+  clientId              String
+  userId                String?
+  scopes                String
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+  client                OAuthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  user                  User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@index([userId])
+}
+
+model OAuthConsent {
+  id           String           @id @default(cuid())
+  clientId     String
+  userId       String
+  scopes       String
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  consentGiven Boolean
+  client       OAuthApplication @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@index([userId])
+}
+
+model Jwks {
+  id         String   @id @default(cuid())
+  publicKey  String
+  privateKey String
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime?
 }
 
 enum AssetType {
