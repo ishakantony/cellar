@@ -28,7 +28,10 @@ export const firstPartyClients: FirstPartyClientManifestEntry[] = [
     clientId: 'oidc-dummy-app',
     name: 'OIDC Dummy App',
     type: 'web',
-    redirectUris: ['http://localhost:3001/auth/callback'],
+    redirectUris: [
+      'http://localhost:3001/auth/callback',
+      'https://cellaroidctest.ishak.stream/auth/callback',
+    ],
     secretEnvVar: 'OIDC_DUMMY_APP_OIDC_SECRET',
     skipConsent: true,
   },

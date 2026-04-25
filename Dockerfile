@@ -21,10 +21,13 @@ ENV BETTER_AUTH_SECRET=dummy-secret-for-build-time-only-32-characters-long
 
 RUN npm run build
 
-# ── migrate: run prisma migrate deploy ────────────────────────────────
+# ── migrate: run prisma migrate deploy and auth bootstrap scripts ─────
 FROM base AS migrate
 COPY --from=deps /app/node_modules ./node_modules
+COPY package.json tsconfig.json ./
 COPY prisma ./prisma
+COPY scripts ./scripts
+COPY src ./src
 COPY prisma.config.ts .
 
 CMD ["npx", "prisma", "migrate", "deploy"]
