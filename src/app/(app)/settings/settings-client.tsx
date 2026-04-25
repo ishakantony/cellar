@@ -2,17 +2,32 @@
 
 import { authClient } from '@/lib/auth-client';
 import { toast } from 'sonner';
-import { ProfileForm } from '@/components/settings';
-import type { UpdateProfileData } from '@/schemas/settings';
+import { ProfileForm, PasswordForm } from '@/components/settings';
+import type { UpdateProfileData, ChangePasswordData } from '@/schemas/settings';
 
 export interface SettingsClientProps {
   user: { name: string; email: string; image?: string | null };
+  hasPassword: boolean;
 }
 
-export function SettingsClient({ user }: SettingsClientProps) {
+export function SettingsClient({ user, hasPassword }: SettingsClientProps) {
   async function handleUpdateProfile(data: UpdateProfileData) {
     await authClient.updateUser({ name: data.name });
     toast.success('Profile updated successfully');
+  }
+
+  async function handleChangePassword(data: ChangePasswordData) {
+    const result = await authClient.changePassword({
+      currentPassword: data.currentPassword,
+      newPassword: data.newPassword,
+      revokeOtherSessions: data.revokeOtherSessions,
+    });
+
+    if (result.error) {
+      throw new Error(result.error.message || 'Failed to change password');
+    }
+
+    toast.success('Password changed successfully');
   }
 
   return (
@@ -32,6 +47,15 @@ export function SettingsClient({ user }: SettingsClientProps) {
           userEmail={user.email}
         />
       </section>
+
+      {hasPassword && (
+        <section>
+          <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-on-surface mb-4">
+            Password
+          </h3>
+          <PasswordForm onSubmit={handleChangePassword} />
+        </section>
+      )}
     </div>
   );
 }
