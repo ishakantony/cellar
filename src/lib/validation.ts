@@ -26,6 +26,10 @@ export const UpdateAssetSchema = z.object({
   content: z.string().max(100000).optional(),
   language: z.string().max(50).optional(),
   url: z.string().url().optional(),
+  filePath: z.string().max(500).optional(),
+  fileName: z.string().max(200).optional(),
+  mimeType: z.string().max(100).optional(),
+  fileSize: z.number().int().min(0).optional(),
 });
 
 // Collection schemas

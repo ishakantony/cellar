@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn } from 'storybook/test';
+import { useState } from 'react';
 import { Select } from './select';
 
 const meta: Meta<typeof Select> = {
@@ -22,11 +22,9 @@ const defaultOptions = [
 ];
 
 export const Default: Story = {
-  args: {
-    value: 'option1',
-    options: defaultOptions,
-    onChange: fn(),
-    disabled: false,
+  render: () => {
+    const [value, setValue] = useState('option1');
+    return <Select value={value} options={defaultOptions} onChange={setValue} />;
   },
 };
 
@@ -34,37 +32,45 @@ export const Disabled: Story = {
   args: {
     value: 'option1',
     options: defaultOptions,
-    onChange: fn(),
+    onChange: () => {},
     disabled: true,
   },
 };
 
 export const ManyOptions: Story = {
-  args: {
-    value: 'medium',
-    options: [
-      { value: 'xs', label: 'Extra Small' },
-      { value: 'small', label: 'Small' },
-      { value: 'medium', label: 'Medium' },
-      { value: 'large', label: 'Large' },
-      { value: 'xl', label: 'Extra Large' },
-      { value: 'xxl', label: 'Double XL' },
-    ],
-    onChange: fn(),
-    disabled: false,
+  render: () => {
+    const [value, setValue] = useState('medium');
+    return (
+      <Select
+        value={value}
+        options={[
+          { value: 'xs', label: 'Extra Small' },
+          { value: 'small', label: 'Small' },
+          { value: 'medium', label: 'Medium' },
+          { value: 'large', label: 'Large' },
+          { value: 'xl', label: 'Extra Large' },
+          { value: 'xxl', label: 'Double XL' },
+        ]}
+        onChange={setValue}
+      />
+    );
   },
 };
 
 export const StatusSelect: Story = {
-  args: {
-    value: 'active',
-    options: [
-      { value: 'active', label: 'Active' },
-      { value: 'inactive', label: 'Inactive' },
-      { value: 'pending', label: 'Pending' },
-      { value: 'archived', label: 'Archived' },
-    ],
-    onChange: fn(),
-    disabled: false,
+  render: () => {
+    const [value, setValue] = useState('active');
+    return (
+      <Select
+        value={value}
+        options={[
+          { value: 'active', label: 'Active' },
+          { value: 'inactive', label: 'Inactive' },
+          { value: 'pending', label: 'Pending' },
+          { value: 'archived', label: 'Archived' },
+        ]}
+        onChange={setValue}
+      />
+    );
   },
 };

@@ -47,6 +47,10 @@ export async function updateAsset(
     content?: string;
     language?: string;
     url?: string;
+    filePath?: string;
+    fileName?: string;
+    mimeType?: string;
+    fileSize?: number;
   }
 ) {
   // Validate input
@@ -56,6 +60,22 @@ export async function updateAsset(
   }
 
   const user = await getUser();
+
+  // If filePath is changing, delete the old file from disk
+  if (validated.data.filePath !== undefined) {
+    const existing = await prisma.asset.findUnique({
+      where: { id, userId: user.id },
+    });
+    if (existing?.filePath && existing.filePath !== validated.data.filePath) {
+      const uploadDir = process.env.UPLOAD_DIR || './uploads';
+      const uploadsRoot = join(process.cwd(), uploadDir);
+      const fullPath = join(uploadsRoot, existing.filePath);
+      if (fullPath.startsWith(uploadsRoot + '/') || fullPath.startsWith(uploadsRoot + '\\')) {
+        await unlink(fullPath).catch(() => {});
+      }
+    }
+  }
+
   const asset = await prisma.asset.update({
     where: { id, userId: user.id },
     data: validated.data,
@@ -93,8 +113,12 @@ export async function getAssets(filters?: {
   type?: AssetType;
   sort?: 'newest' | 'oldest' | 'az' | 'za';
   q?: string;
+  limit?: number;
+  offset?: number;
 }) {
   const user = await getUser();
+  const limit = filters?.limit ?? 20;
+  const offset = filters?.offset ?? 0;
 
   // Full-text search
   if (filters?.q) {
@@ -121,19 +145,22 @@ export async function getAssets(filters?: {
       WHERE "userId" = ${user.id}
       AND "searchVector" @@ plainto_tsquery('english', ${filters.q})
       ${filters.type ? Prisma.sql`AND "type" = ${filters.type}::"AssetType"` : Prisma.empty}
-      ORDER BY ts_rank("searchVector", plainto_tsquery('english', ${filters.q})) DESC
+      ORDER BY "pinned" DESC, ts_rank("searchVector", plainto_tsquery('english', ${filters.q})) DESC
+      LIMIT ${limit} OFFSET ${offset}
     `;
     return assets;
   }
 
-  const orderBy: Prisma.AssetOrderByWithRelationInput =
+  const orderBy: Prisma.AssetOrderByWithRelationInput[] = [
+    { pinned: 'desc' },
     filters?.sort === 'oldest'
       ? { createdAt: 'asc' }
       : filters?.sort === 'az'
         ? { title: 'asc' }
         : filters?.sort === 'za'
           ? { title: 'desc' }
-          : { updatedAt: 'desc' };
+          : { updatedAt: 'desc' },
+  ];
 
   return prisma.asset.findMany({
     where: {
@@ -141,6 +168,8 @@ export async function getAssets(filters?: {
       ...(filters?.type && { type: filters.type }),
     },
     orderBy,
+    take: limit,
+    skip: offset,
   });
 }
 

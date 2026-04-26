@@ -39,6 +39,7 @@ import {
 } from './assets';
 import { prisma } from '@/lib/prisma';
 import { getUser } from '@/lib/session';
+import { unlink } from 'fs/promises';
 
 describe('assets actions', () => {
   const mockPrisma = prisma as unknown as MockPrisma;
@@ -172,7 +173,9 @@ describe('assets actions', () => {
         where: {
           userId: mockUser.id,
         },
-        orderBy: { updatedAt: 'desc' },
+        orderBy: [{ pinned: 'desc' }, { updatedAt: 'desc' }],
+        take: 20,
+        skip: 0,
       });
       expect(result).toEqual(mockAssets);
     });
@@ -195,7 +198,9 @@ describe('assets actions', () => {
           userId: mockUser.id,
           type: AssetType.SNIPPET,
         },
-        orderBy: { updatedAt: 'desc' },
+        orderBy: [{ pinned: 'desc' }, { updatedAt: 'desc' }],
+        take: 20,
+        skip: 0,
       });
       expect(result).toEqual(mockAssets);
     });
@@ -212,7 +217,9 @@ describe('assets actions', () => {
         where: {
           userId: mockUser.id,
         },
-        orderBy: { updatedAt: 'desc' },
+        orderBy: [{ pinned: 'desc' }, { updatedAt: 'desc' }],
+        take: 20,
+        skip: 0,
       });
     });
 
@@ -228,7 +235,9 @@ describe('assets actions', () => {
         where: {
           userId: mockUser.id,
         },
-        orderBy: { createdAt: 'asc' },
+        orderBy: [{ pinned: 'desc' }, { createdAt: 'asc' }],
+        take: 20,
+        skip: 0,
       });
     });
 
@@ -245,7 +254,9 @@ describe('assets actions', () => {
         where: {
           userId: mockUser.id,
         },
-        orderBy: { title: 'asc' },
+        orderBy: [{ pinned: 'desc' }, { title: 'asc' }],
+        take: 20,
+        skip: 0,
       });
     });
 
@@ -262,7 +273,9 @@ describe('assets actions', () => {
         where: {
           userId: mockUser.id,
         },
-        orderBy: { title: 'desc' },
+        orderBy: [{ pinned: 'desc' }, { title: 'desc' }],
+        take: 20,
+        skip: 0,
       });
     });
 
@@ -301,6 +314,72 @@ describe('assets actions', () => {
 
       expect(mockPrisma.$queryRaw).toHaveBeenCalled();
       expect(result).toEqual(mockAssets);
+    });
+
+    it('should apply limit and offset', async () => {
+      const mockAssets = [
+        createMockAsset({ id: 'asset-1', userId: mockUser.id, title: 'Asset 1' }),
+      ];
+      mockPrisma.asset.findMany.mockResolvedValue(mockAssets);
+
+      await getAssets({ limit: 10, offset: 5 });
+
+      expect(mockPrisma.asset.findMany).toHaveBeenCalledWith({
+        where: {
+          userId: mockUser.id,
+        },
+        orderBy: [{ pinned: 'desc' }, { updatedAt: 'desc' }],
+        take: 10,
+        skip: 5,
+      });
+    });
+
+    it('should use default limit of 20 and offset of 0', async () => {
+      const mockAssets = [
+        createMockAsset({ id: 'asset-1', userId: mockUser.id, title: 'Asset 1' }),
+      ];
+      mockPrisma.asset.findMany.mockResolvedValue(mockAssets);
+
+      await getAssets();
+
+      expect(mockPrisma.asset.findMany).toHaveBeenCalledWith({
+        where: {
+          userId: mockUser.id,
+        },
+        orderBy: [{ pinned: 'desc' }, { updatedAt: 'desc' }],
+        take: 20,
+        skip: 0,
+      });
+    });
+
+    it('should sort pinned first then by updatedAt desc', async () => {
+      const mockAssets = [
+        createMockAsset({ id: 'asset-1', userId: mockUser.id, title: 'Asset 1' }),
+      ];
+      mockPrisma.asset.findMany.mockResolvedValue(mockAssets);
+
+      await getAssets();
+
+      expect(mockPrisma.asset.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orderBy: [{ pinned: 'desc' }, { updatedAt: 'desc' }],
+        })
+      );
+    });
+
+    it('should sort pinned first then by createdAt asc for oldest', async () => {
+      const mockAssets = [
+        createMockAsset({ id: 'asset-1', userId: mockUser.id, title: 'Asset 1' }),
+      ];
+      mockPrisma.asset.findMany.mockResolvedValue(mockAssets);
+
+      await getAssets({ sort: 'oldest' });
+
+      expect(mockPrisma.asset.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orderBy: [{ pinned: 'desc' }, { createdAt: 'asc' }],
+        })
+      );
     });
   });
 
@@ -369,6 +448,92 @@ describe('assets actions', () => {
       expect(mockRevalidatePath).toHaveBeenCalledWith('/assets');
       expect(mockRevalidatePath).toHaveBeenCalledWith('/collections');
       expect(mockRevalidatePath).toHaveBeenCalledTimes(3);
+    });
+
+    it('should update asset with file metadata fields', async () => {
+      const mockAsset = createMockAsset({
+        id: 'asset-1',
+        userId: mockUser.id,
+        title: 'Updated Title',
+        filePath: 'new-file.png',
+        fileName: 'new-file.png',
+        mimeType: 'image/png',
+        fileSize: 2048,
+      });
+      mockPrisma.asset.findUnique.mockResolvedValue(
+        createMockAsset({ id: 'asset-1', userId: mockUser.id, filePath: 'old-file.png' })
+      );
+      mockPrisma.asset.update.mockResolvedValue(mockAsset);
+
+      const result = await updateAsset('asset-1', {
+        title: 'Updated Title',
+        filePath: 'new-file.png',
+        fileName: 'new-file.png',
+        mimeType: 'image/png',
+        fileSize: 2048,
+      });
+
+      expect(mockPrisma.asset.update).toHaveBeenCalledWith({
+        where: { id: 'asset-1', userId: mockUser.id },
+        data: {
+          title: 'Updated Title',
+          filePath: 'new-file.png',
+          fileName: 'new-file.png',
+          mimeType: 'image/png',
+          fileSize: 2048,
+        },
+      });
+      expect(result).toEqual(mockAsset);
+    });
+
+    it('should look up existing asset when filePath is provided', async () => {
+      const mockAsset = createMockAsset({
+        id: 'asset-1',
+        userId: mockUser.id,
+        filePath: 'new-file.png',
+      });
+      mockPrisma.asset.findUnique.mockResolvedValue(
+        createMockAsset({ id: 'asset-1', userId: mockUser.id, filePath: 'old-file.png' })
+      );
+      mockPrisma.asset.update.mockResolvedValue(mockAsset);
+
+      await updateAsset('asset-1', { filePath: 'new-file.png' });
+
+      expect(mockPrisma.asset.findUnique).toHaveBeenCalledWith({
+        where: { id: 'asset-1', userId: mockUser.id },
+      });
+    });
+
+    it('should look up existing asset but still update when filePath is unchanged', async () => {
+      const mockAsset = createMockAsset({
+        id: 'asset-1',
+        userId: mockUser.id,
+        filePath: 'same-file.png',
+      });
+      mockPrisma.asset.findUnique.mockResolvedValue(
+        createMockAsset({ id: 'asset-1', userId: mockUser.id, filePath: 'same-file.png' })
+      );
+      mockPrisma.asset.update.mockResolvedValue(mockAsset);
+
+      await updateAsset('asset-1', { title: 'Updated', filePath: 'same-file.png' });
+
+      expect(mockPrisma.asset.findUnique).toHaveBeenCalledWith({
+        where: { id: 'asset-1', userId: mockUser.id },
+      });
+      expect(mockPrisma.asset.update).toHaveBeenCalled();
+    });
+
+    it('should not look up existing asset when only non-file fields change', async () => {
+      const mockAsset = createMockAsset({
+        id: 'asset-1',
+        userId: mockUser.id,
+        title: 'Updated',
+      });
+      mockPrisma.asset.update.mockResolvedValue(mockAsset);
+
+      await updateAsset('asset-1', { title: 'Updated' });
+
+      expect(mockPrisma.asset.findUnique).not.toHaveBeenCalled();
     });
 
     it('should throw error when user is not authenticated', async () => {
