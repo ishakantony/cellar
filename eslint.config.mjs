@@ -18,6 +18,8 @@ const eslintConfig = defineConfig([
     'next-env.d.ts',
     // Coverage reports
     'coverage/**',
+    // Storybook build output
+    'storybook-static/**',
   ]),
   ...storybook.configs['flat/recommended'],
   // Prettier config must be last to override conflicting ESLint rules

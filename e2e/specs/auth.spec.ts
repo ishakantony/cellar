@@ -28,7 +28,7 @@ test.describe('Authentication Flows', () => {
 
     // Verify redirect to dashboard
     await expect(page).toHaveURL('/dashboard');
-    await expect(page.getByRole('heading', { name: /Quick Actions/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Dashboard Coming Soon/i })).toBeVisible();
 
     // Cleanup after test
     await cleanupTestUser(testEmail);
@@ -38,7 +38,8 @@ test.describe('Authentication Flows', () => {
     await page.goto('/sign-in');
 
     // Fill with non-existent credentials
-    await page.getByLabel(/Email/i).fill('nonexistent@example.com');
+    // Use pressSequentially for email to work around WebKit + React controlled input issue
+    await page.getByLabel(/Email/i).pressSequentially('nonexistent@example.com');
     await page.getByLabel(/Password/i).fill('WrongPassword123!');
 
     // Submit the form

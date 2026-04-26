@@ -14,7 +14,10 @@ describe('firstPartyClients', () => {
         clientId: 'oidc-dummy-app',
         name: 'OIDC Dummy App',
         type: 'web',
-        redirectUris: ['http://localhost:3001/auth/callback'],
+        redirectUris: [
+          'http://localhost:3001/auth/callback',
+          'https://cellaroidctest.ishak.stream/auth/callback',
+        ],
         secretEnvVar: 'OIDC_DUMMY_APP_OIDC_SECRET',
         skipConsent: true,
       },
@@ -109,7 +112,10 @@ describe('firstPartyClients', () => {
       clientId: 'oidc-dummy-app',
       name: 'OIDC Dummy App',
       type: 'web',
-      redirectUris: ['http://localhost:3001/auth/callback'],
+      redirectUris: [
+        'http://localhost:3001/auth/callback',
+        'https://cellaroidctest.ishak.stream/auth/callback',
+      ],
       clientSecret: 'oidc-dummy-app-secret',
       skipConsent: true,
       disabled: false,

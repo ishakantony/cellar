@@ -23,7 +23,7 @@ test.describe('Assets CRUD', () => {
     await page.getByRole('button', { name: /Create/i }).click();
 
     // Should redirect to detail page
-    await expect(page).toHaveURL(/\/assets\/.+/);
+    await expect(page).toHaveURL(/\/assets\/[a-zA-Z0-9-]+$/);
     await expect(page.getByRole('heading', { name: assetTitle })).toBeVisible();
   });
 
@@ -34,7 +34,7 @@ test.describe('Assets CRUD', () => {
     await page.locator('h4').filter({ hasText: assetTitle }).first().click();
 
     // Should navigate to detail page
-    await expect(page).toHaveURL(/\/assets\/.+/);
+    await expect(page).toHaveURL(/\/assets\/[a-zA-Z0-9-]+$/);
     await expect(page.getByRole('heading', { name: assetTitle })).toBeVisible();
   });
 
@@ -56,7 +56,7 @@ test.describe('Assets CRUD', () => {
     await page.getByRole('button', { name: /Save/i }).click();
 
     // Should redirect to detail page with updated title
-    await expect(page).toHaveURL(/\/assets\/.+/);
+    await expect(page).toHaveURL(/\/assets\/[a-zA-Z0-9-]+$/);
     await expect(page.getByRole('heading', { name: updatedTitle })).toBeVisible();
   });
 
@@ -68,6 +68,7 @@ test.describe('Assets CRUD', () => {
 
     // Click on asset to go to detail
     await page.locator('h4').filter({ hasText: updatedTitle }).first().click();
+    await expect(page).toHaveURL(/\/assets\/[a-zA-Z0-9-]+$/);
 
     // Click delete
     await page.getByRole('button', { name: /Delete/i }).click();
@@ -77,8 +78,11 @@ test.describe('Assets CRUD', () => {
     await expect(page.getByText(/Delete Asset/i)).toBeVisible();
     await expect(page.getByText(/This action cannot be undone/i)).toBeVisible();
 
-    // Confirm deletion
-    await page.getByRole('button', { name: /^Delete$/ }).click();
+    // Confirm deletion (scoped to dialog to avoid matching the detail page's delete icon button)
+    await page
+      .getByRole('dialog')
+      .getByRole('button', { name: /^Delete$/ })
+      .click();
 
     // Should redirect to assets list
     await expect(page).toHaveURL('/assets');
@@ -94,14 +98,14 @@ test.describe('Assets Search, Filter and View', () => {
     await page.getByRole('button', { name: /Snippet/i }).click();
     await page.getByPlaceholder(/Asset title/i).fill('Alpha Snippet');
     await page.getByRole('button', { name: /Create/i }).click();
-    await expect(page).toHaveURL(/\/assets\/.+/);
+    await expect(page).toHaveURL(/\/assets\/[a-zA-Z0-9-]+$/);
 
     // Create Beta Note
     await page.goto('/assets/new');
     await page.getByRole('button', { name: /Note/i }).click();
     await page.getByPlaceholder(/Asset title/i).fill('Beta Note');
     await page.getByRole('button', { name: /Create/i }).click();
-    await expect(page).toHaveURL(/\/assets\/.+/);
+    await expect(page).toHaveURL(/\/assets\/[a-zA-Z0-9-]+$/);
   });
 
   test('search filters assets', async ({ page }) => {
@@ -112,7 +116,7 @@ test.describe('Assets Search, Filter and View', () => {
     await page.waitForTimeout(400);
 
     await expect(page.locator('h4').filter({ hasText: 'Alpha Snippet' }).first()).toBeVisible();
-    await expect(page.locator('h4').filter({ hasText: 'Beta Note' })).not.toBeVisible();
+    await expect(page.locator('h4').filter({ hasText: 'Beta Note' })).toHaveCount(0);
   });
 
   test('filter by type', async ({ page }) => {
@@ -120,16 +124,18 @@ test.describe('Assets Search, Filter and View', () => {
 
     // Click Note tab
     await page.getByRole('button', { name: /^Note$/ }).click();
+    await page.waitForTimeout(500);
 
     await expect(page.locator('h4').filter({ hasText: 'Beta Note' }).first()).toBeVisible();
-    await expect(page.locator('h4').filter({ hasText: 'Alpha Snippet' })).not.toBeVisible();
+    await expect(page.locator('h4').filter({ hasText: 'Alpha Snippet' })).toHaveCount(0);
   });
 
   test('sort assets', async ({ page }) => {
     await page.goto('/assets');
 
     // Change sort to A-Z
-    await page.getByRole('combobox').selectOption('A-Z');
+    await page.getByRole('combobox').click();
+    await page.getByRole('option', { name: 'A-Z' }).click();
     await page.waitForTimeout(300);
 
     // Both should still be visible
