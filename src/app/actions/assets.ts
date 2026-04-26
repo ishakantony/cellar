@@ -141,7 +141,8 @@ export async function getAssets(filters?: {
         updatedAt: Date;
       }>
     >`
-      SELECT * FROM "Asset"
+      SELECT "id", "userId", "type", "title", "description", "pinned", "content", "language", "url", "filePath", "fileName", "mimeType", "fileSize", "createdAt", "updatedAt"
+      FROM "Asset"
       WHERE "userId" = ${user.id}
       AND "searchVector" @@ plainto_tsquery('english', ${filters.q})
       ${filters.type ? Prisma.sql`AND "type" = ${filters.type}::"AssetType"` : Prisma.empty}
