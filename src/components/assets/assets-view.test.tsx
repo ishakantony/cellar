@@ -58,4 +58,32 @@ describe('AssetsView', () => {
     fireEvent.click(screen.getByText('Test'));
     expect(onCardClick).toHaveBeenCalledWith('1');
   });
+
+  it('highlights pinned assets with a left border', () => {
+    const { container } = render(
+      <AssetsView
+        assets={[{ ...MOCK_ASSETS[0], pinned: true }]}
+        view="grid"
+        onCardClick={vi.fn()}
+        onTogglePin={vi.fn()}
+        onDelete={vi.fn()}
+        emptyMessage="Empty"
+      />
+    );
+    expect(container.querySelector('.\\!border-l-primary')).toBeInTheDocument();
+  });
+
+  it('does not highlight unpinned assets with a left border', () => {
+    const { container } = render(
+      <AssetsView
+        assets={MOCK_ASSETS}
+        view="grid"
+        onCardClick={vi.fn()}
+        onTogglePin={vi.fn()}
+        onDelete={vi.fn()}
+        emptyMessage="Empty"
+      />
+    );
+    expect(container.querySelector('.\\!border-l-primary')).not.toBeInTheDocument();
+  });
 });

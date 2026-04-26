@@ -3,6 +3,7 @@
 import { Pin, PinOff, Trash2, MoreVertical } from 'lucide-react';
 import { AssetType } from '@/generated/prisma/enums';
 import { TYPE_CONFIG } from '@/lib/asset-types';
+import { cn } from '@/lib/utils';
 import { IconBadgeProps } from '@/components/ui/icon-badge';
 import { Card } from '@/components/ui/card';
 import { IconBadge } from '@/components/ui/icon-badge';
@@ -59,7 +60,10 @@ export function AssetCard({
         hoverable
         onClick={onClick}
         padding="sm"
-        className="flex items-center gap-3 hover:bg-surface-container group cursor-pointer"
+        className={cn(
+          'flex items-center gap-3 hover:bg-surface-container group cursor-pointer',
+          asset.pinned && '!border-l-2 !border-l-primary bg-primary/5'
+        )}
       >
         <IconBadge
           icon={config.icon}
@@ -74,12 +78,30 @@ export function AssetCard({
     );
   }
 
+  const actionMenu = (
+    <div onClick={e => e.stopPropagation()}>
+      <ActionMenu
+        items={menuItems}
+        trigger={
+          <IconButton
+            icon={MoreVertical}
+            className="opacity-0 group-hover:opacity-100 transition-opacity"
+            label="More actions"
+          />
+        }
+      />
+    </div>
+  );
+
   return (
     <Card
       hoverable
       onClick={onClick}
       padding="sm"
-      className="flex items-center gap-4 hover:bg-surface-container-high group cursor-pointer"
+      className={cn(
+        'flex items-center gap-4 hover:bg-surface-container-high group cursor-pointer',
+        asset.pinned && '!border-l-2 !border-l-primary bg-primary/5'
+      )}
     >
       <IconBadge
         icon={config.icon}
@@ -90,17 +112,7 @@ export function AssetCard({
         <h4 className="text-sm font-semibold text-slate-200 truncate">{asset.title}</h4>
         <p className="text-[10px] text-outline font-mono truncate">{subtitle}</p>
       </div>
-      <ActionMenu
-        items={menuItems}
-        trigger={
-          <IconButton
-            icon={MoreVertical}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={e => e.stopPropagation()}
-            label="More actions"
-          />
-        }
-      />
+      {actionMenu}
     </Card>
   );
 }
