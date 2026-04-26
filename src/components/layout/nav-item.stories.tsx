@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn, userEvent, within, expect } from 'storybook/test';
 import { Home, Settings, User, Bell } from 'lucide-react';
 import { NavItem } from './nav-item';
 

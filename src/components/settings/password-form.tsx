@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { changePasswordSchema, type ChangePasswordData } from '@/schemas/settings';
 import { FormField } from '@/components/ui/form-field';
@@ -18,7 +18,7 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
     formState: { errors, isSubmitting },
     setError,
     clearErrors,
-    watch,
+    control,
     setValue,
   } = useForm<ChangePasswordData>({
     resolver: zodResolver(changePasswordSchema),
@@ -41,10 +41,15 @@ export function PasswordForm({ onSubmit }: PasswordFormProps) {
     }
   };
 
-  const currentPassword = watch('currentPassword') || '';
-  const newPassword = watch('newPassword') || '';
-  const confirmPassword = watch('confirmPassword') || '';
-  const revokeOtherSessions = watch('revokeOtherSessions') || false;
+  const [
+    currentPassword = '',
+    newPassword = '',
+    confirmPassword = '',
+    revokeOtherSessions = false,
+  ] = useWatch({
+    control,
+    name: ['currentPassword', 'newPassword', 'confirmPassword', 'revokeOtherSessions'] as const,
+  });
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">

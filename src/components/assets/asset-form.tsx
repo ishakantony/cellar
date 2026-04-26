@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AssetType } from '@/generated/prisma/enums';
 import { CreateAssetSchema, UpdateAssetSchema, type CreateAssetInput } from '@/lib/validation';
@@ -72,7 +72,7 @@ export function AssetForm({
     formState: { errors, isSubmitting, isDirty },
     setError,
     clearErrors,
-    watch,
+    control,
     setValue,
   } = useForm<FormInput>({
     resolver: zodResolver(schema) as never,
@@ -88,17 +88,35 @@ export function AssetForm({
     },
   });
 
-  const type = watch('type');
-  const title = watch('title') || '';
-  const description = watch('description') || '';
-  const content = watch('content') || '';
-  const language = watch('language') || 'javascript';
-  const url = watch('url') || '';
-  const filePath = watch('filePath') || undefined;
-  const fileName = watch('fileName') || undefined;
-  const mimeType = watch('mimeType') || undefined;
-  const fileSize = watch('fileSize') || undefined;
-  const collectionIds = watch('collectionIds') || [];
+  const [
+    watchedType,
+    title = '',
+    description = '',
+    content = '',
+    language = 'javascript',
+    url = '',
+    filePath,
+    fileName,
+    mimeType,
+    fileSize,
+    collectionIds = [],
+  ] = useWatch({
+    control,
+    name: [
+      'type',
+      'title',
+      'description',
+      'content',
+      'language',
+      'url',
+      'filePath',
+      'fileName',
+      'mimeType',
+      'fileSize',
+      'collectionIds',
+    ] as const,
+  });
+  const type = watchedType || AssetType.SNIPPET;
 
   const collectionOptions = useMemo(
     () => availableCollections.map(c => ({ value: c.id, label: c.name })),

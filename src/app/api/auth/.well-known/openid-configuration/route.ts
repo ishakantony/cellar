@@ -2,5 +2,8 @@ import { oauthProviderOpenIdConfigMetadata } from '@better-auth/oauth-provider';
 
 import { auth } from '@/lib/auth';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const GET = oauthProviderOpenIdConfigMetadata(auth as any);
+type OpenIdConfigMetadataAuth = {
+  api: { getOpenIdConfig: (...args: unknown[]) => unknown };
+};
+
+export const GET = oauthProviderOpenIdConfigMetadata(auth as unknown as OpenIdConfigMetadataAuth);

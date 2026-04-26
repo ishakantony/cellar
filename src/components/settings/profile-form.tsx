@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { updateProfileSchema, type UpdateProfileData } from '@/schemas/settings';
 import { FormField } from '@/components/ui/form-field';
@@ -21,7 +21,7 @@ export function ProfileForm({ onSubmit, defaultValues, userEmail }: ProfileFormP
     formState: { errors, isSubmitting },
     setError,
     clearErrors,
-    watch,
+    control,
     setValue,
   } = useForm<UpdateProfileData>({
     resolver: zodResolver(updateProfileSchema),
@@ -43,7 +43,7 @@ export function ProfileForm({ onSubmit, defaultValues, userEmail }: ProfileFormP
   };
 
   // Watch values for controlled inputs
-  const name = watch('name') || '';
+  const name = useWatch({ control, name: 'name' }) || '';
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">

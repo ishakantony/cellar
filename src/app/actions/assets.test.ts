@@ -612,6 +612,7 @@ describe('assets actions', () => {
       });
       mockPrisma.asset.findUnique.mockResolvedValue(mockAsset);
       mockPrisma.asset.delete.mockResolvedValue(mockAsset);
+      vi.mocked(unlink).mockRejectedValueOnce(new Error('unlink failed'));
 
       // Should not throw even if file deletion fails
       await expect(deleteAsset('asset-1')).resolves.not.toThrow();

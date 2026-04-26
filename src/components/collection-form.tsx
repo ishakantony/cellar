@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateCollectionSchema, type CreateCollectionInput } from '@/lib/validation';
 import { FormField } from '@/components/ui/form-field';
@@ -22,7 +22,6 @@ export function CollectionForm({
   onSubmit,
   defaultValues,
   submitLabel = 'Create',
-  mode = 'create',
   onCancel,
 }: CollectionFormProps) {
   const {
@@ -30,7 +29,7 @@ export function CollectionForm({
     formState: { errors, isSubmitting },
     setError,
     clearErrors,
-    watch,
+    control,
     setValue,
   } = useForm<CreateCollectionInput>({
     resolver: zodResolver(CreateCollectionSchema),
@@ -54,9 +53,10 @@ export function CollectionForm({
   };
 
   // Watch values for controlled inputs
-  const name = watch('name') || '';
-  const description = watch('description') || '';
-  const color = watch('color') || '#3b82f6';
+  const [name = '', description = '', color = '#3b82f6'] = useWatch({
+    control,
+    name: ['name', 'description', 'color'] as const,
+  });
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">

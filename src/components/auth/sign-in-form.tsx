@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signInSchema, type SignInData } from '@/schemas/auth';
 import { FormField } from '@/components/ui/form-field';
@@ -19,7 +19,7 @@ export function SignInForm({ onSubmit, defaultValues }: SignInFormProps) {
     formState: { errors, isSubmitting },
     setError,
     clearErrors,
-    watch,
+    control,
     setValue,
   } = useForm<SignInData>({
     resolver: zodResolver(signInSchema),
@@ -41,11 +41,10 @@ export function SignInForm({ onSubmit, defaultValues }: SignInFormProps) {
     }
   };
 
-  // Get current values for controlled inputs
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const email = watch('email') || '';
-
-  const password = watch('password') || '';
+  const [email = '', password = ''] = useWatch({
+    control,
+    name: ['email', 'password'] as const,
+  });
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">

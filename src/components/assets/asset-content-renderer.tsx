@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import Image from 'next/image';
 import { Copy, ExternalLink, Download, X, ZoomIn } from 'lucide-react';
 import { toast } from 'sonner';
 import { AssetType } from '@/generated/prisma/enums';
@@ -119,13 +120,16 @@ function ImageRenderer({
   return (
     <>
       <div
-        className="relative rounded-lg bg-surface-container overflow-hidden cursor-zoom-in group"
+        className="relative h-[min(500px,70vh)] w-full rounded-lg bg-surface-container overflow-hidden cursor-zoom-in group"
         onClick={() => setLightboxOpen(true)}
       >
-        <img
+        <Image
           src={`/api/files/${filePath}`}
           alt={fileName || 'Asset image'}
-          className="w-full max-h-[500px] object-contain"
+          fill
+          unoptimized
+          sizes="(max-width: 768px) 100vw, 768px"
+          className="object-contain"
         />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
           <ZoomIn className="h-8 w-8 text-white" />
@@ -138,11 +142,14 @@ function ImageRenderer({
         size="md"
         ariaLabel="Image preview"
       >
-        <div className="relative">
-          <img
+        <div className="relative h-[80vh] w-full">
+          <Image
             src={`/api/files/${filePath}`}
             alt={fileName || 'Asset image'}
-            className="w-full max-h-[80vh] object-contain rounded-lg"
+            fill
+            unoptimized
+            sizes="(max-width: 768px) 100vw, 768px"
+            className="object-contain rounded-lg"
           />
           <IconButton
             icon={X}

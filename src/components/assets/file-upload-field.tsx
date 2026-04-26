@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import Image from 'next/image';
 import { X, File, RefreshCw } from 'lucide-react';
 
 import { FileDropzone } from '@/components/file-dropzone';
@@ -70,10 +71,13 @@ export function FileUploadField({ value, onChange, accept, error }: FileUploadFi
       <div className="flex items-start gap-4">
         {isImage ? (
           <div className="relative h-20 w-20 rounded-lg overflow-hidden bg-surface-container-high flex-shrink-0">
-            <img
+            <Image
               src={`/api/files/${value.filePath}`}
               alt={value.fileName}
-              className="h-full w-full object-cover"
+              fill
+              unoptimized
+              sizes="80px"
+              className="object-cover"
             />
           </div>
         ) : (

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-import { fn, userEvent, within, expect } from 'storybook/test';
+import { userEvent, within, expect } from 'storybook/test';
 import { useState } from 'react';
 import { CollectionModal } from './collection-modal';
 import { Button } from '@/components/ui/button';
