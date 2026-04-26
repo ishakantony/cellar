@@ -36,15 +36,18 @@ export function AssetsClient({ initialAssets, initialHasMore }: AssetsClientProp
   const [searchQuery, setSearchQuery] = useQueryState('q', {
     defaultValue: '',
     throttleMs: 300,
+    shallow: false,
   });
   const [selectedType, setSelectedType] = useQueryState<AssetType | null>('type', {
     defaultValue: null,
     parse: value => (value as AssetType) || null,
     serialize: value => value || '',
+    shallow: false,
   });
   const [sort, setSort] = useQueryState<'newest' | 'oldest' | 'az' | 'za'>('sort', {
     defaultValue: 'newest',
     parse: value => (value as 'newest' | 'oldest' | 'az' | 'za') || 'newest',
+    shallow: false,
   });
 
   // Refetch when filters change (reset pagination)
