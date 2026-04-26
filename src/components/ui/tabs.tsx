@@ -25,7 +25,7 @@ export function Tabs({ value, options, onChange, className }: TabsProps) {
             key={opt.label}
             onClick={() => onChange(opt.value)}
             className={cn(
-              'px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-all',
+              'px-3 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-all cursor-pointer',
               isActive
                 ? 'bg-primary/10 text-primary'
                 : 'text-outline hover:text-on-surface-variant hover:bg-surface-container'
