@@ -4,9 +4,7 @@ import { toast } from 'sonner';
 import { AssetType } from '@cellar/shared';
 import { MarkdownPreview } from '@/components/markdown-preview';
 import { MonacoEditor } from '@/components/monaco-editor';
-import { Modal } from '@/components/ui/modal';
-import { IconButton } from '@/components/ui/icon-button';
-
+import { IconButton, Modal } from '@cellar/ui';
 interface AssetContentRendererProps {
   asset: {
     type: AssetType;

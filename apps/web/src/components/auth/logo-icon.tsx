@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { cn } from '@cellar/ui';
 
 export interface LogoIconProps {
   className?: string;

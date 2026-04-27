@@ -19,6 +19,8 @@ export default defineConfig({
     alias: {
       '@': path.resolve(dirname, './src'),
       '@cellar/shared': path.resolve(dirname, '../../packages/shared/src/index.ts'),
+      '@cellar/ui/styles.css': path.resolve(dirname, '../../packages/ui/src/styles.css'),
+      '@cellar/ui': path.resolve(dirname, '../../packages/ui/src/index.ts'),
     },
   },
   server: {

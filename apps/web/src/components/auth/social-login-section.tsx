@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { GitBranch } from 'lucide-react';
-import { Divider } from '@/components/ui/divider';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-
+import { Button, Divider, cn } from '@cellar/ui';
 export interface SocialLoginSectionProps {
   onGitHubClick?: () => Promise<void>;
   className?: string;

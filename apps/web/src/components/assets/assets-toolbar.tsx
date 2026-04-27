@@ -1,12 +1,6 @@
 import { Plus } from 'lucide-react';
 import { AssetType } from '@cellar/shared';
-import { SearchInput } from '@/components/ui/search-input';
-import { Tabs } from '@/components/ui/tabs';
-import { Select } from '@/components/ui/select';
-import { ViewToggle } from '@/components/ui/view-toggle';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-
+import { Button, SearchInput, Select, Tabs, ViewToggle, cn } from '@cellar/ui';
 const TYPE_TAB_OPTIONS = [
   { value: null as string | null, label: 'All' },
   { value: 'SNIPPET', label: 'Snippet' },

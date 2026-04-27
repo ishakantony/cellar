@@ -1,5 +1,5 @@
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import { IconButton } from '@/components/ui/icon-button';
+import { IconButton } from '@cellar/ui';
 
 export interface SidebarToggleProps {
   onClick: () => void;

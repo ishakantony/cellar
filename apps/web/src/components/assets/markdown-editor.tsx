@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { cn } from '@/lib/utils';
+import { Textarea, cn } from '@cellar/ui';
 import { MarkdownPreview } from '@/components/markdown-preview';
 import { MonacoEditor } from '@/components/monaco-editor';
-import { Textarea } from '@/components/ui/textarea';
-
 export interface MarkdownEditorProps {
   value: string;
   onChange: (value: string) => void;

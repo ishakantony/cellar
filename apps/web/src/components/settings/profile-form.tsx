@@ -1,12 +1,7 @@
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { updateProfileSchema, type UpdateProfileData } from '@cellar/shared';
-import { FormField } from '@/components/ui/form-field';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Alert } from '@/components/ui/alert';
-import { Label } from '@/components/ui/label';
-
+import { Alert, Button, FormField, Input, Label } from '@cellar/ui';
 export interface ProfileFormProps {
   onSubmit: (data: UpdateProfileData) => Promise<void>;
   defaultValues?: Partial<UpdateProfileData>;

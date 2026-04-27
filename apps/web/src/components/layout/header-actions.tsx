@@ -1,5 +1,5 @@
 import { FolderPlus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@cellar/ui';
 
 export interface HeaderActionsProps {
   onAddCollection: () => void;

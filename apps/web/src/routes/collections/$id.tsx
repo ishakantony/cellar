@@ -4,9 +4,7 @@ import { toast } from 'sonner';
 import { Folder, ArrowLeft } from 'lucide-react';
 import type { CreateCollectionInput } from '@cellar/shared';
 import { CollectionModal } from '@/components/collection-modal';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { IconBadge } from '@/components/ui/icon-badge';
-import { Button } from '@/components/ui/button';
+import { Button, ConfirmDialog, IconBadge } from '@cellar/ui';
 import { getColorClasses } from '@/lib/colors';
 import { useCollectionQuery } from '@/hooks/queries/use-collections';
 import {

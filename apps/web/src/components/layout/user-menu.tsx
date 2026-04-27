@@ -1,7 +1,5 @@
 import { LogOut } from 'lucide-react';
-import { Avatar } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
-
+import { Avatar, cn } from '@cellar/ui';
 export interface UserMenuProps {
   user: {
     name: string;

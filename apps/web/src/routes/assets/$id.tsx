@@ -4,11 +4,8 @@ import { toast } from 'sonner';
 import { ArrowLeft, Pencil, Trash2, Pin, PinOff } from 'lucide-react';
 import { TYPE_CONFIG } from '@/lib/asset-types';
 import { AssetContentRenderer } from '@/components/assets/asset-content-renderer';
-import { MultiSelect } from '@/components/ui/multi-select';
-import { Button } from '@/components/ui/button';
-import { IconButton } from '@/components/ui/icon-button';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { IconBadge, type IconBadgeProps } from '@/components/ui/icon-badge';
+import { Button, ConfirmDialog, IconBadge, IconButton, MultiSelect } from '@cellar/ui';
+import type { IconBadgeProps } from '@cellar/ui';
 import { useAssetQuery } from '@/hooks/queries/use-assets';
 import { useCollectionsQuery } from '@/hooks/queries/use-collections';
 import {

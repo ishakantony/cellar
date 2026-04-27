@@ -1,10 +1,6 @@
 import { Folder, Pin, PinOff, Trash2, MoreHorizontal, Pencil } from 'lucide-react';
 import { getColorClasses } from '@/lib/colors';
-import { Card } from '@/components/ui/card';
-import { IconBadge } from '@/components/ui/icon-badge';
-import { ActionMenu } from '@/components/ui/action-menu';
-import { IconButton } from '@/components/ui/icon-button';
-
+import { ActionMenu, Card, IconBadge, IconButton } from '@cellar/ui';
 interface CollectionCardProps {
   collection: {
     id: string;

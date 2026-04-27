@@ -1,5 +1,5 @@
 import { LogoIcon } from './logo-icon';
-import { cn } from '@/lib/utils';
+import { cn } from '@cellar/ui';
 
 export interface AuthHeaderProps {
   subtitle: string;

@@ -1,5 +1,5 @@
 import { Logo } from '@/components/auth/logo-icon';
-import { cn } from '@/lib/utils';
+import { cn } from '@cellar/ui';
 
 export interface SidebarLogoProps {
   className?: string;

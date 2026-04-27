@@ -1,11 +1,7 @@
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signUpSchema, type SignUpData } from '@cellar/shared';
-import { FormField } from '@/components/ui/form-field';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Alert } from '@/components/ui/alert';
-
+import { Alert, Button, FormField, Input } from '@cellar/ui';
 export interface SignUpFormProps {
   onSubmit?: (data: SignUpData) => Promise<void>;
   defaultValues?: Partial<SignUpData>;

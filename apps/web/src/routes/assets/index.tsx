@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { AssetType, type AssetSort } from '@cellar/shared';
 import { AssetsToolbar } from '@/components/assets/assets-toolbar';
 import { AssetsView } from '@/components/assets/assets-view';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { ConfirmDialog } from '@cellar/ui';
 import { useAssetsQuery, type AssetSummary } from '@/hooks/queries/use-assets';
 import {
   useDeleteAssetMutation,

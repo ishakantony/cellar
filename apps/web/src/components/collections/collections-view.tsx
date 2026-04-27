@@ -1,5 +1,4 @@
-import { cn } from '@/lib/utils';
-import { EmptyState } from '@/components/ui/empty-state';
+import { EmptyState, cn } from '@cellar/ui';
 import { CollectionCard } from './collection-card';
 
 interface CollectionItem {

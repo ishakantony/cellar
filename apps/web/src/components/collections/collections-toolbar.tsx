@@ -1,8 +1,5 @@
 import { Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { SearchInput } from '@/components/ui/search-input';
-import { ViewToggle } from '@/components/ui/view-toggle';
-
+import { Button, SearchInput, ViewToggle } from '@cellar/ui';
 export interface CollectionsToolbarProps {
   searchValue: string;
   onSearchChange: (value: string) => void;

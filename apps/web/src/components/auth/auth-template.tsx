@@ -1,6 +1,6 @@
 import { AuthHeader } from './auth-header';
 import { AuthFooter } from './auth-footer';
-import { cn } from '@/lib/utils';
+import { cn } from '@cellar/ui';
 
 export interface AuthTemplateProps {
   headerSubtitle: string;

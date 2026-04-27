@@ -1,8 +1,6 @@
 import { type LucideIcon } from 'lucide-react';
-import { Label } from '@/components/ui/label';
+import { Label, cn } from '@cellar/ui';
 import { NavItem } from './nav-item';
-import { cn } from '@/lib/utils';
-
 export interface NavItemConfig {
   href: string;
   icon: LucideIcon;

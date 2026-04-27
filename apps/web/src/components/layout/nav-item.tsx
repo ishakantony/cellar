@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import { type LucideIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@cellar/ui';
 
 export interface NavItemProps {
   href: string;

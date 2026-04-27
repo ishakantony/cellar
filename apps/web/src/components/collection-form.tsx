@@ -1,13 +1,15 @@
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateCollectionSchema, type CreateCollectionInput } from '@cellar/shared';
-import { FormField } from '@/components/ui/form-field';
-import { Input } from '@/components/ui/input';
-import { Alert } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { ColorPicker, DEFAULT_COLOR_OPTIONS } from '@/components/ui/color-picker';
-import { Label } from '@/components/ui/label';
-
+import {
+  Alert,
+  Button,
+  ColorPicker,
+  DEFAULT_COLOR_OPTIONS,
+  FormField,
+  Input,
+  Label,
+} from '@cellar/ui';
 export interface CollectionFormProps {
   onSubmit: (data: CreateCollectionInput) => Promise<void>;
   defaultValues?: Partial<CreateCollectionInput>;

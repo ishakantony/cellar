@@ -10,7 +10,7 @@ import {
   FileText,
 } from 'lucide-react';
 import { NavSection } from './nav-section';
-import { cn } from '@/lib/utils';
+import { cn } from '@cellar/ui';
 
 export interface SidebarNavigationProps {
   activePath: string;

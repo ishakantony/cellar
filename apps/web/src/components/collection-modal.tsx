@@ -1,4 +1,4 @@
-import { Modal } from '@/components/ui/modal';
+import { Modal } from '@cellar/ui';
 import { CollectionForm } from '@/components/collection-form';
 import type { CreateCollectionInput } from '@cellar/shared';
 

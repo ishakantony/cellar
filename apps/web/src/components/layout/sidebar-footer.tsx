@@ -1,7 +1,7 @@
 import { Settings } from 'lucide-react';
 import { NavItem } from './nav-item';
 import { UserMenu } from './user-menu';
-import { cn } from '@/lib/utils';
+import { cn } from '@cellar/ui';
 
 export interface SidebarFooterProps {
   activePath: string;

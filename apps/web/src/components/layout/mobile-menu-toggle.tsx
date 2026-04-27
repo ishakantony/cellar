@@ -1,5 +1,5 @@
 import { Menu } from 'lucide-react';
-import { IconButton } from '@/components/ui/icon-button';
+import { IconButton } from '@cellar/ui';
 
 export interface MobileMenuToggleProps {
   onClick: () => void;

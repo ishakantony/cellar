@@ -3,7 +3,7 @@ import { signOut } from '@/lib/auth-client';
 import { SidebarLogo } from './sidebar-logo';
 import { SidebarNavigation } from './sidebar-navigation';
 import { SidebarFooter } from './sidebar-footer';
-import { cn } from '@/lib/utils';
+import { cn } from '@cellar/ui';
 
 export interface SidebarProps {
   collapsed: boolean;

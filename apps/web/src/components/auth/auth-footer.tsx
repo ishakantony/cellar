@@ -1,6 +1,4 @@
-import { TextLink } from '@/components/ui/text-link';
-import { cn } from '@/lib/utils';
-
+import { TextLink, cn } from '@cellar/ui';
 export interface AuthFooterProps {
   prompt: string;
   linkText: string;
