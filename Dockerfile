@@ -13,15 +13,29 @@ COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY apps/web/package.json apps/web/
 COPY apps/api/package.json apps/api/
 COPY packages/shared/package.json packages/shared/
+COPY packages/ui/package.json packages/ui/
 RUN pnpm install --frozen-lockfile
 
 # ── build: typecheck and build the SPA ────────────────────────────────
 FROM deps AS build
 COPY tsconfig.base.json tsconfig.json ./
 COPY packages/shared ./packages/shared
+COPY packages/ui ./packages/ui
 COPY apps/api ./apps/api
 COPY apps/web ./apps/web
 RUN pnpm --filter web build
+
+# ── storybook-build: build the static Storybook for packages/ui ───────
+FROM deps AS storybook-build
+COPY tsconfig.base.json tsconfig.json ./
+COPY packages/shared ./packages/shared
+COPY packages/ui ./packages/ui
+RUN pnpm --filter @cellar/ui build-storybook
+
+# ── storybook-runner: tiny nginx image serving storybook-static ───────
+FROM nginx:alpine AS storybook-runner
+COPY --from=storybook-build /repo/packages/ui/storybook-static /usr/share/nginx/html
+EXPOSE 80
 
 # ── runner: lean runtime image ────────────────────────────────────────
 FROM node:24-slim AS runner
