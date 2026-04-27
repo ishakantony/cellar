@@ -5,6 +5,11 @@ import { SignInForm } from '@/components/auth/sign-in-form';
 import { SocialLoginSection } from '@/components/auth/social-login-section';
 import type { SignInData } from '@cellar/shared';
 
+const demoDefaults =
+  import.meta.env.VITE_DEMO_MODE === 'true'
+    ? { email: 'demo@cellar.app', password: 'password123' }
+    : undefined;
+
 export function SignInPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -38,7 +43,7 @@ export function SignInPage() {
   return (
     <AuthTemplate
       headerSubtitle="Sign in to your vault"
-      form={<SignInForm onSubmit={handleSubmit} />}
+      form={<SignInForm onSubmit={handleSubmit} defaultValues={demoDefaults} />}
       socialLogin={<SocialLoginSection onGitHubClick={handleGitHub} />}
       footerPrompt="Don't have an account?"
       footerLinkText="Sign up"
