@@ -1,0 +1,41 @@
+{
+  "name": "api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc --noEmit",
+    "start": "tsx src/index.ts",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/boot/migrate.ts",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:reset": "tsx scripts/reset-db.ts"
+  },
+  "dependencies": {
+    "@better-auth/oauth-provider": "^1.6.8",
+    "@cellar/shared": "workspace:*",
+    "@hono/node-server": "^1.13.7",
+    "@hono/zod-validator": "^0.7.0",
+    "@paralleldrive/cuid2": "^2.2.2",
+    "better-auth": "^1.6.8",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.6.13",
+    "pg": "^8.20.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/pg": "^8.20.0",
+    "drizzle-kit": "^0.31.4",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.2",
+    "vitest": "^4.1.4"
+  }
+}

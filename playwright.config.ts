@@ -29,7 +29,7 @@ export default defineConfig({
   /* Shared settings for all the projects below */
   use: {
     /* Base URL to use in actions like `await page.goto('/')` */
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:5201',
 
     /* Collect trace when retrying the failed test */
     trace: 'on-first-retry',
@@ -80,9 +80,13 @@ export default defineConfig({
 
   /* Run local dev server before starting the tests */
   webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
+    command: 'pnpm --filter api dev',
+    url: 'http://localhost:5201/api/health',
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000, // 2 minutes
+    timeout: 120 * 1000,
+    env: {
+      NODE_ENV: 'test',
+      E2E_TEST_MODE: 'true',
+    },
   },
 });

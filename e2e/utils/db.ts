@@ -21,7 +21,7 @@ export async function cleanupTestUser(email: string): Promise<void> {
   try {
     await client.connect();
     // Delete user by email (cascade will handle related records)
-    await client.query('DELETE FROM "User" WHERE email = $1', [email]);
+    await client.query('DELETE FROM "user" WHERE email = $1', [email]);
     console.log(`Cleaned up test user: ${email}`);
   } catch {
     // User might not exist, that's fine

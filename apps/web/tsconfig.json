@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "noEmit": true,
+    "types": ["vite/client", "@testing-library/jest-dom"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@cellar/shared": ["../../packages/shared/src/index.ts"],
+      "@cellar/shared/*": ["../../packages/shared/src/*"],
+      "@cellar/api/app-type": ["../api/src/app.ts"]
+    }
+  },
+  "include": ["src", ".storybook"],
+  "exclude": ["dist", "node_modules", "storybook-static"]
+}

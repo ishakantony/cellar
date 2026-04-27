@@ -1,29 +1,33 @@
-// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
+import { defineConfig, globalIgnores } from 'eslint/config';
+import tseslint from 'typescript-eslint';
+import reactHooks from 'eslint-plugin-react-hooks';
 import storybook from 'eslint-plugin-storybook';
 import prettier from 'eslint-config-prettier';
 
-import { defineConfig, globalIgnores } from 'eslint/config';
-import nextVitals from 'eslint-config-next/core-web-vitals';
-import nextTs from 'eslint-config-next/typescript';
-
-const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
-  // Override default ignores of eslint-config-next.
+export default defineConfig([
   globalIgnores([
-    // Default ignores of eslint-config-next:
-    '.next/**',
-    'out/**',
-    'build/**',
-    'next-env.d.ts',
-    // Coverage reports
-    'coverage/**',
-    // Storybook build output
-    'storybook-static/**',
+    '**/node_modules/**',
+    '**/dist/**',
+    '**/coverage/**',
+    '**/storybook-static/**',
+    '**/playwright-report/**',
+    '**/playwright/.auth/**',
+    '**/test-results/**',
+    'apps/api/drizzle/**',
   ]),
+  ...tseslint.configs.recommended,
+  {
+    plugins: {
+      'react-hooks': reactHooks,
+    },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+    },
+  },
   ...storybook.configs['flat/recommended'],
-  // Prettier config must be last to override conflicting ESLint rules
   prettier,
 ]);
-
-export default eslintConfig;

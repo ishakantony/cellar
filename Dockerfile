@@ -1,89 +1,52 @@
 # syntax=docker/dockerfile:1
 
-# ── base: shared foundation ───────────────────────────────────────────
+# ── base: node + pnpm ─────────────────────────────────────────────────
 FROM node:24-slim AS base
-WORKDIR /app
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+WORKDIR /repo
 
-# ── deps: install all dependencies (cached layer) ─────────────────────
+# ── deps: install workspace dependencies (cached) ─────────────────────
 FROM base AS deps
-COPY package.json package-lock.json* ./
-RUN npm ci
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+COPY apps/web/package.json apps/web/
+COPY apps/api/package.json apps/api/
+COPY packages/shared/package.json packages/shared/
+RUN pnpm install --frozen-lockfile
 
-# ── builder: generate prisma client + next build ──────────────────────
-FROM base AS builder
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+# ── build: typecheck and build the SPA ────────────────────────────────
+FROM deps AS build
+COPY tsconfig.base.json tsconfig.json ./
+COPY packages/shared ./packages/shared
+COPY apps/api ./apps/api
+COPY apps/web ./apps/web
+RUN pnpm --filter web build
 
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
-# Placeholder secret for build-time only (real value at runtime)
-ENV BETTER_AUTH_SECRET=dummy-secret-for-build-time-only-32-characters-long
-
-RUN npm run build
-
-# ── migrate: run prisma migrate deploy and auth bootstrap scripts ─────
-FROM base AS migrate
-COPY --from=deps /app/node_modules ./node_modules
-COPY package.json tsconfig.json ./
-COPY prisma ./prisma
-COPY scripts ./scripts
-COPY src ./src
-COPY prisma.config.ts .
-
-CMD ["npx", "prisma", "migrate", "deploy"]
-
-# ── storybook-builder: build static storybook files ────────────────────
-FROM base AS storybook-builder
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
-
-RUN npm run build-storybook
-
-# ── storybook: serve static storybook with serve ──────────────────────
-FROM node:24-slim AS storybook
-WORKDIR /app
-
-# Copy built storybook files
-COPY --from=storybook-builder /app/storybook-static ./
-
-RUN npm i -g http-server
-
-ENV NODE_ENV=production
-ENV PORT=3000
-
-EXPOSE 3000
-
-USER node
-
-CMD ["http-server", "-p", "3000"]
-
-# ── runner: lean production image (standalone output only) ────────────
+# ── runner: lean runtime image ────────────────────────────────────────
 FROM node:24-slim AS runner
-WORKDIR /app
-
 ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+WORKDIR /app
 
 RUN groupadd --system --gid 1001 nodejs \
- && useradd  --system --uid 1001 -g nodejs nextjs
+ && useradd  --system --uid 1001 -g nodejs cellar
 
-# Static assets
-COPY --from=builder /app/public ./public
-
-# Standalone server + its traced node_modules
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Copy the workspace tree (pnpm uses content-addressable hardlinks across packages)
+COPY --from=build --chown=cellar:nodejs /repo /app
 
 # Writable uploads directory (mount a volume here in production)
-RUN mkdir -p uploads && chown nextjs:nodejs uploads
+RUN mkdir -p /app/uploads && chown cellar:nodejs /app/uploads
+ENV UPLOAD_DIR=/app/uploads
+ENV WEB_DIST_DIR=/app/apps/web/dist
 
-USER nextjs
+USER cellar
+EXPOSE 5200
+ENV PORT=5200
 
-EXPOSE 3000
-ENV PORT=3000
-ENV HOSTNAME=0.0.0.0
-
-CMD ["node", "server.js"]
+# tsx executes TypeScript directly; on boot the server runs migrations,
+# seeds (if empty), syncs OIDC clients, prints the startup report, then listens.
+WORKDIR /app/apps/api
+CMD ["node", "--import", "tsx/esm", "src/index.ts"]
