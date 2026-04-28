@@ -65,13 +65,20 @@ export function CollectionCard({
     </div>
   );
 
+  const pinIcon = collection.pinned ? (
+    <Pin className="h-3 w-3 shrink-0 text-amber-400" aria-label="Pinned" />
+  ) : null;
+
   if (layout === 'list') {
     return (
       <Card hoverable onClick={onClick} className="group cursor-pointer" padding="sm">
         <div className="flex items-center gap-3">
           <IconBadge icon={Folder} variant="collection" color={colorClasses} size="sm" />
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold text-slate-200 truncate">{collection.name}</p>
+            <div className="flex items-center gap-1">
+              {pinIcon}
+              <p className="text-xs font-bold text-slate-200 truncate">{collection.name}</p>
+            </div>
             {collection.description && (
               <p className="text-[10px] text-outline truncate">{collection.description}</p>
             )}
@@ -90,7 +97,10 @@ export function CollectionCard({
         {actionMenu}
       </div>
       <div>
-        <p className="text-xs font-bold text-slate-200 truncate">{collection.name}</p>
+        <div className="flex items-center gap-1">
+          {pinIcon}
+          <p className="text-xs font-bold text-slate-200 truncate">{collection.name}</p>
+        </div>
         <p className="text-[10px] text-outline mt-0.5">{collection._count.assets} items</p>
       </div>
     </Card>

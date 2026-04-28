@@ -52,6 +52,51 @@ describe('CollectionsView', () => {
     expect(screen.getByText('Collection 2')).toBeInTheDocument();
   });
 
+  it('renders both section headers when pinned and unpinned both exist', () => {
+    render(
+      <CollectionsView
+        collections={[{ ...mockCollections[0], pinned: true }, mockCollections[1]]}
+        view="grid"
+        onCardClick={() => {}}
+        onTogglePin={() => {}}
+        onEdit={() => {}}
+        onDelete={() => {}}
+      />
+    );
+    expect(screen.getByRole('heading', { name: 'Pinned' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'All collections' })).toBeInTheDocument();
+  });
+
+  it('renders no headers when only unpinned collections exist', () => {
+    render(
+      <CollectionsView
+        collections={mockCollections}
+        view="grid"
+        onCardClick={() => {}}
+        onTogglePin={() => {}}
+        onEdit={() => {}}
+        onDelete={() => {}}
+      />
+    );
+    expect(screen.queryByRole('heading', { name: 'Pinned' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'All collections' })).not.toBeInTheDocument();
+  });
+
+  it('renders no headers when only pinned collections exist', () => {
+    render(
+      <CollectionsView
+        collections={mockCollections.map(c => ({ ...c, pinned: true }))}
+        view="grid"
+        onCardClick={() => {}}
+        onTogglePin={() => {}}
+        onEdit={() => {}}
+        onDelete={() => {}}
+      />
+    );
+    expect(screen.queryByRole('heading', { name: 'Pinned' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'All collections' })).not.toBeInTheDocument();
+  });
+
   it('calls onCardClick with correct id', async () => {
     const handleClick = vi.fn();
     render(

@@ -88,6 +88,48 @@ describe('CollectionCard', () => {
     expect(handleEdit).toHaveBeenCalledTimes(1);
   });
 
+  it('renders the pin icon when collection is pinned in grid layout', () => {
+    render(
+      <CollectionCard
+        collection={{ ...mockCollection, pinned: true }}
+        layout="grid"
+        onClick={() => {}}
+        onTogglePin={() => {}}
+        onEdit={() => {}}
+        onDelete={() => {}}
+      />
+    );
+    expect(screen.getByLabelText('Pinned')).toBeInTheDocument();
+  });
+
+  it('renders the pin icon when collection is pinned in list layout', () => {
+    render(
+      <CollectionCard
+        collection={{ ...mockCollection, pinned: true }}
+        layout="list"
+        onClick={() => {}}
+        onTogglePin={() => {}}
+        onEdit={() => {}}
+        onDelete={() => {}}
+      />
+    );
+    expect(screen.getByLabelText('Pinned')).toBeInTheDocument();
+  });
+
+  it('does not render the pin icon when collection is not pinned', () => {
+    render(
+      <CollectionCard
+        collection={mockCollection}
+        layout="grid"
+        onClick={() => {}}
+        onTogglePin={() => {}}
+        onEdit={() => {}}
+        onDelete={() => {}}
+      />
+    );
+    expect(screen.queryByLabelText('Pinned')).not.toBeInTheDocument();
+  });
+
   it('calls onDelete when delete action is clicked', async () => {
     const handleDelete = vi.fn();
     const { container } = render(
