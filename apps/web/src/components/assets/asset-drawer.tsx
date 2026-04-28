@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router';
 import { useQueryState } from 'nuqs';
 import { Pencil, Pin, PinOff, Trash2, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { Button, ConfirmDialog, Drawer, IconBadge, IconButton } from '@cellar/ui';
+import { ConfirmDialog, Drawer, IconBadge, IconButton, Tooltip } from '@cellar/ui';
 import type { IconBadgeProps } from '@cellar/ui';
 import type { CreateAssetInput } from '@cellar/shared';
 import { AssetContentRenderer } from './asset-content-renderer';
@@ -16,6 +17,7 @@ import {
 } from '@/hooks/mutations/use-asset-mutations';
 import { useCollectionsQuery } from '@/hooks/queries/use-collections';
 import { TYPE_CONFIG } from '@/lib/asset-types';
+import { formatRelativeTime, formatExactTime } from '@/lib/date';
 
 export function AssetDrawer() {
   const [assetId, setAssetId] = useQueryState('id');
@@ -83,7 +85,7 @@ function AssetCreateContent({
         <IconButton icon={X} size="sm" onClick={onClose} label="Close drawer" />
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 min-h-0 flex flex-col">
         <AssetForm
           mode="create"
           availableCollections={availableCollections}
@@ -177,7 +179,7 @@ function AssetViewContent({ id, onClose }: { id: string; onClose: () => void }) 
           <IconButton icon={X} size="sm" onClick={onClose} label="Close drawer" />
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 min-h-0 flex flex-col">
           <AssetForm
             mode="edit"
             defaultValues={editDefaultValues}
@@ -206,7 +208,7 @@ function AssetViewContent({ id, onClose }: { id: string; onClose: () => void }) 
 
   return (
     <>
-      <div className="flex items-start gap-3 px-6 pt-6 pb-5 border-b border-white/5 shrink-0">
+      <div className="flex items-center gap-3 px-6 pt-6 pb-5 border-b border-white/5 shrink-0">
         <IconBadge
           icon={config.icon}
           variant={asset.type.toLowerCase() as IconBadgeProps['variant']}
@@ -226,14 +228,10 @@ function AssetViewContent({ id, onClose }: { id: string; onClose: () => void }) 
             label={asset.pinned ? 'Unpin' : 'Pin'}
             className={asset.pinned ? 'text-primary' : ''}
           />
-          <Button variant="secondary" size="sm" onClick={() => setMode('edit')}>
-            <Pencil className="h-3.5 w-3.5 mr-1" />
-            Edit
-          </Button>
+          <IconButton icon={Pencil} size="sm" onClick={() => setMode('edit')} label="Edit" />
           <IconButton
             icon={Trash2}
             size="sm"
-            variant="ghost"
             onClick={() => setDeleteDialogOpen(true)}
             label="Delete"
             className="text-error hover:text-error"
@@ -252,12 +250,13 @@ function AssetViewContent({ id, onClose }: { id: string; onClose: () => void }) 
             </h3>
             <div className="flex flex-wrap gap-2">
               {asset.collections.map(({ collection }) => (
-                <span
+                <Link
                   key={collection.id}
-                  className="inline-flex items-center rounded-full bg-surface-container px-3 py-1 text-xs text-on-surface-variant"
+                  to={`/collections/${collection.id}`}
+                  className="inline-flex items-center rounded-full bg-surface-container px-3 py-1 text-xs text-on-surface-variant hover:bg-surface-container-high hover:text-slate-100 transition-colors"
                 >
                   {collection.name}
-                </span>
+                </Link>
               ))}
             </div>
           </div>
@@ -265,8 +264,12 @@ function AssetViewContent({ id, onClose }: { id: string; onClose: () => void }) 
       </div>
 
       <div className="px-6 py-4 border-t border-white/5 shrink-0 flex items-center gap-4 text-[10px] text-outline">
-        <span>Created {new Date(asset.createdAt).toLocaleDateString()}</span>
-        <span>Updated {new Date(asset.updatedAt).toLocaleDateString()}</span>
+        <Tooltip content={formatExactTime(asset.createdAt)}>
+          <span>Created {formatRelativeTime(asset.createdAt)}</span>
+        </Tooltip>
+        <Tooltip content={formatExactTime(asset.updatedAt)}>
+          <span>Updated {formatRelativeTime(asset.updatedAt)}</span>
+        </Tooltip>
       </div>
 
       <ConfirmDialog

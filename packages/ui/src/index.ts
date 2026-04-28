@@ -26,4 +26,5 @@ export * from './components/sonner';
 export * from './components/tabs';
 export * from './components/text-link';
 export * from './components/textarea';
+export * from './components/tooltip';
 export * from './components/view-toggle';
