@@ -1,10 +1,10 @@
 import { useCallback, useState, type ReactNode } from 'react';
-import { useNavigate } from 'react-router';
-import { parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
+import { parseAsString, parseAsStringLiteral, useQueryState, useQueryStates } from 'nuqs';
 import { toast } from 'sonner';
 import { ASSET_TYPES, AssetType, type AssetSort } from '@cellar/shared';
 import { AssetsToolbar } from '@/components/assets/assets-toolbar';
 import { AssetsView } from '@/components/assets/assets-view';
+import { AssetDrawer } from '@/components/assets/asset-drawer';
 import { ConfirmDialog, TextLink } from '@cellar/ui';
 import { useAssetsQuery, type AssetSummary } from '@/hooks/queries/use-assets';
 import {
@@ -16,7 +16,8 @@ import { useViewMode } from '@/hooks/use-view-mode';
 const SORT_VALUES = ['newest', 'oldest', 'az', 'za'] as const satisfies readonly AssetSort[];
 
 export function AssetsListPage() {
-  const navigate = useNavigate();
+  const [, setAssetId] = useQueryState('id');
+  const [, setNewParam] = useQueryState('new');
 
   const [filters, setFilters] = useQueryStates(
     {
@@ -102,13 +103,13 @@ export function AssetsListPage() {
         onSortChange={sort => setFilters({ sort })}
         viewMode={viewMode}
         onViewChange={setViewMode}
-        onNewAsset={() => navigate('/assets/new')}
+        onNewAsset={() => void setNewParam('1')}
       />
 
       <AssetsView
         assets={assetItems}
         view={viewMode}
-        onCardClick={id => navigate(`/assets/${id}`)}
+        onCardClick={id => void setAssetId(id)}
         onTogglePin={handleTogglePin}
         onDelete={id => {
           setAssetToDelete(id);
@@ -116,6 +117,8 @@ export function AssetsListPage() {
         }}
         emptyMessage={emptyMessage}
       />
+
+      <AssetDrawer />
 
       <ConfirmDialog
         open={deleteDialogOpen}

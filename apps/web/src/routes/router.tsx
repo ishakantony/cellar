@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router';
+import { createBrowserRouter, Navigate, useParams } from 'react-router';
 import { AuthGuard } from './auth-guard';
 
 import { AuthLayout } from './auth-layout';
@@ -8,8 +8,12 @@ import { AppLayout } from './app-layout';
 import { DashboardPage } from './dashboard';
 import { AssetsListPage } from './assets/index';
 import { AssetCreatePage } from './assets/new';
-import { AssetDetailPage } from './assets/$id';
 import { AssetEditPage } from './assets/$id.edit';
+
+function AssetIdRedirect() {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={`/assets?id=${id}`} replace />;
+}
 import { CollectionsListPage } from './collections/index';
 import { CollectionDetailPage } from './collections/$id';
 import { SettingsPage } from './settings';
@@ -41,7 +45,7 @@ export const router = createBrowserRouter([
       { path: '/dashboard', element: <DashboardPage /> },
       { path: '/assets', element: <AssetsListPage /> },
       { path: '/assets/new', element: <AssetCreatePage /> },
-      { path: '/assets/:id', element: <AssetDetailPage /> },
+      { path: '/assets/:id', element: <AssetIdRedirect /> },
       { path: '/assets/:id/edit', element: <AssetEditPage /> },
       { path: '/collections', element: <CollectionsListPage /> },
       { path: '/collections/:id', element: <CollectionDetailPage /> },
