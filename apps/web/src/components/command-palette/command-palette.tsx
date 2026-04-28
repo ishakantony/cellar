@@ -28,6 +28,7 @@ import {
 } from '@/lib/command-palette-results';
 import { commandPaletteActions } from '@/lib/command-palette-actions';
 import { cn } from '@cellar/ui';
+import { getIconColorClass } from '@/lib/colors';
 
 // ---------------------------------------------------------------------------
 // Relative time helper
@@ -340,7 +341,8 @@ function RowIcon({ item }: { item: PaletteItem }) {
   }
 
   if (item.kind === 'collection') {
-    return <Folder className={iconClass} />;
+    const colorClass = getIconColorClass(item.collection?.color);
+    return <Folder className={cn('h-4 w-4 shrink-0', colorClass)} />;
   }
 
   if (item.kind === 'action' && item.actionId) {

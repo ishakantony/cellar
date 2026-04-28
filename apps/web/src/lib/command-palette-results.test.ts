@@ -463,3 +463,140 @@ describe('commandPaletteResults — Actions group', () => {
     expect(actionsGroup!.items.length).toBe(9);
   });
 });
+
+// --- Issue 003: Collections group ---
+
+describe('commandPaletteResults — Collections group', () => {
+  it('filters collections by name (case-insensitive substring) when querying', () => {
+    const result = commandPaletteResults({
+      query: 'DESIGN',
+      recentAssets: [],
+      searchAssets: [],
+      searchAssetTotal: 0,
+      collections: [
+        makeCollection({ id: 'c1', name: 'Design Assets' }),
+        makeCollection({ id: 'c2', name: 'Recipes' }),
+        makeCollection({ id: 'c3', name: 'design-drafts' }),
+      ],
+      navEntries: allNavEntries,
+    });
+
+    const group = result.groups.find(g => g.id === 'collections');
+    expect(group).toBeDefined();
+    const names = group!.items.map(i => i.label);
+    expect(names).toContain('Design Assets');
+    expect(names).toContain('design-drafts');
+    expect(names).not.toContain('Recipes');
+  });
+
+  it('caps Collections group at 5 items when more than 5 match', () => {
+    const collections = Array.from({ length: 8 }, (_, i) =>
+      makeCollection({ id: `c${i}`, name: `Collection ${i}` })
+    );
+    const result = commandPaletteResults({
+      query: 'collection',
+      recentAssets: [],
+      searchAssets: [],
+      searchAssetTotal: 0,
+      collections,
+      navEntries: allNavEntries,
+    });
+
+    const group = result.groups.find(g => g.id === 'collections');
+    expect(group).toBeDefined();
+    expect(group!.items).toHaveLength(5);
+  });
+
+  it('omits Collections group entirely (header included) when no collections match', () => {
+    const result = commandPaletteResults({
+      query: 'zzznomatch',
+      recentAssets: [],
+      searchAssets: [],
+      searchAssetTotal: 0,
+      collections: [
+        makeCollection({ id: 'c1', name: 'Alpha' }),
+        makeCollection({ id: 'c2', name: 'Beta' }),
+      ],
+      navEntries: allNavEntries,
+    });
+
+    const groupIds = result.groups.map(g => g.id);
+    expect(groupIds).not.toContain('collections');
+  });
+
+  it('preserves input order (pinned-first from API) in Collections group', () => {
+    // API returns pinned-first; module should not re-sort — just cap
+    const collections = [
+      makeCollection({ id: 'pinned-1', name: 'Pinned Alpha' }),
+      makeCollection({ id: 'pinned-2', name: 'Pinned Beta' }),
+      makeCollection({ id: 'normal-1', name: 'Normal One' }),
+    ];
+    const result = commandPaletteResults({
+      query: 'alpha',
+      recentAssets: [],
+      searchAssets: [],
+      searchAssetTotal: 0,
+      collections,
+      navEntries: allNavEntries,
+    });
+
+    const group = result.groups.find(g => g.id === 'collections')!;
+    expect(group.items[0].collection?.id).toBe('pinned-1');
+  });
+
+  it('Collections group items have kind="collection" with a collection reference', () => {
+    const result = commandPaletteResults({
+      query: 'my',
+      recentAssets: [],
+      searchAssets: [],
+      searchAssetTotal: 0,
+      collections: [makeCollection({ id: 'c1', name: 'My Collection', color: '#3b82f6' })],
+      navEntries: allNavEntries,
+    });
+
+    const group = result.groups.find(g => g.id === 'collections');
+    expect(group).toBeDefined();
+    const item = group!.items[0];
+    expect(item.kind).toBe('collection');
+    expect(item.collection).toBeDefined();
+    expect(item.collection!.id).toBe('c1');
+    expect(item.collection!.color).toBe('#3b82f6');
+  });
+
+  it('Collections group is omitted on empty query', () => {
+    const result = commandPaletteResults({
+      query: '',
+      recentAssets: [],
+      searchAssets: [],
+      searchAssetTotal: 0,
+      collections: [makeCollection({ id: 'c1', name: 'My Collection' })],
+      navEntries: allNavEntries,
+    });
+
+    const groupIds = result.groups.map(g => g.id);
+    expect(groupIds).not.toContain('collections');
+  });
+
+  it('Collections group appears between Assets and Actions in query results', () => {
+    const result = commandPaletteResults({
+      query: 'test',
+      recentAssets: [],
+      searchAssets: [makeAsset({ id: 'a1', title: 'Test Asset' })],
+      searchAssetTotal: 1,
+      collections: [makeCollection({ id: 'c1', name: 'Test Collection' })],
+      navEntries: allNavEntries,
+    });
+
+    const groupIds = result.groups.map(g => g.id);
+    const assetsIdx = groupIds.indexOf('assets');
+    const collectionsIdx = groupIds.indexOf('collections');
+    const actionsIdx = groupIds.indexOf('actions');
+
+    if (assetsIdx !== -1 && collectionsIdx !== -1) {
+      expect(assetsIdx).toBeLessThan(collectionsIdx);
+    }
+    if (collectionsIdx !== -1 && actionsIdx !== -1) {
+      expect(collectionsIdx).toBeLessThan(actionsIdx);
+    }
+  });
+});

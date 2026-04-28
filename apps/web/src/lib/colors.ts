@@ -20,3 +20,14 @@ export function getColorClasses(color: string | null | undefined): string {
   if (color && COLLECTION_COLORS[color]) return COLLECTION_COLORS[color];
   return 'bg-blue-500/15 text-blue-400';
 }
+
+/**
+ * Returns only the text-color Tailwind class for a collection color.
+ * Used when rendering a bare icon (no background badge) — e.g. the command palette folder icon.
+ */
+export function getIconColorClass(color: string | null | undefined): string {
+  const classes = getColorClasses(color);
+  // getColorClasses always returns "bg-... text-...", so grab the text-* part
+  const textClass = classes.split(' ').find(c => c.startsWith('text-'));
+  return textClass ?? 'text-blue-400';
+}
