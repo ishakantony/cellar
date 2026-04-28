@@ -30,7 +30,7 @@ export function AssetsListPage() {
   const selectedType = parseType(searchParams.get('type'));
   const sort = parseSort(searchParams.get('sort'));
 
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const viewMode: 'grid' | 'list' = searchParams.get('view') === 'list' ? 'list' : 'grid';
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [assetToDelete, setAssetToDelete] = useState<string | null>(null);
 
@@ -66,6 +66,10 @@ export function AssetsListPage() {
   );
   const setSort = useCallback(
     (value: AssetSort) => updateParam('sort', value === 'newest' ? null : value),
+    [updateParam]
+  );
+  const setViewMode = useCallback(
+    (value: 'grid' | 'list') => updateParam('view', value === 'grid' ? null : value),
     [updateParam]
   );
 
