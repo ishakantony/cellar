@@ -104,7 +104,7 @@ export function commandPaletteResults(input: CommandPaletteResultsInput): Palett
   const trimmed = query.trim();
 
   if (trimmed === '') {
-    return buildEmptyQueryResult(recentAssets);
+    return buildEmptyQueryResult(recentAssets, searchAssets);
   }
 
   return buildQueryResult(trimmed, searchAssets, searchAssetTotal, collections, navEntries);
@@ -114,12 +114,22 @@ export function commandPaletteResults(input: CommandPaletteResultsInput): Palett
 // Empty-query branch: Recent + Actions
 // ---------------------------------------------------------------------------
 
-function buildEmptyQueryResult(recentAssets: PaletteAsset[]): PaletteResult {
+function buildEmptyQueryResult(
+  recentAssets: PaletteAsset[],
+  searchAssets: PaletteAsset[]
+): PaletteResult {
   const groups: PaletteGroup[] = [];
 
-  if (recentAssets.length > 0) {
+  // Dedup invariant: remove from Recent any asset that appears in Assets.
+  // In v1 this path is only reached when query is empty (searchAssets is always
+  // empty here), but the rule guards the module's correctness for future changes
+  // where both groups might coexist.
+  const searchAssetIds = new Set(searchAssets.map(a => a.id));
+  const dedupedRecents = recentAssets.filter(a => !searchAssetIds.has(a.id));
+
+  if (dedupedRecents.length > 0) {
     // Sort pinned first, then take up to RECENT_CAP
-    const sorted = [...recentAssets].sort((a, b) => {
+    const sorted = [...dedupedRecents].sort((a, b) => {
       if (a.pinned && !b.pinned) return -1;
       if (!a.pinned && b.pinned) return 1;
       return 0;

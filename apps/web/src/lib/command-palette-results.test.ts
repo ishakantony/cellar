@@ -112,6 +112,47 @@ describe('commandPaletteResults — empty query', () => {
     expect(recentGroup.items[0].asset?.id).toBe('r2');
     expect(recentGroup.items[1].asset?.id).toBe('r1');
   });
+
+  it('dedup invariant: removes from Recent any asset that also appears in searchAssets (theoretical future case)', () => {
+    // In v1 the empty-query branch is only reached when searchAssets is empty,
+    // but the module must enforce the invariant regardless so future changes that
+    // introduce recents into a branch that also has assets cannot cause duplicates.
+    const sharedAsset = makeAsset({ id: 'shared-1', title: 'Shared Asset' });
+    const uniqueRecent = makeAsset({ id: 'unique-r', title: 'Unique Recent' });
+    const result = commandPaletteResults({
+      query: '',
+      recentAssets: [sharedAsset, uniqueRecent],
+      // Simulate the theoretical coexistence: searchAssets contains sharedAsset
+      searchAssets: [sharedAsset],
+      searchAssetTotal: 1,
+      collections: [],
+      navEntries: allNavEntries,
+    });
+
+    const recentGroup = result.groups.find(g => g.id === 'recent')!;
+    const recentIds = recentGroup.items.map(i => i.asset?.id);
+    // shared-1 is in searchAssets so must not appear in Recent
+    expect(recentIds).not.toContain('shared-1');
+    // unique-r is not in searchAssets so must remain in Recent
+    expect(recentIds).toContain('unique-r');
+  });
+
+  it('dedup invariant: when all recents are in searchAssets, Recent group is omitted entirely', () => {
+    const sharedAsset = makeAsset({ id: 'shared-1', title: 'Shared Asset' });
+    const result = commandPaletteResults({
+      query: '',
+      recentAssets: [sharedAsset],
+      searchAssets: [sharedAsset],
+      searchAssetTotal: 1,
+      collections: [],
+      navEntries: allNavEntries,
+    });
+
+    const groupIds = result.groups.map(g => g.id);
+    expect(groupIds).not.toContain('recent');
+    // Actions should still be present
+    expect(groupIds).toContain('actions');
+  });
 });
 
 // --- Non-empty query branch ---
