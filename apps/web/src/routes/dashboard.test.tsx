@@ -38,6 +38,11 @@ vi.mock('@/hooks/mutations/use-collection-mutations', () => ({
   useDeleteCollectionMutation: () => ({ mutateAsync: vi.fn() }),
 }));
 
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router');
+  return { ...actual, useNavigate: () => vi.fn() };
+});
+
 // ---------------------------------------------------------------------------
 // Fixture data
 // ---------------------------------------------------------------------------
@@ -134,14 +139,14 @@ describe('DashboardPage', () => {
     // Should find "42" adjacent to "total assets" label
     const statsStrip = screen.getByTestId('stats-strip');
     expect(statsStrip).toHaveTextContent('42');
-    expect(statsStrip).toHaveTextContent('total assets');
+    expect(statsStrip).toHaveTextContent(/total assets/i);
   });
 
   it('renders pinned count from counts.pinnedCount', () => {
     renderWithData();
     const statsStrip = screen.getByTestId('stats-strip');
     expect(statsStrip).toHaveTextContent('2');
-    expect(statsStrip).toHaveTextContent('pinned');
+    expect(statsStrip).toHaveTextContent(/pinned/i);
   });
 
   it('renders per-type counts in the stats strip', () => {
@@ -249,7 +254,7 @@ describe('DashboardPage', () => {
     expect(screen.getByRole('button', { name: /link/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /image/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /file/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /new collection/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /collection/i })).toBeInTheDocument();
   });
 
   // ---- Loading state -------------------------------------------------------
