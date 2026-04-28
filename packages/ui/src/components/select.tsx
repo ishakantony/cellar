@@ -14,6 +14,7 @@ export interface SelectProps<T> {
   onChange: (value: T) => void;
   disabled?: boolean;
   className?: string;
+  size?: 'sm' | 'md';
 }
 
 export function Select<T extends string>({
@@ -22,6 +23,7 @@ export function Select<T extends string>({
   onChange,
   disabled = false,
   className,
+  size = 'md',
 }: SelectProps<T>) {
   const [open, setOpen] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(0);
@@ -86,7 +88,8 @@ export function Select<T extends string>({
         }}
         onKeyDown={handleKeyDown}
         className={cn(
-          'flex items-center justify-between gap-2 rounded-lg bg-surface-container px-3 py-2 text-xs font-bold uppercase tracking-widest text-on-surface-variant transition-all min-w-[120px]',
+          'flex items-center justify-between gap-2 rounded-lg bg-surface-container font-bold uppercase tracking-widest text-on-surface-variant transition-all',
+          size === 'sm' ? 'px-2 py-1 text-[10px] min-w-[110px]' : 'px-3 py-2 text-xs min-w-[120px]',
           'cursor-pointer outline-none focus:ring-1 focus:ring-primary/50',
           open && 'ring-1 ring-primary/50',
           disabled && 'cursor-not-allowed opacity-60'
@@ -119,7 +122,8 @@ export function Select<T extends string>({
                 onClick={() => handleSelect(opt.value as T)}
                 onMouseEnter={() => setHighlightedIndex(index)}
                 className={cn(
-                  'flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors',
+                  'flex w-full items-center gap-2 text-left transition-colors',
+                  size === 'sm' ? 'px-2 py-1.5 text-[10px]' : 'px-3 py-2 text-xs',
                   isSelected
                     ? 'bg-primary/10 text-primary'
                     : isHighlighted

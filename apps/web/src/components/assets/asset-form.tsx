@@ -4,37 +4,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AssetType } from '@cellar/shared';
 import { CreateAssetSchema, UpdateAssetSchema, type CreateAssetInput } from '@cellar/shared';
 import { TYPE_CONFIG, ASSET_TYPE_OPTIONS } from '@/lib/asset-types';
-import { Alert, Button, FormField, Input, MultiSelect, Select, Textarea, cn } from '@cellar/ui';
+import { Alert, Button, FormField, Input, MultiSelect, Textarea, cn } from '@cellar/ui';
 import { MarkdownEditor } from './markdown-editor';
 import { FileUploadField, type FileUploadValue } from './file-upload-field';
-import { SnippetEditor } from '@/components/snippet-editor';
-
-const LANGUAGE_OPTIONS = [
-  { value: 'javascript', label: 'JavaScript' },
-  { value: 'typescript', label: 'TypeScript' },
-  { value: 'python', label: 'Python' },
-  { value: 'go', label: 'Go' },
-  { value: 'rust', label: 'Rust' },
-  { value: 'java', label: 'Java' },
-  { value: 'c', label: 'C' },
-  { value: 'cpp', label: 'C++' },
-  { value: 'csharp', label: 'C#' },
-  { value: 'php', label: 'PHP' },
-  { value: 'ruby', label: 'Ruby' },
-  { value: 'swift', label: 'Swift' },
-  { value: 'kotlin', label: 'Kotlin' },
-  { value: 'sql', label: 'SQL' },
-  { value: 'html', label: 'HTML' },
-  { value: 'css', label: 'CSS' },
-  { value: 'json', label: 'JSON' },
-  { value: 'yaml', label: 'YAML' },
-  { value: 'xml', label: 'XML' },
-  { value: 'shell', label: 'Shell' },
-  { value: 'markdown', label: 'Markdown' },
-  { value: 'plaintext', label: 'Plain Text' },
-];
-
-const isStorybook = typeof process !== 'undefined' && process.env.STORYBOOK === 'true';
+import { SnippetEditor } from '@/components/assets/snippet-editor';
 
 export interface AssetFormProps {
   mode: 'create' | 'edit';
@@ -239,33 +212,13 @@ export function AssetForm({
               Content
             </label>
             {type === 'SNIPPET' ? (
-              isStorybook ? (
-                <div className="space-y-2">
-                  <Select
-                    value={language}
-                    options={LANGUAGE_OPTIONS}
-                    onChange={val => setValue('language', val)}
-                    disabled={isSubmitting}
-                  />
-                  <Textarea
-                    value={content}
-                    onChange={val => setValue('content', val)}
-                    placeholder="Paste your code here..."
-                    className="font-mono min-h-[240px]"
-                    disabled={isSubmitting}
-                  />
-                </div>
-              ) : (
-                <div className="h-[300px]">
-                  <SnippetEditor
-                    value={content}
-                    onChange={val => setValue('content', val)}
-                    language={language}
-                    onLanguageChange={val => setValue('language', val)}
-                    disabled={isSubmitting}
-                  />
-                </div>
-              )
+              <SnippetEditor
+                value={content}
+                onChange={val => setValue('content', val)}
+                language={language}
+                onLanguageChange={val => setValue('language', val)}
+                disabled={isSubmitting}
+              />
             ) : (
               <MarkdownEditor
                 value={content}

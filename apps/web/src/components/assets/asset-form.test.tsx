@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AssetForm } from './asset-form';
 import userEvent from '@testing-library/user-event';
 
-vi.mock('@/components/snippet-editor', () => ({
+vi.mock('@/components/assets/snippet-editor', () => ({
   SnippetEditor: ({
     value,
     onChange,

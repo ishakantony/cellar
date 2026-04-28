@@ -1,22 +1,16 @@
 import { useState } from 'react';
-import { Textarea, cn } from '@cellar/ui';
-import { MarkdownPreview } from '@/components/markdown-preview';
-import { CodeMirrorEditor } from '@/components/codemirror-editor';
+import { cn } from '@cellar/ui';
+import { MarkdownPreview } from '@/components/common/markdown-preview';
+import { CodeMirrorEditor } from '@/components/common/codemirror-editor';
+
 export interface MarkdownEditorProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
-  minHeight?: number;
+  height?: number;
 }
 
-const isStorybook = typeof process !== 'undefined' && process.env.STORYBOOK === 'true';
-
-export function MarkdownEditor({
-  value,
-  onChange,
-  placeholder,
-  minHeight = 240,
-}: MarkdownEditorProps) {
+export function MarkdownEditor({ value, onChange, height = 240 }: MarkdownEditorProps) {
   const [activeTab, setActiveTab] = useState<'edit' | 'preview'>('edit');
 
   return (
@@ -48,22 +42,11 @@ export function MarkdownEditor({
         </button>
       </div>
 
-      <div style={{ minHeight }}>
+      <div style={{ height }}>
         {activeTab === 'edit' ? (
-          isStorybook ? (
-            <Textarea
-              value={value}
-              onChange={onChange}
-              placeholder={placeholder}
-              className="rounded-none border-none bg-surface-container resize-y min-h-[240px]"
-            />
-          ) : (
-            <div className="h-[240px]">
-              <CodeMirrorEditor value={value} onChange={onChange} language="markdown" />
-            </div>
-          )
+          <CodeMirrorEditor value={value} onChange={onChange} language="markdown" />
         ) : (
-          <div className="h-[240px] overflow-auto">
+          <div className="h-full overflow-auto">
             <MarkdownPreview content={value || '*Nothing to preview*'} />
           </div>
         )}

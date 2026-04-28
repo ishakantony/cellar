@@ -2,8 +2,8 @@ import { useState, useCallback } from 'react';
 import { Copy, ExternalLink, Download, X, ZoomIn } from 'lucide-react';
 import { toast } from 'sonner';
 import { AssetType } from '@cellar/shared';
-import { MarkdownPreview } from '@/components/markdown-preview';
-import { CodeMirrorEditor } from '@/components/codemirror-editor';
+import { MarkdownPreview } from '@/components/common/markdown-preview';
+import { CodeMirrorEditor } from '@/components/common/codemirror-editor';
 import { IconButton, Modal, cn } from '@cellar/ui';
 interface AssetContentRendererProps {
   asset: {

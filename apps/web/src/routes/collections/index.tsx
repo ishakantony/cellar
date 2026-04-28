@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import type { CreateCollectionInput } from '@cellar/shared';
 import { CollectionsToolbar } from '@/components/collections/collections-toolbar';
 import { CollectionsView } from '@/components/collections/collections-view';
-import { CollectionModal } from '@/components/collection-modal';
+import { CollectionModal } from '@/components/collections/collection-modal';
 import { ConfirmDialog, TextLink } from '@cellar/ui';
 import { useCollectionsQuery } from '@/hooks/queries/use-collections';
 import {

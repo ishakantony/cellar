@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { AssetContentRenderer } from './asset-content-renderer';
 
-vi.mock('@/components/codemirror-editor', () => ({
+vi.mock('@/components/common/codemirror-editor', () => ({
   CodeMirrorEditor: ({
     value,
     readOnly,
@@ -17,7 +17,7 @@ vi.mock('@/components/codemirror-editor', () => ({
   ),
 }));
 
-vi.mock('@/components/markdown-preview', () => ({
+vi.mock('@/components/common/markdown-preview', () => ({
   MarkdownPreview: ({ content }: { content: string }) => (
     <div data-testid="markdown-preview">{content}</div>
   ),

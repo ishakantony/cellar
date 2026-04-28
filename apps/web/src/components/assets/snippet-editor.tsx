@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { CodeMirrorEditor } from '@/components/codemirror-editor';
-import { getPrettierParser } from '@/lib/codemirror-languages';
+import { Select } from '@cellar/ui';
+import { CodeMirrorEditor } from '@/components/common/codemirror-editor';
+import { getPrettierParser, getPrettierPluginLoaders } from '@/lib/codemirror-languages';
 
 const LANGUAGE_OPTIONS = [
   { value: 'javascript', label: 'JavaScript' },
@@ -31,23 +32,10 @@ async function formatWithPrettier(code: string, language: string): Promise<strin
   const parser = getPrettierParser(language);
   if (!parser) return code;
 
+  const loaders = getPrettierPluginLoaders(language);
   const [prettier, ...plugins] = await Promise.all([
     import('prettier/standalone'),
-    ...(language === 'javascript'
-      ? [import('prettier/plugins/babel'), import('prettier/plugins/estree')]
-      : language === 'typescript'
-        ? [import('prettier/plugins/typescript'), import('prettier/plugins/estree')]
-        : language === 'html'
-          ? [import('prettier/plugins/html')]
-          : language === 'css'
-            ? [import('prettier/plugins/postcss')]
-            : language === 'json'
-              ? [import('prettier/plugins/babel'), import('prettier/plugins/estree')]
-              : language === 'markdown'
-                ? [import('prettier/plugins/markdown')]
-                : language === 'yaml'
-                  ? [import('prettier/plugins/yaml')]
-                  : []),
+    ...loaders.map(load => load()),
   ]);
 
   return prettier.format(code, {
@@ -62,6 +50,7 @@ export interface SnippetEditorProps {
   language: string;
   onLanguageChange: (language: string) => void;
   disabled?: boolean;
+  height?: number;
 }
 
 export function SnippetEditor({
@@ -70,6 +59,7 @@ export function SnippetEditor({
   language,
   onLanguageChange,
   disabled = false,
+  height = 260,
 }: SnippetEditorProps) {
   const [formatting, setFormatting] = useState(false);
   const canFormat = getPrettierParser(language) !== null;
@@ -85,21 +75,15 @@ export function SnippetEditor({
   };
 
   return (
-    <div className="rounded-lg overflow-hidden bg-surface-container-lowest">
+    <div className="rounded-lg bg-surface-container overflow-hidden">
       <div className="flex items-center justify-between gap-2 px-3 py-1.5 border-b border-outline-variant/10">
-        <select
+        <Select
+          size="sm"
           value={language}
-          onChange={e => onLanguageChange(e.target.value)}
+          options={LANGUAGE_OPTIONS}
+          onChange={onLanguageChange}
           disabled={disabled}
-          className="bg-transparent text-[10px] font-bold uppercase tracking-widest text-outline focus:outline-none cursor-pointer"
-        >
-          {LANGUAGE_OPTIONS.map(opt => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-
+        />
         <button
           type="button"
           onClick={handleFormat}
@@ -110,7 +94,9 @@ export function SnippetEditor({
         </button>
       </div>
 
-      <CodeMirrorEditor value={value} onChange={onChange} language={language} />
+      <div style={{ height }}>
+        <CodeMirrorEditor value={value} onChange={onChange} language={language} />
+      </div>
     </div>
   );
 }

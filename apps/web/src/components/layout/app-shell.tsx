@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { CollectionModal } from '@/components/collection-modal';
+import { CollectionModal } from '@/components/collections/collection-modal';
 import { Header } from '@/components/layout/header';
 import { Sidebar } from '@/components/layout/sidebar';
 import { SidebarToggle } from '@/components/layout/sidebar-toggle';

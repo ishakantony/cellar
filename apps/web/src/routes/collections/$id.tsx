@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 import { Folder, ArrowLeft } from 'lucide-react';
 import type { CreateCollectionInput } from '@cellar/shared';
-import { CollectionModal } from '@/components/collection-modal';
+import { CollectionModal } from '@/components/collections/collection-modal';
 import { Button, ConfirmDialog, IconBadge } from '@cellar/ui';
 import { getColorClasses } from '@/lib/colors';
 import { useCollectionQuery } from '@/hooks/queries/use-collections';

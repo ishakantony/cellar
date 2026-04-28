@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { X, File, RefreshCw } from 'lucide-react';
 
-import { FileDropzone } from '@/components/file-dropzone';
+import { FileDropzone } from '@/components/common/file-dropzone';
 
 export interface FileUploadValue {
   filePath: string;

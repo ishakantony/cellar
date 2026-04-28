@@ -1,5 +1,5 @@
 import { Modal } from '@cellar/ui';
-import { CollectionForm } from '@/components/collection-form';
+import { CollectionForm } from '@/components/collections/collection-form';
 import type { CreateCollectionInput } from '@cellar/shared';
 
 export function CollectionModal({
