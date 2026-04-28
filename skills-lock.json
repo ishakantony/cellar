@@ -16,6 +16,12 @@
       "sourceType": "github",
       "computedHash": "64f353f655e1fe716f2f082fdb1be6fd197c0689bb839d3576b388df46eafe2a"
     },
+    "tackle-issues": {
+      "source": "ishakantony/skills",
+      "sourceType": "github",
+      "skillPath": "tackle-issues/SKILL.md",
+      "computedHash": "e2e7b6ff52ded6be119e825bf2edfb8a0cf2244efd247e6f263e13c24c5e6c28"
+    },
     "tdd": {
       "source": "ishakantony/skills",
       "sourceType": "github",
