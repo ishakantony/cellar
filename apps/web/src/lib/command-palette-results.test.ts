@@ -270,4 +270,74 @@ describe('commandPaletteResults — non-empty query', () => {
     const ids = allItems.map(i => i.asset?.id);
     expect(ids.filter(id => id === 'shared-1')).toHaveLength(1);
   });
+
+  // --- Issue 002: Assets group specific tests ---
+
+  it('Assets group is capped at 5 items even when more results are provided', () => {
+    const manyAssets = Array.from({ length: 8 }, (_, i) =>
+      makeAsset({ id: `a${i}`, title: `Asset ${i}` })
+    );
+    const result = commandPaletteResults({
+      query: 'asset',
+      recentAssets: [],
+      searchAssets: manyAssets,
+      searchAssetTotal: 8,
+      collections: [],
+      navEntries: allNavEntries,
+    });
+
+    const assetsGroup = result.groups.find(g => g.id === 'assets');
+    expect(assetsGroup).toBeDefined();
+    expect(assetsGroup!.items).toHaveLength(5);
+  });
+
+  it('Assets group is omitted entirely (header included) when searchAssets is empty', () => {
+    const result = commandPaletteResults({
+      query: 'nomatch',
+      recentAssets: [],
+      searchAssets: [],
+      searchAssetTotal: 0,
+      collections: [],
+      navEntries: allNavEntries,
+    });
+
+    const groupIds = result.groups.map(g => g.id);
+    expect(groupIds).not.toContain('assets');
+  });
+
+  it('preserves pinned-first ordering from server in Assets group', () => {
+    // Server returns pinned first — the module should preserve this order
+    const assets = [
+      makeAsset({ id: 'p1', title: 'Pinned One', pinned: true }),
+      makeAsset({ id: 'p2', title: 'Pinned Two', pinned: true }),
+      makeAsset({ id: 'n1', title: 'Normal One', pinned: false }),
+    ];
+    const result = commandPaletteResults({
+      query: 'one',
+      recentAssets: [],
+      searchAssets: assets,
+      searchAssetTotal: 3,
+      collections: [],
+      navEntries: allNavEntries,
+    });
+
+    const assetsGroup = result.groups.find(g => g.id === 'assets')!;
+    expect(assetsGroup.items[0].asset?.pinned).toBe(true);
+    expect(assetsGroup.items[1].asset?.pinned).toBe(true);
+    expect(assetsGroup.items[2].asset?.pinned).toBe(false);
+  });
+
+  it('totalCount is reported as searchAssetTotal on the Assets group', () => {
+    const result = commandPaletteResults({
+      query: 'test',
+      recentAssets: [],
+      searchAssets: Array.from({ length: 5 }, (_, i) => makeAsset({ id: `a${i}` })),
+      searchAssetTotal: 23,
+      collections: [],
+      navEntries: allNavEntries,
+    });
+
+    const assetsGroup = result.groups.find(g => g.id === 'assets');
+    expect(assetsGroup?.totalCount).toBe(23);
+  });
 });

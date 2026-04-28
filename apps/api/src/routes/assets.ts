@@ -33,16 +33,27 @@ export const assetsRoute = new Hono<{ Variables: AuthVariables }>()
     const { type, sort, q, limit = 20, offset = 0 } = c.req.valid('query');
 
     if (q) {
-      const result = await db.execute<PublicAsset>(sql`
-        SELECT id, "userId", "type"::text AS type, title, description, pinned, content, language, url,
-               "filePath", "fileName", "mimeType", "fileSize", "createdAt", "updatedAt"
-        FROM ${asset}
-        WHERE "userId" = ${user.id}
-          AND "searchVector" @@ plainto_tsquery('english', ${q})
-          ${type ? sql`AND "type" = ${type}::"AssetType"` : sql``}
-        ORDER BY pinned DESC, ts_rank("searchVector", plainto_tsquery('english', ${q})) DESC
-        LIMIT ${limit} OFFSET ${offset}
-      `);
+      const [result, countResult] = await Promise.all([
+        db.execute<PublicAsset>(sql`
+          SELECT id, "userId", "type"::text AS type, title, description, pinned, content, language, url,
+                 "filePath", "fileName", "mimeType", "fileSize", "createdAt", "updatedAt"
+          FROM ${asset}
+          WHERE "userId" = ${user.id}
+            AND "searchVector" @@ plainto_tsquery('english', ${q})
+            ${type ? sql`AND "type" = ${type}::"AssetType"` : sql``}
+          ORDER BY pinned DESC, ts_rank("searchVector", plainto_tsquery('english', ${q})) DESC
+          LIMIT ${limit} OFFSET ${offset}
+        `),
+        db.execute<{ count: string }>(sql`
+          SELECT COUNT(*) AS count
+          FROM ${asset}
+          WHERE "userId" = ${user.id}
+            AND "searchVector" @@ plainto_tsquery('english', ${q})
+            ${type ? sql`AND "type" = ${type}::"AssetType"` : sql``}
+        `),
+      ]);
+      const total = parseInt(countResult.rows[0]?.count ?? '0', 10);
+      c.header('X-Total-Count', String(total));
       return c.json(result.rows as PublicAsset[]);
     }
 

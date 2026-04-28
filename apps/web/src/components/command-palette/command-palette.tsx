@@ -22,6 +22,7 @@ import {
 import { useCommandPalette } from '@/hooks/use-command-palette';
 import { useCollectionModal } from '@/hooks/use-collection-modal';
 import { useAssetDrawer } from '@/hooks/use-asset-drawer';
+import { useCommandPaletteData } from '@/hooks/use-command-palette-data';
 import { allNavEntries } from '@/lib/nav-config';
 import {
   commandPaletteResults,
@@ -30,6 +31,29 @@ import {
 } from '@/lib/command-palette-results';
 import { cn } from '@cellar/ui';
 import type { AssetType } from '@cellar/shared';
+
+// ---------------------------------------------------------------------------
+// Relative time helper
+// ---------------------------------------------------------------------------
+
+const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+
+function relativeTime(isoString: string): string {
+  const now = Date.now();
+  const then = new Date(isoString).getTime();
+  const diffSeconds = Math.round((then - now) / 1000);
+  const diffMinutes = Math.round(diffSeconds / 60);
+  const diffHours = Math.round(diffMinutes / 60);
+  const diffDays = Math.round(diffHours / 24);
+
+  if (Math.abs(diffSeconds) < 60) return rtf.format(diffSeconds, 'second');
+  if (Math.abs(diffMinutes) < 60) return rtf.format(diffMinutes, 'minute');
+  if (Math.abs(diffHours) < 24) return rtf.format(diffHours, 'hour');
+  if (Math.abs(diffDays) < 30) return rtf.format(diffDays, 'day');
+  const diffMonths = Math.round(diffDays / 30);
+  if (Math.abs(diffMonths) < 12) return rtf.format(diffMonths, 'month');
+  return rtf.format(Math.round(diffDays / 365), 'year');
+}
 
 // ---------------------------------------------------------------------------
 // Icon maps (module-level constants, never change)
@@ -96,6 +120,10 @@ export function CommandPalette({ onToggleSidebar }: CommandPaletteProps) {
   const navigate = useNavigate();
   const triggerRef = useRef<HTMLButtonElement | null>(null);
 
+  // Fetch asset search results, recents, and collections
+  const { searchAssets, searchAssetTotal, recentAssets, collections } =
+    useCommandPaletteData(query);
+
   // Snapshot the element that had focus before the palette opened so we can
   // return focus to it on close.
   useEffect(() => {
@@ -150,14 +178,13 @@ export function CommandPalette({ onToggleSidebar }: CommandPaletteProps) {
     [handleClose, navigate, openView, openAssetCreate, openCollectionCreate, onToggleSidebar]
   );
 
-  // Build result groups — Go To always available; assets/collections fed by
-  // data hooks in a later slice (v1 passes empty arrays).
+  // Build result groups with live data
   const result = commandPaletteResults({
     query,
-    recentAssets: [],
-    searchAssets: [],
-    searchAssetTotal: 0,
-    collections: [],
+    recentAssets,
+    searchAssets,
+    searchAssetTotal,
+    collections,
     navEntries: allNavEntries,
   });
 
@@ -253,9 +280,21 @@ function PaletteGroupSection({
   group: PaletteGroup;
   onSelect: (item: PaletteItem) => void;
 }) {
+  const headingContent =
+    group.id === 'assets' && group.totalCount && group.totalCount > group.items.length ? (
+      <span className="flex items-center gap-1.5">
+        {group.label}
+        <span className="rounded bg-white/10 px-1 py-0.5 text-[10px] font-medium text-white/40">
+          {group.items.length} of {group.totalCount}
+        </span>
+      </span>
+    ) : (
+      group.label
+    );
+
   return (
     <Command.Group
-      heading={group.label}
+      heading={headingContent as string}
       className={cn(
         '[&>[cmdk-group-heading]]:px-2',
         '[&>[cmdk-group-heading]]:py-1.5',
@@ -263,7 +302,9 @@ function PaletteGroupSection({
         '[&>[cmdk-group-heading]]:font-medium',
         '[&>[cmdk-group-heading]]:text-white/30',
         '[&>[cmdk-group-heading]]:uppercase',
-        '[&>[cmdk-group-heading]]:tracking-wider'
+        '[&>[cmdk-group-heading]]:tracking-wider',
+        '[&>[cmdk-group-heading]]:flex',
+        '[&>[cmdk-group-heading]]:items-center'
       )}
     >
       {group.items.map(item => (
@@ -284,6 +325,7 @@ function PaletteRow({
   item: PaletteItem;
   onSelect: (item: PaletteItem) => void;
 }) {
+  const isAsset = item.kind === 'asset' && item.asset;
   return (
     <Command.Item
       value={item.id}
@@ -297,8 +339,11 @@ function PaletteRow({
     >
       <RowIcon item={item} />
       <span className="flex-1 truncate">{item.label}</span>
-      {item.kind === 'asset' && item.asset?.pinned && (
-        <Pin className="h-3 w-3 text-white/30 shrink-0" />
+      {isAsset && (
+        <span className="flex items-center gap-1.5 shrink-0">
+          {item.asset!.pinned && <Pin className="h-3 w-3 text-white/30" />}
+          <span className="text-[11px] text-white/25">{relativeTime(item.asset!.updatedAt)}</span>
+        </span>
       )}
     </Command.Item>
   );
