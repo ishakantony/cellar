@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { EmptyState, cn } from '@cellar/ui';
 import { CollectionCard } from './collection-card';
 
@@ -17,11 +18,7 @@ export interface CollectionsViewProps {
   onTogglePin: (id: string) => void;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
-  emptyMessage?: string;
-  emptyAction?: {
-    label: string;
-    onClick: () => void;
-  };
+  emptyMessage?: ReactNode;
   className?: string;
 }
 
@@ -33,11 +30,10 @@ export function CollectionsView({
   onEdit,
   onDelete,
   emptyMessage = 'No collections found.',
-  emptyAction,
   className,
 }: CollectionsViewProps) {
   if (collections.length === 0) {
-    return <EmptyState message={emptyMessage} action={emptyAction} className={className} />;
+    return <EmptyState message={emptyMessage} className={className} />;
   }
 
   const pinned = collections.filter(c => c.pinned);

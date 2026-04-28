@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { EmptyState, cn } from '@cellar/ui';
 import { AssetCard } from './asset-card';
 import { AssetCardSkeleton } from './asset-card-skeleton';
@@ -18,8 +19,7 @@ export interface AssetsViewProps {
   onCardClick: (id: string) => void;
   onTogglePin: (id: string) => void;
   onDelete: (id: string) => void;
-  emptyMessage: string;
-  emptyAction?: { label: string; onClick: () => void };
+  emptyMessage: ReactNode;
   loading?: boolean;
 }
 
@@ -30,7 +30,6 @@ export function AssetsView({
   onTogglePin,
   onDelete,
   emptyMessage,
-  emptyAction,
   loading,
 }: AssetsViewProps) {
   if (loading) {
@@ -51,7 +50,7 @@ export function AssetsView({
   }
 
   if (assets.length === 0) {
-    return <EmptyState message={emptyMessage} action={emptyAction} className="mt-12" />;
+    return <EmptyState message={emptyMessage} className="mt-12" />;
   }
 
   return (

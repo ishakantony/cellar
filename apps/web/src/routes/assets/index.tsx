@@ -1,11 +1,11 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 import { parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
 import { toast } from 'sonner';
 import { ASSET_TYPES, AssetType, type AssetSort } from '@cellar/shared';
 import { AssetsToolbar } from '@/components/assets/assets-toolbar';
 import { AssetsView } from '@/components/assets/assets-view';
-import { ConfirmDialog } from '@cellar/ui';
+import { ConfirmDialog, TextLink } from '@cellar/ui';
 import { useAssetsQuery, type AssetSummary } from '@/hooks/queries/use-assets';
 import {
   useDeleteAssetMutation,
@@ -76,11 +76,15 @@ export function AssetsListPage() {
     updatedAt: new Date(asset.updatedAt),
   }));
 
-  const emptyMessage = searchQuery.trim()
-    ? 'No assets match your search.'
-    : selectedType
-      ? `No ${selectedType.toLowerCase()} assets yet.`
-      : 'No assets yet. Create your first asset to get started.';
+  const emptyMessage: ReactNode = searchQuery.trim() ? (
+    'No assets match your search.'
+  ) : selectedType ? (
+    `No ${selectedType.toLowerCase()} assets yet.`
+  ) : (
+    <>
+      No assets yet. <TextLink href="/assets/new">Create</TextLink> your first asset to get started.
+    </>
+  );
 
   return (
     <div>
@@ -111,11 +115,6 @@ export function AssetsListPage() {
           setDeleteDialogOpen(true);
         }}
         emptyMessage={emptyMessage}
-        emptyAction={
-          !searchQuery.trim() && !selectedType
-            ? { label: 'New Asset', onClick: () => navigate('/assets/new') }
-            : undefined
-        }
       />
 
       <ConfirmDialog

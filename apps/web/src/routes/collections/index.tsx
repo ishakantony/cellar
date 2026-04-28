@@ -6,7 +6,7 @@ import type { CreateCollectionInput } from '@cellar/shared';
 import { CollectionsToolbar } from '@/components/collections/collections-toolbar';
 import { CollectionsView } from '@/components/collections/collections-view';
 import { CollectionModal } from '@/components/collection-modal';
-import { ConfirmDialog } from '@cellar/ui';
+import { ConfirmDialog, TextLink } from '@cellar/ui';
 import { useCollectionsQuery } from '@/hooks/queries/use-collections';
 import {
   useCreateCollectionMutation,
@@ -117,14 +117,14 @@ export function CollectionsListPage() {
             setDeleteDialogOpen(true);
           }}
           emptyMessage={
-            searchQuery.trim()
-              ? 'No collections match your search.'
-              : 'No collections yet. Create your first collection to get started.'
-          }
-          emptyAction={
-            !searchQuery.trim()
-              ? { label: 'New Collection', onClick: () => setModalOpen(true) }
-              : undefined
+            searchQuery.trim() ? (
+              'No collections match your search.'
+            ) : (
+              <>
+                No collections yet. <TextLink onClick={() => setModalOpen(true)}>Create</TextLink>{' '}
+                your first collection to get started.
+              </>
+            )
           }
         />
       )}
