@@ -12,6 +12,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@better-auth/oauth-provider": "^1.6.8",
     "@cellar/shared": "workspace:*",
     "@cellar/ui": "workspace:*",
     "@hookform/resolvers": "^5.2.2",
@@ -20,10 +21,10 @@
     "@tanstack/react-query": "^5.62.7",
     "@tanstack/react-query-devtools": "^5.62.7",
     "better-auth": "^1.6.8",
-    "@better-auth/oauth-provider": "^1.6.8",
     "hono": "^4.6.13",
     "lottie-react": "^2.4.1",
     "lucide-react": "^1.8.0",
+    "nuqs": "^2.8.9",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-hook-form": "^7.55.0",

@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useNavigate } from 'react-router';
+import { parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
 import { toast } from 'sonner';
-import { AssetType, type AssetSort } from '@cellar/shared';
+import { ASSET_TYPES, AssetType, type AssetSort } from '@cellar/shared';
 import { AssetsToolbar } from '@/components/assets/assets-toolbar';
 import { AssetsView } from '@/components/assets/assets-view';
 import { ConfirmDialog } from '@cellar/ui';
@@ -10,27 +11,25 @@ import {
   useDeleteAssetMutation,
   useTogglePinAssetMutation,
 } from '@/hooks/mutations/use-asset-mutations';
+import { useViewMode } from '@/hooks/use-view-mode';
 
-const SORT_VALUES: readonly AssetSort[] = ['newest', 'oldest', 'az', 'za'] as const;
-
-function parseSort(value: string | null): AssetSort {
-  return SORT_VALUES.find(s => s === value) ?? 'newest';
-}
-
-function parseType(value: string | null): AssetType | null {
-  if (!value) return null;
-  const upper = value.toUpperCase() as AssetType;
-  return Object.values(AssetType).includes(upper) ? upper : null;
-}
+const SORT_VALUES = ['newest', 'oldest', 'az', 'za'] as const satisfies readonly AssetSort[];
 
 export function AssetsListPage() {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const searchQuery = searchParams.get('q') ?? '';
-  const selectedType = parseType(searchParams.get('type'));
-  const sort = parseSort(searchParams.get('sort'));
 
-  const viewMode: 'grid' | 'list' = searchParams.get('view') === 'list' ? 'list' : 'grid';
+  const [filters, setFilters] = useQueryStates(
+    {
+      q: parseAsString.withDefault(''),
+      type: parseAsStringLiteral(ASSET_TYPES),
+      sort: parseAsStringLiteral(SORT_VALUES).withDefault('newest'),
+    },
+    { throttleMs: 250 }
+  );
+  const [viewMode, setViewMode] = useViewMode();
+
+  const { q: searchQuery, type: selectedType, sort } = filters;
+
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [assetToDelete, setAssetToDelete] = useState<string | null>(null);
 
@@ -43,35 +42,6 @@ export function AssetsListPage() {
 
   const togglePin = useTogglePinAssetMutation();
   const deleteAsset = useDeleteAssetMutation();
-
-  const updateParam = useCallback(
-    (key: string, value: string | null) => {
-      setSearchParams(prev => {
-        const next = new URLSearchParams(prev);
-        if (value === null || value === '') {
-          next.delete(key);
-        } else {
-          next.set(key, value);
-        }
-        return next;
-      });
-    },
-    [setSearchParams]
-  );
-
-  const setSearchQuery = useCallback((value: string) => updateParam('q', value), [updateParam]);
-  const setSelectedType = useCallback(
-    (value: AssetType | null) => updateParam('type', value),
-    [updateParam]
-  );
-  const setSort = useCallback(
-    (value: AssetSort) => updateParam('sort', value === 'newest' ? null : value),
-    [updateParam]
-  );
-  const setViewMode = useCallback(
-    (value: 'grid' | 'list') => updateParam('view', value === 'grid' ? null : value),
-    [updateParam]
-  );
 
   const handleTogglePin = useCallback(
     async (id: string) => {
@@ -121,11 +91,11 @@ export function AssetsListPage() {
 
       <AssetsToolbar
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
+        onSearchChange={q => setFilters({ q })}
         selectedType={selectedType}
-        onTypeChange={setSelectedType}
+        onTypeChange={(type: AssetType | null) => setFilters({ type })}
         sort={sort}
-        onSortChange={setSort}
+        onSortChange={sort => setFilters({ sort })}
         viewMode={viewMode}
         onViewChange={setViewMode}
         onNewAsset={() => navigate('/assets/new')}

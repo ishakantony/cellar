@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useNavigate } from 'react-router';
+import { parseAsString, useQueryState } from 'nuqs';
 import { toast } from 'sonner';
 import type { CreateCollectionInput } from '@cellar/shared';
 import { CollectionsToolbar } from '@/components/collections/collections-toolbar';
@@ -12,43 +13,22 @@ import {
   useDeleteCollectionMutation,
   useToggleCollectionPinMutation,
 } from '@/hooks/mutations/use-collection-mutations';
+import { useViewMode } from '@/hooks/use-view-mode';
 
 export function CollectionsListPage() {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
   const collectionsQuery = useCollectionsQuery();
   const createCollection = useCreateCollectionMutation();
   const deleteCollection = useDeleteCollectionMutation();
   const togglePin = useToggleCollectionPinMutation();
 
-  const searchQuery = searchParams.get('q') ?? '';
-  const viewMode: 'grid' | 'list' = searchParams.get('view') === 'list' ? 'list' : 'grid';
+  const [searchQuery, setSearchQuery] = useQueryState('q', parseAsString.withDefault(''));
+  const [viewMode, setViewMode] = useViewMode();
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [collectionToDelete, setCollectionToDelete] = useState<string | null>(null);
 
   const collections = collectionsQuery.data ?? [];
-
-  const updateParam = useCallback(
-    (key: string, value: string | null) => {
-      setSearchParams(prev => {
-        const next = new URLSearchParams(prev);
-        if (value === null || value === '') {
-          next.delete(key);
-        } else {
-          next.set(key, value);
-        }
-        return next;
-      });
-    },
-    [setSearchParams]
-  );
-
-  const setSearchQuery = useCallback((value: string) => updateParam('q', value), [updateParam]);
-  const setViewMode = useCallback(
-    (value: 'grid' | 'list') => updateParam('view', value === 'grid' ? null : value),
-    [updateParam]
-  );
 
   const filteredCollections = useMemo(() => {
     if (!searchQuery.trim()) return collections;

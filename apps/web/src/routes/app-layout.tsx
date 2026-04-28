@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router';
+import { NuqsAdapter } from 'nuqs/adapters/react-router/v7';
 import { useSession } from '@/lib/auth-client';
 import { AppShell } from '@/components/layout/app-shell';
 
@@ -20,8 +21,10 @@ export function AppLayout() {
   };
 
   return (
-    <AppShell user={user}>
-      <Outlet />
-    </AppShell>
+    <NuqsAdapter>
+      <AppShell user={user}>
+        <Outlet />
+      </AppShell>
+    </NuqsAdapter>
   );
 }
