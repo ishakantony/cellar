@@ -1,10 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CollectionModal } from '@/components/collections/collection-modal';
 import { AssetDrawer } from '@/components/assets/asset-drawer';
+import { CommandPalette } from '@/components/command-palette/command-palette';
 import { Header } from '@/components/layout/header';
 import { Sidebar } from '@/components/layout/sidebar';
 import { SidebarToggle } from '@/components/layout/sidebar-toggle';
-import { useCollectionModal } from '@/hooks/use-collection-modal';
+import { useCommandPalette } from '@/hooks/use-command-palette';
+
+function useCommandPaletteShortcut() {
+  const { setOpen } = useCommandPalette();
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      // Suppress when focus is in a text field
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        return;
+      }
+
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setOpen(true);
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [setOpen]);
+}
 
 export function AppShell({
   children,
@@ -14,7 +37,11 @@ export function AppShell({
   user: { name: string; email: string; image?: string | null };
 }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { openCreate } = useCollectionModal();
+
+  // Install global ⌘K / Ctrl+K shortcut
+  useCommandPaletteShortcut();
+
+  const toggleSidebar = useCallback(() => setSidebarCollapsed(c => !c), []);
 
   return (
     <div className="flex h-full">
@@ -25,19 +52,18 @@ export function AppShell({
           sidebarCollapsed={sidebarCollapsed}
           sidebarToggle={
             <SidebarToggle
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              onClick={toggleSidebar}
               collapsed={sidebarCollapsed}
               className="hidden md:flex"
             />
           }
-          onAddCollection={openCreate}
         />
         <div className="flex-1 overflow-y-auto p-8 pb-20 md:pb-8">{children}</div>
       </main>
 
       <CollectionModal />
-
       <AssetDrawer />
+      <CommandPalette onToggleSidebar={toggleSidebar} />
     </div>
   );
 }

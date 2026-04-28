@@ -10,6 +10,11 @@ vi.mock('@/lib/auth-client', () => ({
   signOut: vi.fn(),
 }));
 
+// CommandTrigger uses the useCommandPalette store — we just need it not to crash
+vi.mock('@/hooks/use-command-palette', () => ({
+  useCommandPalette: () => ({ setOpen: vi.fn(), open: false, query: '' }),
+}));
+
 const mockUser = {
   name: 'John Doe',
   email: 'john@example.com',
@@ -19,12 +24,13 @@ const mockUser = {
 describe('Header sidebar controls', () => {
   it('renders the desktop sidebar toggle in the topbar when the sidebar is expanded', () => {
     render(
-      <Header
-        onMobileMenuToggle={vi.fn()}
-        sidebarCollapsed={false}
-        sidebarToggle={<SidebarToggle onClick={vi.fn()} collapsed={false} />}
-        onAddCollection={vi.fn()}
-      />
+      <MemoryRouter>
+        <Header
+          onMobileMenuToggle={vi.fn()}
+          sidebarCollapsed={false}
+          sidebarToggle={<SidebarToggle onClick={vi.fn()} collapsed={false} />}
+        />
+      </MemoryRouter>
     );
 
     expect(screen.getByRole('button', { name: /collapse sidebar/i })).toBeInTheDocument();
@@ -32,12 +38,13 @@ describe('Header sidebar controls', () => {
 
   it('renders the reopen toggle in the topbar when the sidebar is collapsed', () => {
     render(
-      <Header
-        onMobileMenuToggle={vi.fn()}
-        sidebarCollapsed={true}
-        sidebarToggle={<SidebarToggle onClick={vi.fn()} collapsed={true} />}
-        onAddCollection={vi.fn()}
-      />
+      <MemoryRouter>
+        <Header
+          onMobileMenuToggle={vi.fn()}
+          sidebarCollapsed={true}
+          sidebarToggle={<SidebarToggle onClick={vi.fn()} collapsed={true} />}
+        />
+      </MemoryRouter>
     );
 
     expect(screen.getByRole('button', { name: /expand sidebar/i })).toBeInTheDocument();
