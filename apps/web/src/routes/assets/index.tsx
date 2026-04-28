@@ -16,7 +16,7 @@ import { useAssetDrawer } from '@/hooks/use-asset-drawer';
 const SORT_VALUES = ['newest', 'oldest', 'az', 'za'] as const satisfies readonly AssetSort[];
 
 export function AssetsListPage() {
-  const { openView, openCreate } = useAssetDrawer();
+  const { openCreate } = useAssetDrawer();
 
   const [filters, setFilters] = useQueryStates(
     {
@@ -108,7 +108,6 @@ export function AssetsListPage() {
       <AssetsView
         assets={assetItems}
         view={viewMode}
-        onCardClick={id => openView(id)}
         onTogglePin={handleTogglePin}
         onDelete={id => {
           setAssetToDelete(id);

@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { Folder, ArrowLeft } from 'lucide-react';
 import type { CreateCollectionInput } from '@cellar/shared';
 import { CollectionModal } from '@/components/collections/collection-modal';
+import { AssetCard } from '@/components/assets/asset-card';
 import { Button, ConfirmDialog, IconBadge } from '@cellar/ui';
 import { getColorClasses } from '@/lib/colors';
 import { useCollectionQuery } from '@/hooks/queries/use-collections';
@@ -11,6 +12,10 @@ import {
   useDeleteCollectionMutation,
   useUpdateCollectionMutation,
 } from '@/hooks/mutations/use-collection-mutations';
+import {
+  useDeleteAssetMutation,
+  useTogglePinAssetMutation,
+} from '@/hooks/mutations/use-asset-mutations';
 
 export function CollectionDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +23,8 @@ export function CollectionDetailPage() {
   const collectionQuery = useCollectionQuery(id);
   const updateCollection = useUpdateCollectionMutation(id ?? '');
   const deleteCollection = useDeleteCollectionMutation();
+  const togglePin = useTogglePinAssetMutation();
+  const deleteAsset = useDeleteAssetMutation();
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -109,16 +116,16 @@ export function CollectionDetailPage() {
       ) : (
         <div className="flex flex-col gap-2">
           {collection.assets.map(({ asset }) => (
-            <div
+            <AssetCard
               key={asset.id}
-              className="flex items-center gap-3 bg-surface-container rounded-lg px-4 py-3 cursor-pointer hover:bg-surface-container-high transition-colors"
-              onClick={() => navigate(`/assets/${asset.id}`)}
-            >
-              <span className="text-[10px] font-bold uppercase tracking-wider text-outline bg-surface-bright px-2 py-0.5 rounded">
-                {asset.type}
-              </span>
-              <span className="text-sm text-slate-100">{asset.title}</span>
-            </div>
+              asset={{
+                ...asset,
+                updatedAt: new Date(asset.updatedAt),
+              }}
+              onTogglePin={() => togglePin.mutate(asset.id)}
+              onDelete={() => deleteAsset.mutate(asset.id)}
+              compact
+            />
           ))}
         </div>
       )}

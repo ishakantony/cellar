@@ -1,7 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { AssetsView } from './assets-view';
 import { AssetType } from '@cellar/shared';
+
+vi.mock('@/hooks/use-asset-drawer', () => ({
+  useAssetDrawer: () => ({ openView: vi.fn() }),
+}));
 
 const MOCK_ASSETS = [
   {
@@ -20,7 +24,6 @@ describe('AssetsView', () => {
       <AssetsView
         assets={MOCK_ASSETS}
         view="grid"
-        onCardClick={vi.fn()}
         onTogglePin={vi.fn()}
         onDelete={vi.fn()}
         emptyMessage="Empty"
@@ -34,7 +37,6 @@ describe('AssetsView', () => {
       <AssetsView
         assets={[]}
         view="grid"
-        onCardClick={vi.fn()}
         onTogglePin={vi.fn()}
         onDelete={vi.fn()}
         emptyMessage="Nothing here"
@@ -43,28 +45,11 @@ describe('AssetsView', () => {
     expect(screen.getByText('Nothing here')).toBeInTheDocument();
   });
 
-  it('calls onCardClick when card clicked', () => {
-    const onCardClick = vi.fn();
-    render(
-      <AssetsView
-        assets={MOCK_ASSETS}
-        view="grid"
-        onCardClick={onCardClick}
-        onTogglePin={vi.fn()}
-        onDelete={vi.fn()}
-        emptyMessage="Empty"
-      />
-    );
-    fireEvent.click(screen.getByText('Test'));
-    expect(onCardClick).toHaveBeenCalledWith('1');
-  });
-
   it('renders a Pinned section heading when assets are pinned', () => {
     render(
       <AssetsView
         assets={[{ ...MOCK_ASSETS[0], pinned: true }]}
         view="grid"
-        onCardClick={vi.fn()}
         onTogglePin={vi.fn()}
         onDelete={vi.fn()}
         emptyMessage="Empty"
@@ -78,7 +63,6 @@ describe('AssetsView', () => {
       <AssetsView
         assets={MOCK_ASSETS}
         view="grid"
-        onCardClick={vi.fn()}
         onTogglePin={vi.fn()}
         onDelete={vi.fn()}
         emptyMessage="Empty"
@@ -95,7 +79,6 @@ describe('AssetsView', () => {
           { ...MOCK_ASSETS[0], id: '2', title: 'Pinned Asset', pinned: true },
         ]}
         view="grid"
-        onCardClick={vi.fn()}
         onTogglePin={vi.fn()}
         onDelete={vi.fn()}
         emptyMessage="Empty"
@@ -110,7 +93,6 @@ describe('AssetsView', () => {
       <AssetsView
         assets={[{ ...MOCK_ASSETS[0], pinned: true }]}
         view="list"
-        onCardClick={vi.fn()}
         onTogglePin={vi.fn()}
         onDelete={vi.fn()}
         emptyMessage="Empty"
@@ -127,7 +109,6 @@ describe('AssetsView', () => {
           { ...MOCK_ASSETS[0], id: '2', pinned: false },
         ]}
         view="grid"
-        onCardClick={vi.fn()}
         onTogglePin={vi.fn()}
         onDelete={vi.fn()}
         emptyMessage="Empty"
@@ -141,7 +122,6 @@ describe('AssetsView', () => {
       <AssetsView
         assets={[{ ...MOCK_ASSETS[0], pinned: true }]}
         view="grid"
-        onCardClick={vi.fn()}
         onTogglePin={vi.fn()}
         onDelete={vi.fn()}
         emptyMessage="Empty"

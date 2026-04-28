@@ -1,8 +1,14 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { AssetType } from '@cellar/shared';
 import { AssetCard } from './asset-card';
+
+const mockOpenView = vi.fn();
+
+vi.mock('@/hooks/use-asset-drawer', () => ({
+  useAssetDrawer: () => ({ openView: mockOpenView }),
+}));
 
 const mockAsset = {
   id: '1',
@@ -13,36 +19,33 @@ const mockAsset = {
 };
 
 describe('AssetCard', () => {
-  it('opens action menu from the icon button without opening the asset', async () => {
-    const handleClick = vi.fn();
+  beforeEach(() => {
+    mockOpenView.mockClear();
+  });
 
-    render(
-      <AssetCard
-        asset={mockAsset}
-        onClick={handleClick}
-        onTogglePin={() => {}}
-        onDelete={() => {}}
-      />
-    );
+  it('calls openView with the asset id when the card is clicked', async () => {
+    render(<AssetCard asset={mockAsset} onTogglePin={() => {}} onDelete={() => {}} />);
+
+    await userEvent.click(screen.getByText('Launch Notes'));
+
+    expect(mockOpenView).toHaveBeenCalledTimes(1);
+    expect(mockOpenView).toHaveBeenCalledWith('1');
+  });
+
+  it('opens action menu from the icon button without opening the asset', async () => {
+    render(<AssetCard asset={mockAsset} onTogglePin={() => {}} onDelete={() => {}} />);
 
     await userEvent.click(screen.getByLabelText('More actions'));
 
     expect(screen.getByRole('button', { name: 'Pin' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument();
-    expect(handleClick).not.toHaveBeenCalled();
+    expect(mockOpenView).not.toHaveBeenCalled();
   });
 
   it('calls action handlers from the menu', async () => {
     const handleTogglePin = vi.fn();
 
-    render(
-      <AssetCard
-        asset={mockAsset}
-        onClick={() => {}}
-        onTogglePin={handleTogglePin}
-        onDelete={() => {}}
-      />
-    );
+    render(<AssetCard asset={mockAsset} onTogglePin={handleTogglePin} onDelete={() => {}} />);
 
     await userEvent.click(screen.getByLabelText('More actions'));
     await userEvent.click(screen.getByRole('button', { name: 'Pin' }));
@@ -54,7 +57,6 @@ describe('AssetCard', () => {
     render(
       <AssetCard
         asset={{ ...mockAsset, pinned: true }}
-        onClick={() => {}}
         onTogglePin={() => {}}
         onDelete={() => {}}
       />
@@ -64,9 +66,7 @@ describe('AssetCard', () => {
   });
 
   it('shows no pin icon when unpinned', () => {
-    render(
-      <AssetCard asset={mockAsset} onClick={() => {}} onTogglePin={() => {}} onDelete={() => {}} />
-    );
+    render(<AssetCard asset={mockAsset} onTogglePin={() => {}} onDelete={() => {}} />);
 
     expect(screen.queryByLabelText('Pinned')).not.toBeInTheDocument();
   });
@@ -75,7 +75,6 @@ describe('AssetCard', () => {
     const { container } = render(
       <AssetCard
         asset={{ ...mockAsset, pinned: true }}
-        onClick={() => {}}
         onTogglePin={() => {}}
         onDelete={() => {}}
       />

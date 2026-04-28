@@ -1,6 +1,7 @@
 import { Pin, PinOff, Trash2, MoreVertical } from 'lucide-react';
 import { AssetType } from '@cellar/shared';
 import { TYPE_CONFIG } from '@/lib/asset-types';
+import { useAssetDrawer } from '@/hooks/use-asset-drawer';
 import { ActionMenu, Card, IconBadge, IconBadgeProps, IconButton } from '@cellar/ui';
 interface AssetCardProps {
   asset: {
@@ -11,19 +12,13 @@ interface AssetCardProps {
     pinned: boolean;
     updatedAt: Date;
   };
-  onClick: () => void;
   onTogglePin: () => void;
   onDelete: () => void;
   compact?: boolean;
 }
 
-export function AssetCard({
-  asset,
-  onClick,
-  onTogglePin,
-  onDelete,
-  compact = false,
-}: AssetCardProps) {
+export function AssetCard({ asset, onTogglePin, onDelete, compact = false }: AssetCardProps) {
+  const { openView } = useAssetDrawer();
   const config = TYPE_CONFIG[asset.type];
   const subtitle =
     asset.type === 'SNIPPET' && asset.language
@@ -50,7 +45,7 @@ export function AssetCard({
     return (
       <Card
         hoverable
-        onClick={onClick}
+        onClick={() => openView(asset.id)}
         padding="sm"
         className="flex items-center gap-3 hover:bg-surface-container group cursor-pointer"
       >
@@ -90,7 +85,7 @@ export function AssetCard({
   return (
     <Card
       hoverable
-      onClick={onClick}
+      onClick={() => openView(asset.id)}
       padding="sm"
       className="flex items-center gap-4 hover:bg-surface-container-high group cursor-pointer"
     >

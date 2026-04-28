@@ -16,7 +16,6 @@ interface AssetItem {
 export interface AssetsViewProps {
   assets: AssetItem[];
   view: 'grid' | 'list';
-  onCardClick: (id: string) => void;
   onTogglePin: (id: string) => void;
   onDelete: (id: string) => void;
   emptyMessage: ReactNode;
@@ -26,7 +25,6 @@ export interface AssetsViewProps {
 export function AssetsView({
   assets,
   view,
-  onCardClick,
   onTogglePin,
   onDelete,
   emptyMessage,
@@ -65,7 +63,6 @@ export function AssetsView({
     <AssetCard
       key={asset.id}
       asset={asset}
-      onClick={() => onCardClick(asset.id)}
       onTogglePin={() => onTogglePin(asset.id)}
       onDelete={() => onDelete(asset.id)}
       compact={view === 'list'}
