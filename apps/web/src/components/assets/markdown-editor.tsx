@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Textarea, cn } from '@cellar/ui';
 import { MarkdownPreview } from '@/components/markdown-preview';
-import { MonacoEditor } from '@/components/monaco-editor';
+import { CodeMirrorEditor } from '@/components/codemirror-editor';
 export interface MarkdownEditorProps {
   value: string;
   onChange: (value: string) => void;
@@ -59,7 +59,7 @@ export function MarkdownEditor({
             />
           ) : (
             <div className="h-[240px]">
-              <MonacoEditor value={value} onChange={onChange} language="markdown" />
+              <CodeMirrorEditor value={value} onChange={onChange} language="markdown" />
             </div>
           )
         ) : (

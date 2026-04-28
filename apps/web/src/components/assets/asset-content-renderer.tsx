@@ -3,8 +3,8 @@ import { Copy, ExternalLink, Download, X, ZoomIn } from 'lucide-react';
 import { toast } from 'sonner';
 import { AssetType } from '@cellar/shared';
 import { MarkdownPreview } from '@/components/markdown-preview';
-import { MonacoEditor } from '@/components/monaco-editor';
-import { IconButton, Modal } from '@cellar/ui';
+import { CodeMirrorEditor } from '@/components/codemirror-editor';
+import { IconButton, Modal, cn } from '@cellar/ui';
 interface AssetContentRendererProps {
   asset: {
     type: AssetType;
@@ -46,16 +46,53 @@ function SnippetRenderer({
         <IconButton icon={Copy} size="sm" onClick={handleCopy} label="Copy code" />
       </div>
       <div className="h-[400px]">
-        <MonacoEditor value={content || ''} language={language || 'plaintext'} readOnly />
+        <CodeMirrorEditor value={content || ''} language={language || 'plaintext'} readOnly />
       </div>
     </div>
   );
 }
 
 function MarkdownRenderer({ content }: { content: string | null }) {
+  const [activeTab, setActiveTab] = useState<'preview' | 'source'>('preview');
+
   return (
-    <div className="rounded-lg bg-surface-container p-6">
-      <MarkdownPreview content={content || ''} />
+    <div className="rounded-lg bg-surface-container overflow-hidden">
+      <div className="flex items-center gap-1 border-b border-outline-variant/10 px-3 py-1.5">
+        <button
+          type="button"
+          onClick={() => setActiveTab('preview')}
+          className={cn(
+            'px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-all',
+            activeTab === 'preview'
+              ? 'bg-primary/10 text-primary'
+              : 'text-outline hover:text-on-surface-variant'
+          )}
+        >
+          Preview
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('source')}
+          className={cn(
+            'px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest transition-all',
+            activeTab === 'source'
+              ? 'bg-primary/10 text-primary'
+              : 'text-outline hover:text-on-surface-variant'
+          )}
+        >
+          Source
+        </button>
+      </div>
+
+      {activeTab === 'preview' ? (
+        <div className="p-6">
+          <MarkdownPreview content={content || ''} />
+        </div>
+      ) : (
+        <div className="h-[400px]">
+          <CodeMirrorEditor value={content || ''} language="markdown" readOnly />
+        </div>
+      )}
     </div>
   );
 }

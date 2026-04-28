@@ -7,7 +7,8 @@ import { TYPE_CONFIG, ASSET_TYPE_OPTIONS } from '@/lib/asset-types';
 import { Alert, Button, FormField, Input, MultiSelect, Select, Textarea, cn } from '@cellar/ui';
 import { MarkdownEditor } from './markdown-editor';
 import { FileUploadField, type FileUploadValue } from './file-upload-field';
-import { MonacoEditor } from '@/components/monaco-editor';
+import { SnippetEditor } from '@/components/snippet-editor';
+
 const LANGUAGE_OPTIONS = [
   { value: 'javascript', label: 'JavaScript' },
   { value: 'typescript', label: 'TypeScript' },
@@ -237,14 +238,14 @@ export function AssetForm({
             Content
           </label>
           {type === 'SNIPPET' ? (
-            <div className="space-y-2">
-              <Select
-                value={language}
-                options={LANGUAGE_OPTIONS}
-                onChange={val => setValue('language', val)}
-                disabled={isSubmitting}
-              />
-              {isStorybook ? (
+            isStorybook ? (
+              <div className="space-y-2">
+                <Select
+                  value={language}
+                  options={LANGUAGE_OPTIONS}
+                  onChange={val => setValue('language', val)}
+                  disabled={isSubmitting}
+                />
                 <Textarea
                   value={content}
                   onChange={val => setValue('content', val)}
@@ -252,16 +253,18 @@ export function AssetForm({
                   className="font-mono min-h-[240px]"
                   disabled={isSubmitting}
                 />
-              ) : (
-                <div className="h-[240px] rounded-lg overflow-hidden">
-                  <MonacoEditor
-                    value={content}
-                    onChange={val => setValue('content', val)}
-                    language={language}
-                  />
-                </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="h-[300px]">
+                <SnippetEditor
+                  value={content}
+                  onChange={val => setValue('content', val)}
+                  language={language}
+                  onLanguageChange={val => setValue('language', val)}
+                  disabled={isSubmitting}
+                />
+              </div>
+            )
           ) : (
             <MarkdownEditor
               value={content}

@@ -2,8 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MarkdownEditor } from './markdown-editor';
 
-vi.mock('@/components/monaco-editor', () => ({
-  MonacoEditor: ({ value, onChange }: { value: string; onChange?: (v: string) => void }) => (
+vi.mock('@/components/codemirror-editor', () => ({
+  CodeMirrorEditor: ({ value, onChange }: { value: string; onChange?: (v: string) => void }) => (
     <textarea value={value} onChange={e => onChange?.(e.target.value)} />
   ),
 }));

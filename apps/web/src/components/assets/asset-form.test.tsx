@@ -3,9 +3,24 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { AssetForm } from './asset-form';
 import userEvent from '@testing-library/user-event';
 
-vi.mock('@/components/monaco-editor', () => ({
-  MonacoEditor: ({ value, onChange }: { value: string; onChange?: (v: string) => void }) => (
-    <textarea value={value} onChange={e => onChange?.(e.target.value)} />
+vi.mock('@/components/snippet-editor', () => ({
+  SnippetEditor: ({
+    value,
+    onChange,
+    language,
+    onLanguageChange,
+  }: {
+    value: string;
+    onChange: (v: string) => void;
+    language: string;
+    onLanguageChange: (l: string) => void;
+  }) => (
+    <div>
+      <select value={language} onChange={e => onLanguageChange(e.target.value)}>
+        <option value={language}>{language}</option>
+      </select>
+      <textarea value={value} onChange={e => onChange(e.target.value)} />
+    </div>
   ),
 }));
 
