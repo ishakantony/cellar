@@ -105,12 +105,18 @@ body {
   background: linear-gradient(135deg, #b9c3ff 0%, #0033c2 100%);
 }
 
-[data-sonner-toast][data-type='success'] [data-icon] {
-  color: var(--color-primary);
-}
+[data-sonner-toaster] {
+  --normal-bg: #16202e; /* --color-surface-container-high */
+  --normal-text: #d9e6fd; /* --color-foreground */
+  --normal-border: rgba(255, 255, 255, 0.1);
 
-[data-sonner-toast][data-type='error'] [data-icon] {
-  color: var(--color-error);
+  --success-bg: #1a2e22;
+  --success-text: #86efac;
+  --success-border: rgba(134, 239, 172, 0.15);
+
+  --error-bg: #2e161b; /* dark variant of --color-error (#ec7c8a) */
+  --error-text: #ec7c8a; /* --color-error */
+  --error-border: rgba(236, 124, 138, 0.2);
 }
 
 [data-sonner-toast] {

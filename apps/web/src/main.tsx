@@ -28,7 +28,7 @@ createRoot(rootElement).render(
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
       <ReactQueryDevtools />
-      <Toaster position="top-right" richColors />
+      <Toaster position="top-right" theme="dark" />
     </QueryClientProvider>
   </StrictMode>
 );
