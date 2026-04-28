@@ -4,6 +4,9 @@ import { apiFetch } from '../../lib/api-fetch';
 import { assetKeys, collectionKeys, dashboardKey } from '../keys';
 import type { AssetSummary } from '../queries/use-assets';
 
+type CreateAssetPayload = CreateAssetInput & { collectionIds?: string[] };
+type UpdateAssetPayload = UpdateAssetInput & { collectionIds?: string[] };
+
 function invalidateAssetTree(qc: ReturnType<typeof useQueryClient>) {
   qc.invalidateQueries({ queryKey: assetKeys.all });
   qc.invalidateQueries({ queryKey: dashboardKey });
@@ -12,13 +15,14 @@ function invalidateAssetTree(qc: ReturnType<typeof useQueryClient>) {
 export function useCreateAssetMutation() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateAssetInput) =>
+    mutationFn: (data: CreateAssetPayload) =>
       apiFetch<AssetSummary>('/api/assets', {
         method: 'POST',
         body: JSON.stringify(data),
       }),
     onSuccess: () => {
       invalidateAssetTree(qc);
+      qc.invalidateQueries({ queryKey: collectionKeys.all });
     },
   });
 }
@@ -26,7 +30,7 @@ export function useCreateAssetMutation() {
 export function useUpdateAssetMutation(id: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: UpdateAssetInput) =>
+    mutationFn: (data: UpdateAssetPayload) =>
       apiFetch<AssetSummary>(`/api/assets/${id}`, {
         method: 'PATCH',
         body: JSON.stringify(data),

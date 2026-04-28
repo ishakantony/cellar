@@ -11,7 +11,7 @@ import {
 } from '@cellar/shared';
 
 import { db } from '../db/client';
-import { asset, assetPublicColumns, type AssetRow } from '../db/schema';
+import { asset, assetCollection, assetPublicColumns, type AssetRow } from '../db/schema';
 import { requireUser, type AuthVariables } from '../lib/session-middleware';
 
 const PUBLIC_COLUMNS = assetPublicColumns;
@@ -93,14 +93,23 @@ export const assetsRoute = new Hono<{ Variables: AuthVariables }>()
   })
   .post('/', zValidator('json', CreateAssetSchema), async c => {
     const user = c.get('user');
-    const data = c.req.valid('json');
-    const [created] = await db
-      .insert(asset)
-      .values({
-        ...data,
-        userId: user.id,
-      })
-      .returning(PUBLIC_COLUMNS);
+    const { collectionIds, ...assetData } = c.req.valid('json');
+
+    const created = await db.transaction(async tx => {
+      const [row] = await tx
+        .insert(asset)
+        .values({ ...assetData, userId: user.id })
+        .returning(PUBLIC_COLUMNS);
+
+      if (collectionIds && collectionIds.length > 0) {
+        await tx
+          .insert(assetCollection)
+          .values(collectionIds.map(collectionId => ({ assetId: row.id, collectionId })));
+      }
+
+      return row;
+    });
+
     return c.json(created, 201);
   })
   .patch('/:id', zValidator('json', UpdateAssetSchema), async c => {
@@ -108,7 +117,7 @@ export const assetsRoute = new Hono<{ Variables: AuthVariables }>()
     const idResult = AssetIdSchema.safeParse(c.req.param('id'));
     if (!idResult.success) return c.json({ error: 'Invalid id' }, 400);
     const id = idResult.data;
-    const data = c.req.valid('json');
+    const { collectionIds, ...data } = c.req.valid('json');
 
     if (data.filePath !== undefined) {
       const existing = await db.query.asset.findFirst({
@@ -120,14 +129,39 @@ export const assetsRoute = new Hono<{ Variables: AuthVariables }>()
       }
     }
 
-    const [updated] = await db
-      .update(asset)
-      .set({ ...data, updatedAt: new Date() })
-      .where(and(eq(asset.id, id), eq(asset.userId, user.id)))
-      .returning(PUBLIC_COLUMNS);
+    try {
+      const updated = await db.transaction(async tx => {
+        const [row] = await tx
+          .update(asset)
+          .set({ ...data, updatedAt: new Date() })
+          .where(and(eq(asset.id, id), eq(asset.userId, user.id)))
+          .returning(PUBLIC_COLUMNS);
 
-    if (!updated) return c.json({ error: 'Not found' }, 404);
-    return c.json(updated);
+        if (!row) {
+          const err = new Error('Not found');
+          (err as NodeJS.ErrnoException).code = 'NOT_FOUND';
+          throw err;
+        }
+
+        if (collectionIds !== undefined) {
+          await tx.delete(assetCollection).where(eq(assetCollection.assetId, id));
+          if (collectionIds.length > 0) {
+            await tx
+              .insert(assetCollection)
+              .values(collectionIds.map(collectionId => ({ assetId: id, collectionId })));
+          }
+        }
+
+        return row;
+      });
+
+      return c.json(updated);
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === 'NOT_FOUND') {
+        return c.json({ error: 'Not found' }, 404);
+      }
+      throw err;
+    }
   })
   .delete('/:id', async c => {
     const user = c.get('user');

@@ -4,12 +4,16 @@ import { Pencil, Pin, PinOff, Trash2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button, ConfirmDialog, Drawer, IconBadge, IconButton } from '@cellar/ui';
 import type { IconBadgeProps } from '@cellar/ui';
+import type { CreateAssetInput } from '@cellar/shared';
 import { AssetContentRenderer } from './asset-content-renderer';
+import { AssetForm } from './asset-form';
 import { useAssetQuery } from '@/hooks/queries/use-assets';
 import {
+  useCreateAssetMutation,
   useDeleteAssetMutation,
   useTogglePinAssetMutation,
 } from '@/hooks/mutations/use-asset-mutations';
+import { useCollectionsQuery } from '@/hooks/queries/use-collections';
 import { TYPE_CONFIG } from '@/lib/asset-types';
 
 export function AssetDrawer() {
@@ -32,23 +36,61 @@ export function AssetDrawer() {
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [isOpen, handleClose]);
 
+  const handleCreated = useCallback(
+    (id: string) => {
+      void setNewParam(null);
+      void setAssetId(id);
+    },
+    [setNewParam, setAssetId]
+  );
+
   return (
     <Drawer open={isOpen} onClose={handleClose}>
       {assetId ? (
         <AssetViewContent id={assetId} onClose={handleClose} />
-      ) : (
-        <div className="flex-1 p-6 flex items-center justify-center">
-          <p className="text-xs text-outline">Create form coming soon…</p>
-          <IconButton
-            icon={X}
-            size="sm"
-            onClick={handleClose}
-            label="Close drawer"
-            className="absolute top-4 right-4"
-          />
-        </div>
-      )}
+      ) : newParam ? (
+        <AssetCreateContent onClose={handleClose} onCreated={handleCreated} />
+      ) : null}
     </Drawer>
+  );
+}
+
+function AssetCreateContent({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated: (id: string) => void;
+}) {
+  const createAsset = useCreateAssetMutation();
+  const collectionsQuery = useCollectionsQuery();
+  const availableCollections = collectionsQuery.data?.map(c => ({ id: c.id, name: c.name })) ?? [];
+
+  const handleSubmit = useCallback(
+    async (data: CreateAssetInput & { collectionIds?: string[] }) => {
+      const created = await createAsset.mutateAsync(data);
+      toast.success(`Asset "${created.title}" created`);
+      onCreated(created.id);
+    },
+    [createAsset, onCreated]
+  );
+
+  return (
+    <>
+      <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-white/5 shrink-0">
+        <h2 className="text-base font-bold text-slate-100">New Asset</h2>
+        <IconButton icon={X} size="sm" onClick={onClose} label="Close drawer" />
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-6">
+        <AssetForm
+          mode="create"
+          availableCollections={availableCollections}
+          onSubmit={handleSubmit}
+          onCancel={onClose}
+        />
+      </div>
+    </>
   );
 }
 

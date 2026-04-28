@@ -12,6 +12,7 @@ export const CreateAssetSchema = z.object({
   fileName: z.string().max(200).optional(),
   mimeType: z.string().max(100).optional(),
   fileSize: z.number().int().min(0).optional(),
+  collectionIds: z.string().array().optional(),
 });
 export const UpdateAssetSchema = z.object({
   title: z.string().min(1).max(200).optional(),
@@ -23,6 +24,7 @@ export const UpdateAssetSchema = z.object({
   fileName: z.string().max(200).optional(),
   mimeType: z.string().max(100).optional(),
   fileSize: z.number().int().min(0).optional(),
+  collectionIds: z.string().array().optional(),
 });
 // IDs are CUIDs, not UUIDs — accept any non-empty string.
 export const AssetIdSchema = z.string().min(1);

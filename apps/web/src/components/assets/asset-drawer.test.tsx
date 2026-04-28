@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -11,16 +11,26 @@ vi.mock('@/hooks/queries/use-assets', () => ({
 vi.mock('@/hooks/mutations/use-asset-mutations', () => ({
   useTogglePinAssetMutation: vi.fn(),
   useDeleteAssetMutation: vi.fn(),
+  useCreateAssetMutation: vi.fn(),
+}));
+vi.mock('@/hooks/queries/use-collections', () => ({
+  useCollectionsQuery: vi.fn(),
 }));
 vi.mock('./asset-content-renderer', () => ({
   AssetContentRenderer: () => <div data-testid="asset-content" />,
+}));
+vi.mock('./asset-form', () => ({
+  AssetForm: vi.fn(() => <div data-testid="asset-form" />),
 }));
 
 import { useAssetQuery } from '@/hooks/queries/use-assets';
 import {
   useTogglePinAssetMutation,
   useDeleteAssetMutation,
+  useCreateAssetMutation,
 } from '@/hooks/mutations/use-asset-mutations';
+import { useCollectionsQuery } from '@/hooks/queries/use-collections';
+import { AssetForm } from './asset-form';
 import { AssetDrawer } from './asset-drawer';
 
 const mockAsset = {
@@ -67,6 +77,14 @@ describe('AssetDrawer', () => {
     vi.mocked(useDeleteAssetMutation).mockReturnValue({
       mutateAsync: vi.fn().mockResolvedValue({}),
     } as unknown as ReturnType<typeof useDeleteAssetMutation>);
+
+    vi.mocked(useCreateAssetMutation).mockReturnValue({
+      mutateAsync: vi.fn().mockResolvedValue({ id: 'new-asset-id', title: 'New Asset' }),
+    } as unknown as ReturnType<typeof useCreateAssetMutation>);
+
+    vi.mocked(useCollectionsQuery).mockReturnValue({
+      data: [],
+    } as unknown as ReturnType<typeof useCollectionsQuery>);
   });
 
   it('is closed when neither ?id nor ?new is present', () => {
@@ -141,8 +159,79 @@ describe('AssetDrawer', () => {
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });
 
-  it('opens with create placeholder when ?new=1 is set', () => {
-    render(<AssetDrawer />, { wrapper: makeWrapper('?new=1') });
-    expect(screen.getByRole('button', { name: 'Close drawer' })).toBeInTheDocument();
+  describe('create mode', () => {
+    it('renders AssetForm when ?new=1 is set', () => {
+      render(<AssetDrawer />, { wrapper: makeWrapper('?new=1') });
+      expect(screen.getByTestId('asset-form')).toBeInTheDocument();
+    });
+
+    it('passes available collections to AssetForm', () => {
+      vi.mocked(useCollectionsQuery).mockReturnValue({
+        data: [
+          {
+            id: 'c1',
+            name: 'Work',
+            userId: 'u1',
+            description: null,
+            color: null,
+            pinned: false,
+            assetCount: 0,
+            createdAt: '',
+            updatedAt: '',
+          },
+        ],
+      } as unknown as ReturnType<typeof useCollectionsQuery>);
+
+      render(<AssetDrawer />, { wrapper: makeWrapper('?new=1') });
+
+      const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
+      expect(formProps?.availableCollections).toEqual([{ id: 'c1', name: 'Work' }]);
+    });
+
+    it('cancel clears ?new param and closes the drawer', async () => {
+      render(<AssetDrawer />, { wrapper: makeWrapper('?new=1') });
+      const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
+
+      await act(async () => {
+        formProps?.onCancel?.();
+      });
+
+      expect(screen.queryByTestId('asset-form')).not.toBeInTheDocument();
+    });
+
+    it('submit calls createAsset mutation with collectionIds', async () => {
+      const mutateAsync = vi.fn().mockResolvedValue({ id: 'new-asset-id', title: 'New' });
+      vi.mocked(useCreateAssetMutation).mockReturnValue({
+        mutateAsync,
+      } as unknown as ReturnType<typeof useCreateAssetMutation>);
+
+      render(<AssetDrawer />, { wrapper: makeWrapper('?new=1') });
+      const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
+
+      await act(async () => {
+        await formProps?.onSubmit({ type: 'NOTE', title: 'New', collectionIds: ['c1'] });
+      });
+
+      expect(mutateAsync).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'NOTE', title: 'New', collectionIds: ['c1'] })
+      );
+    });
+
+    it('submit transitions to view mode for the new asset', async () => {
+      const mutateAsync = vi.fn().mockResolvedValue({ id: 'new-asset-id', title: 'New' });
+      vi.mocked(useCreateAssetMutation).mockReturnValue({
+        mutateAsync,
+      } as unknown as ReturnType<typeof useCreateAssetMutation>);
+
+      render(<AssetDrawer />, { wrapper: makeWrapper('?new=1') });
+      const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
+
+      await act(async () => {
+        await formProps?.onSubmit({ type: 'NOTE', title: 'New', collectionIds: [] });
+      });
+
+      // Create form is gone; view mode loads the new asset
+      expect(screen.queryByTestId('asset-form')).not.toBeInTheDocument();
+    });
   });
 });
