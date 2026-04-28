@@ -15,9 +15,6 @@ import {
   Image as ImageIcon,
   FileText,
   PlusCircle,
-  FolderPlus,
-  LogOut,
-  PanelLeftClose,
 } from 'lucide-react';
 import { useCommandPalette } from '@/hooks/use-command-palette';
 import { useCollectionModal } from '@/hooks/use-collection-modal';
@@ -29,8 +26,8 @@ import {
   type PaletteItem,
   type PaletteGroup,
 } from '@/lib/command-palette-results';
+import { commandPaletteActions } from '@/lib/command-palette-actions';
 import { cn } from '@cellar/ui';
-import type { AssetType } from '@cellar/shared';
 
 // ---------------------------------------------------------------------------
 // Relative time helper
@@ -71,17 +68,11 @@ const NAV_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> 
   '/assets?type=FILE': FileText,
 };
 
-const ACTION_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  'new-snippet': Code,
-  'new-prompt': Terminal,
-  'new-link': LinkIcon,
-  'new-note': StickyNote,
-  'new-image': ImageIcon,
-  'new-file': FileText,
-  'new-collection': FolderPlus,
-  'sign-out': LogOut,
-  'toggle-sidebar': PanelLeftClose,
-};
+/** Icon map derived from the commandPaletteActions registry — single source of truth. */
+const ACTION_ICON_MAP: Record<
+  string,
+  React.ComponentType<{ className?: string }>
+> = Object.fromEntries(commandPaletteActions.map(({ id, icon }) => [id, icon]));
 
 const ASSET_TYPE_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   SNIPPET: Code,
@@ -90,19 +81,6 @@ const ASSET_TYPE_ICON_MAP: Record<string, React.ComponentType<{ className?: stri
   NOTE: StickyNote,
   IMAGE: ImageIcon,
   FILE: FileText,
-};
-
-// ---------------------------------------------------------------------------
-// Asset type action map (module-level)
-// ---------------------------------------------------------------------------
-
-const ACTION_ASSET_TYPE: Record<string, AssetType> = {
-  'new-snippet': 'SNIPPET',
-  'new-prompt': 'PROMPT',
-  'new-link': 'LINK',
-  'new-note': 'NOTE',
-  'new-image': 'IMAGE',
-  'new-file': 'FILE',
 };
 
 // ---------------------------------------------------------------------------
@@ -158,18 +136,18 @@ export function CommandPalette({ onToggleSidebar }: CommandPaletteProps) {
 
         case 'action': {
           const actionId = item.actionId ?? '';
-          const assetType = ACTION_ASSET_TYPE[actionId];
-
-          if (assetType) {
-            openAssetCreate({ type: assetType });
-          } else if (actionId === 'new-collection') {
-            openCollectionCreate();
-          } else if (actionId === 'sign-out') {
-            import('@/lib/auth-client').then(({ signOut }) => {
-              void signOut().then(() => navigate('/sign-in'));
+          const entry = commandPaletteActions.find(a => a.id === actionId);
+          if (entry) {
+            entry.run({
+              createAsset: type => openAssetCreate({ type }),
+              createCollection: openCollectionCreate,
+              signOut: () => {
+                import('@/lib/auth-client').then(({ signOut }) => {
+                  void signOut().then(() => navigate('/sign-in'));
+                });
+              },
+              toggleSidebar: () => onToggleSidebar?.(),
             });
-          } else if (actionId === 'toggle-sidebar') {
-            onToggleSidebar?.();
           }
           break;
         }

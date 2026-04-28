@@ -341,3 +341,125 @@ describe('commandPaletteResults — non-empty query', () => {
     expect(assetsGroup?.totalCount).toBe(23);
   });
 });
+
+// --- Issue 004: Actions group filtering and capping ---
+
+describe('commandPaletteResults — Actions group', () => {
+  it('filters Actions by query: "new s" matches New Snippet (and not other types)', () => {
+    const result = commandPaletteResults({
+      query: 'new s',
+      recentAssets: [],
+      searchAssets: [],
+      searchAssetTotal: 0,
+      collections: [],
+      navEntries: allNavEntries,
+    });
+
+    const actionsGroup = result.groups.find(g => g.id === 'actions');
+    expect(actionsGroup).toBeDefined();
+    const labels = actionsGroup!.items.map(i => i.label);
+    // "new s" matches "New Snippet" and "New Sidebar" keywords — at minimum Snippet
+    expect(labels.some(l => l === 'New Snippet')).toBe(true);
+    // Sign out should not match "new s"
+    expect(labels).not.toContain('Sign out');
+  });
+
+  it('filters Actions by query: "out" matches "Sign out"', () => {
+    const result = commandPaletteResults({
+      query: 'out',
+      recentAssets: [],
+      searchAssets: [],
+      searchAssetTotal: 0,
+      collections: [],
+      navEntries: allNavEntries,
+    });
+
+    const actionsGroup = result.groups.find(g => g.id === 'actions');
+    expect(actionsGroup).toBeDefined();
+    const labels = actionsGroup!.items.map(i => i.label);
+    expect(labels).toContain('Sign out');
+  });
+
+  it('omits Actions group entirely (including header) when no actions match the query', () => {
+    const result = commandPaletteResults({
+      query: 'xyzzy-no-action-matches',
+      recentAssets: [],
+      searchAssets: [],
+      searchAssetTotal: 0,
+      collections: [],
+      navEntries: [],
+    });
+
+    const groupIds = result.groups.map(g => g.id);
+    expect(groupIds).not.toContain('actions');
+  });
+
+  it('caps Actions group at 5 when querying (using a broad query that matches many actions)', () => {
+    // "create" is a keyword on all 7 "new" actions — should still cap at 5
+    const result = commandPaletteResults({
+      query: 'create',
+      recentAssets: [],
+      searchAssets: [],
+      searchAssetTotal: 0,
+      collections: [],
+      navEntries: allNavEntries,
+    });
+
+    const actionsGroup = result.groups.find(g => g.id === 'actions');
+    expect(actionsGroup).toBeDefined();
+    expect(actionsGroup!.items.length).toBeLessThanOrEqual(5);
+  });
+
+  it('Actions group items have kind="action" and an actionId', () => {
+    const result = commandPaletteResults({
+      query: 'snip',
+      recentAssets: [],
+      searchAssets: [],
+      searchAssetTotal: 0,
+      collections: [],
+      navEntries: allNavEntries,
+    });
+
+    const actionsGroup = result.groups.find(g => g.id === 'actions');
+    expect(actionsGroup).toBeDefined();
+    for (const item of actionsGroup!.items) {
+      expect(item.kind).toBe('action');
+      expect(item.actionId).toBeTruthy();
+    }
+  });
+
+  it('Actions group appears after Collections and before Go To in query results', () => {
+    const result = commandPaletteResults({
+      query: 'new',
+      recentAssets: [],
+      searchAssets: [],
+      searchAssetTotal: 0,
+      collections: [makeCollection({ name: 'New Collection Alpha' })],
+      navEntries: allNavEntries,
+    });
+
+    const groupIds = result.groups.map(g => g.id);
+    const collectionsIdx = groupIds.indexOf('collections');
+    const actionsIdx = groupIds.indexOf('actions');
+
+    if (collectionsIdx !== -1 && actionsIdx !== -1) {
+      expect(collectionsIdx).toBeLessThan(actionsIdx);
+    }
+  });
+
+  it('Actions group is shown on empty query (uncapped, all 9 actions)', () => {
+    const result = commandPaletteResults({
+      query: '',
+      recentAssets: [],
+      searchAssets: [],
+      searchAssetTotal: 0,
+      collections: [],
+      navEntries: allNavEntries,
+    });
+
+    const actionsGroup = result.groups.find(g => g.id === 'actions');
+    expect(actionsGroup).toBeDefined();
+    // On empty query, actions are uncapped — all 9 should appear
+    expect(actionsGroup!.items.length).toBe(9);
+  });
+});

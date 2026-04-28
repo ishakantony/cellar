@@ -1,5 +1,6 @@
 import type { NavEntry } from './nav-config';
 import type { AssetType } from '@cellar/shared';
+import { commandPaletteActions } from './command-palette-actions';
 
 // ---------------------------------------------------------------------------
 // Types exposed to consumers
@@ -50,7 +51,8 @@ export interface PaletteResult {
 }
 
 // ---------------------------------------------------------------------------
-// Static action entries (no run() here — that lives in command-palette-actions)
+// Static action entries — derived from the commandPaletteActions registry so
+// there is a single source of truth. The results module only needs id/label/keywords.
 // ---------------------------------------------------------------------------
 
 export interface ActionEntry {
@@ -59,25 +61,14 @@ export interface ActionEntry {
   keywords: string[];
 }
 
-export const ACTION_ENTRIES: ActionEntry[] = [
-  { id: 'new-snippet', label: 'New Snippet', keywords: ['create', 'snippet', 'code', 'snip'] },
-  { id: 'new-prompt', label: 'New Prompt', keywords: ['create', 'prompt', 'ai', 'llm'] },
-  { id: 'new-link', label: 'New Link', keywords: ['create', 'link', 'url', 'bookmark'] },
-  { id: 'new-note', label: 'New Note', keywords: ['create', 'note', 'text', 'markdown'] },
-  { id: 'new-image', label: 'New Image', keywords: ['create', 'image', 'photo', 'picture'] },
-  { id: 'new-file', label: 'New File', keywords: ['create', 'file', 'upload', 'document'] },
-  {
-    id: 'new-collection',
-    label: 'New Collection',
-    keywords: ['create', 'collection', 'folder', 'group'],
-  },
-  { id: 'sign-out', label: 'Sign out', keywords: ['sign', 'out', 'logout', 'exit'] },
-  {
-    id: 'toggle-sidebar',
-    label: 'Toggle sidebar',
-    keywords: ['toggle', 'sidebar', 'collapse', 'expand'],
-  },
-];
+/** Derived from commandPaletteActions — keeps filtering in sync with the registry. */
+export const ACTION_ENTRIES: ActionEntry[] = commandPaletteActions.map(
+  ({ id, label, keywords }) => ({
+    id,
+    label,
+    keywords,
+  })
+);
 
 // ---------------------------------------------------------------------------
 // Fuzzy / substring match helper
