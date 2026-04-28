@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import '../../load-env';
 import { syncFirstPartyClients } from './sync-clients';
 
 const disableMissing = process.env.OIDC_DISABLE_MISSING_CLIENTS === 'true';

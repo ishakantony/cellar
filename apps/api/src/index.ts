@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import './load-env';
 import { serve } from '@hono/node-server';
 import { app } from './app';
 import { runMigrations } from './boot/migrate';

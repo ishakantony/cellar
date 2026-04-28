@@ -22,7 +22,7 @@ End-to-end types flow via Hono RPC: the SPA imports `AppType` from `apps/api/src
 ```bash
 docker compose up -d postgres   # local Postgres on :5203
 pnpm install
-cp .env.example apps/api/.env   # fill in BETTER_AUTH_SECRET (>= 32 chars)
+cp .env.example .env            # fill in BETTER_AUTH_SECRET (>= 32 chars) — single root .env is read by both web and api
 pnpm dev                        # runs web on :5200 and api on :5201 in parallel
 ```
 

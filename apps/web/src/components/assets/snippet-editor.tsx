@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { Plugin } from 'prettier';
 import { Select } from '@cellar/ui';
 import { CodeMirrorEditor } from '@/components/common/codemirror-editor';
 import { getPrettierParser, getPrettierPluginLoaders } from '@/lib/codemirror-languages';
@@ -33,14 +34,14 @@ async function formatWithPrettier(code: string, language: string): Promise<strin
   if (!parser) return code;
 
   const loaders = getPrettierPluginLoaders(language);
-  const [prettier, ...plugins] = await Promise.all([
+  const [prettier, plugins] = await Promise.all([
     import('prettier/standalone'),
-    ...loaders.map(load => load()),
+    Promise.all(loaders.map(load => load())),
   ]);
 
   return prettier.format(code, {
     parser,
-    plugins: plugins.map(p => (p as { default?: unknown }).default ?? p),
+    plugins: plugins.map(p => ((p as { default?: Plugin }).default ?? p) as Plugin),
   });
 }
 

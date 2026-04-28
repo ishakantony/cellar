@@ -1,4 +1,4 @@
-import 'dotenv/config';
+import '../load-env';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { drizzle } from 'drizzle-orm/node-postgres';
@@ -15,10 +15,34 @@ export async function runMigrations(connectionString: string = process.env.DATAB
 
   const pool = new Pool({ connectionString, max: 1 });
   const db = drizzle(pool);
+  const startedAt = Date.now();
   try {
+    const before = await countAppliedMigrations(pool);
     await migrate(db, { migrationsFolder });
+    const after = await countAppliedMigrations(pool);
+    const applied = Math.max(0, after - before);
+    const elapsed = Date.now() - startedAt;
+    if (applied === 0) {
+      console.info(`[cellar] migrations up to date (${after} applied, ${elapsed}ms)`);
+    } else {
+      console.info(`[cellar] migrations applied: ${applied} new (${after} total, ${elapsed}ms)`);
+    }
+  } catch (error) {
+    console.error('[cellar] migration failed:', error);
+    throw error;
   } finally {
     await pool.end();
+  }
+}
+
+async function countAppliedMigrations(pool: Pool): Promise<number> {
+  try {
+    const result = await pool.query<{ count: string }>(
+      'SELECT COUNT(*)::text AS count FROM drizzle.__drizzle_migrations'
+    );
+    return Number(result.rows[0]?.count ?? 0);
+  } catch {
+    return 0;
   }
 }
 
@@ -29,12 +53,6 @@ const isMain =
 
 if (isMain) {
   runMigrations()
-    .then(() => {
-      console.info('[cellar] migrations applied');
-      process.exit(0);
-    })
-    .catch(error => {
-      console.error('[cellar] migration failed:', error);
-      process.exit(1);
-    });
+    .then(() => process.exit(0))
+    .catch(() => process.exit(1));
 }

@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  envDir: path.resolve(dirname, '../..'),
   plugins: [
     react({
       babel: {

@@ -80,6 +80,7 @@ export function createStartupReport(env: StartupEnv = process.env): string {
     ['NODE_ENV', readEnvValue(env, 'NODE_ENV') ?? 'unknown'],
     ['PORT', readEnvValue(env, 'PORT') ?? `default (${DEFAULT_PORT})`],
     ['E2E_TEST_MODE', readEnvValue(env, 'E2E_TEST_MODE') ?? 'false'],
+    ['VITE_DEMO_MODE', readEnvValue(env, 'VITE_DEMO_MODE') ?? 'false'],
   ]);
 
   const databaseLines = linesForSection('Database', [
