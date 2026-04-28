@@ -8,6 +8,7 @@ export interface ConfirmDialogProps {
   title: string;
   message: string;
   confirmLabel?: string;
+  cancelLabel?: string;
   variant?: 'primary' | 'danger';
 }
 
@@ -18,6 +19,7 @@ export function ConfirmDialog({
   title,
   message,
   confirmLabel = 'Confirm',
+  cancelLabel = 'Cancel',
   variant = 'primary',
 }: ConfirmDialogProps) {
   return (
@@ -25,7 +27,7 @@ export function ConfirmDialog({
       <p className="text-sm text-on-surface-variant">{message}</p>
       <div className="flex items-center justify-end gap-2 mt-6">
         <Button variant="ghost" onClick={onClose}>
-          Cancel
+          {cancelLabel}
         </Button>
         <Button variant={variant} onClick={onConfirm}>
           {confirmLabel}

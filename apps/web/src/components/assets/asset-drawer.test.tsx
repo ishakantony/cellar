@@ -12,6 +12,7 @@ vi.mock('@/hooks/mutations/use-asset-mutations', () => ({
   useTogglePinAssetMutation: vi.fn(),
   useDeleteAssetMutation: vi.fn(),
   useCreateAssetMutation: vi.fn(),
+  useUpdateAssetMutation: vi.fn(),
 }));
 vi.mock('@/hooks/queries/use-collections', () => ({
   useCollectionsQuery: vi.fn(),
@@ -28,6 +29,7 @@ import {
   useTogglePinAssetMutation,
   useDeleteAssetMutation,
   useCreateAssetMutation,
+  useUpdateAssetMutation,
 } from '@/hooks/mutations/use-asset-mutations';
 import { useCollectionsQuery } from '@/hooks/queries/use-collections';
 import { AssetForm } from './asset-form';
@@ -85,6 +87,10 @@ describe('AssetDrawer', () => {
     vi.mocked(useCollectionsQuery).mockReturnValue({
       data: [],
     } as unknown as ReturnType<typeof useCollectionsQuery>);
+
+    vi.mocked(useUpdateAssetMutation).mockReturnValue({
+      mutateAsync: vi.fn().mockResolvedValue({}),
+    } as unknown as ReturnType<typeof useUpdateAssetMutation>);
   });
 
   it('is closed when neither ?id nor ?new is present', () => {
@@ -157,6 +163,118 @@ describe('AssetDrawer', () => {
 
     render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
+  });
+
+  describe('edit mode', () => {
+    it('clicking Edit switches the drawer to edit mode', async () => {
+      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      expect(screen.queryByTestId('asset-form')).not.toBeInTheDocument();
+
+      await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+
+      expect(screen.getByTestId('asset-form')).toBeInTheDocument();
+    });
+
+    it('edit mode passes asset values as defaultValues to AssetForm', async () => {
+      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+
+      const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
+      expect(formProps?.mode).toBe('edit');
+      expect(formProps?.defaultValues).toMatchObject({ title: 'My Test Note' });
+    });
+
+    it('Save calls useUpdateAssetMutation with the form data', async () => {
+      const mutateAsync = vi.fn().mockResolvedValue({});
+      vi.mocked(useUpdateAssetMutation).mockReturnValue({
+        mutateAsync,
+      } as unknown as ReturnType<typeof useUpdateAssetMutation>);
+
+      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+
+      const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
+      await act(async () => {
+        await formProps?.onSubmit({ type: 'NOTE', title: 'Updated Title', collectionIds: ['c1'] });
+      });
+
+      expect(mutateAsync).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Updated Title', collectionIds: ['c1'] })
+      );
+    });
+
+    it('successful save returns the drawer to view mode', async () => {
+      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+
+      const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
+      await act(async () => {
+        await formProps?.onSubmit({ type: 'NOTE', title: 'Updated', collectionIds: [] });
+      });
+
+      expect(screen.queryByTestId('asset-form')).not.toBeInTheDocument();
+    });
+
+    it('Cancel with no changes immediately returns to view mode', async () => {
+      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+      expect(screen.getByTestId('asset-form')).toBeInTheDocument();
+
+      const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
+      await act(async () => {
+        formProps?.onCancel?.();
+      });
+
+      expect(screen.queryByTestId('asset-form')).not.toBeInTheDocument();
+    });
+
+    it('Cancel with unsaved changes shows a discard confirmation dialog', async () => {
+      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+
+      await act(async () => {
+        vi.mocked(AssetForm).mock.lastCall?.[0]?.onDirtyChange?.(true);
+      });
+      // Re-read props after rerender so onCancel has the updated isDirty closure
+      await act(async () => {
+        vi.mocked(AssetForm).mock.lastCall?.[0]?.onCancel?.();
+      });
+
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByText(/discard changes/i)).toBeInTheDocument();
+    });
+
+    it('choosing Stay in the discard dialog keeps the user in edit mode', async () => {
+      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+
+      await act(async () => {
+        vi.mocked(AssetForm).mock.lastCall?.[0]?.onDirtyChange?.(true);
+      });
+      await act(async () => {
+        vi.mocked(AssetForm).mock.lastCall?.[0]?.onCancel?.();
+      });
+
+      await userEvent.click(screen.getByRole('button', { name: 'Stay' }));
+
+      expect(screen.getByTestId('asset-form')).toBeInTheDocument();
+    });
+
+    it('choosing Discard in the discard dialog returns to view mode', async () => {
+      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
+
+      await act(async () => {
+        vi.mocked(AssetForm).mock.lastCall?.[0]?.onDirtyChange?.(true);
+      });
+      await act(async () => {
+        vi.mocked(AssetForm).mock.lastCall?.[0]?.onCancel?.();
+      });
+
+      await userEvent.click(screen.getByRole('button', { name: 'Discard' }));
+
+      expect(screen.queryByTestId('asset-form')).not.toBeInTheDocument();
+    });
   });
 
   describe('create mode', () => {

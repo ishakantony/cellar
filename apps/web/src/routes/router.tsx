@@ -7,7 +7,6 @@ import { SignUpPage } from './sign-up';
 import { AppLayout } from './app-layout';
 import { DashboardPage } from './dashboard';
 import { AssetsListPage } from './assets/index';
-import { AssetEditPage } from './assets/$id.edit';
 
 function AssetIdRedirect() {
   const { id } = useParams<{ id: string }>();
@@ -45,7 +44,7 @@ export const router = createBrowserRouter([
       { path: '/assets', element: <AssetsListPage /> },
       { path: '/assets/new', element: <Navigate to="/assets?new=1" replace /> },
       { path: '/assets/:id', element: <AssetIdRedirect /> },
-      { path: '/assets/:id/edit', element: <AssetEditPage /> },
+      { path: '/assets/:id/edit', element: <AssetIdRedirect /> },
       { path: '/collections', element: <CollectionsListPage /> },
       { path: '/collections/:id', element: <CollectionDetailPage /> },
       { path: '/settings', element: <SettingsPage /> },

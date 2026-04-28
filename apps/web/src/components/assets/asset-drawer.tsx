@@ -12,6 +12,7 @@ import {
   useCreateAssetMutation,
   useDeleteAssetMutation,
   useTogglePinAssetMutation,
+  useUpdateAssetMutation,
 } from '@/hooks/mutations/use-asset-mutations';
 import { useCollectionsQuery } from '@/hooks/queries/use-collections';
 import { TYPE_CONFIG } from '@/lib/asset-types';
@@ -98,7 +99,12 @@ function AssetViewContent({ id, onClose }: { id: string; onClose: () => void }) 
   const assetQuery = useAssetQuery(id);
   const togglePin = useTogglePinAssetMutation();
   const deleteAsset = useDeleteAssetMutation();
+  const updateAsset = useUpdateAssetMutation(id);
+  const collectionsQuery = useCollectionsQuery();
+  const [mode, setMode] = useState<'view' | 'edit'>('view');
+  const [isDirty, setIsDirty] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [discardDialogOpen, setDiscardDialogOpen] = useState(false);
 
   const handleTogglePin = useCallback(async () => {
     try {
@@ -119,6 +125,24 @@ function AssetViewContent({ id, onClose }: { id: string; onClose: () => void }) 
     }
   }, [id, deleteAsset, onClose]);
 
+  const handleEditSave = useCallback(
+    async (data: Parameters<typeof updateAsset.mutateAsync>[0]) => {
+      await updateAsset.mutateAsync(data);
+      toast.success('Asset updated');
+      setMode('view');
+      setIsDirty(false);
+    },
+    [updateAsset]
+  );
+
+  const handleEditCancel = useCallback(() => {
+    if (isDirty) {
+      setDiscardDialogOpen(true);
+    } else {
+      setMode('view');
+    }
+  }, [isDirty]);
+
   if (assetQuery.isPending) {
     return <div className="flex-1 p-6 text-center text-xs text-outline">Loading…</div>;
   }
@@ -129,6 +153,56 @@ function AssetViewContent({ id, onClose }: { id: string; onClose: () => void }) 
 
   const asset = assetQuery.data;
   const config = TYPE_CONFIG[asset.type];
+  const availableCollections = collectionsQuery.data?.map(c => ({ id: c.id, name: c.name })) ?? [];
+
+  const editDefaultValues = {
+    type: asset.type,
+    title: asset.title,
+    description: asset.description || undefined,
+    content: asset.content || undefined,
+    language: asset.language || undefined,
+    url: asset.url || undefined,
+    filePath: asset.filePath || undefined,
+    fileName: asset.fileName || undefined,
+    mimeType: asset.mimeType || undefined,
+    fileSize: asset.fileSize ?? undefined,
+    collectionIds: asset.collections.map(c => c.collection.id),
+  };
+
+  if (mode === 'edit') {
+    return (
+      <>
+        <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-white/5 shrink-0">
+          <h2 className="text-base font-bold text-slate-100">Edit Asset</h2>
+          <IconButton icon={X} size="sm" onClick={onClose} label="Close drawer" />
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6">
+          <AssetForm
+            mode="edit"
+            defaultValues={editDefaultValues}
+            availableCollections={availableCollections}
+            onSubmit={handleEditSave}
+            onCancel={handleEditCancel}
+            onDirtyChange={setIsDirty}
+          />
+        </div>
+
+        <ConfirmDialog
+          open={discardDialogOpen}
+          onClose={() => setDiscardDialogOpen(false)}
+          onConfirm={() => {
+            setDiscardDialogOpen(false);
+            setMode('view');
+          }}
+          title="Discard Changes"
+          message="Discard unsaved changes?"
+          confirmLabel="Discard"
+          cancelLabel="Stay"
+        />
+      </>
+    );
+  }
 
   return (
     <>
@@ -152,7 +226,7 @@ function AssetViewContent({ id, onClose }: { id: string; onClose: () => void }) 
             label={asset.pinned ? 'Unpin' : 'Pin'}
             className={asset.pinned ? 'text-primary' : ''}
           />
-          <Button variant="secondary" size="sm" onClick={() => {}}>
+          <Button variant="secondary" size="sm" onClick={() => setMode('edit')}>
             <Pencil className="h-3.5 w-3.5 mr-1" />
             Edit
           </Button>
