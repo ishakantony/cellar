@@ -2,29 +2,26 @@ import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { parseAsString, useQueryState } from 'nuqs';
 import { toast } from 'sonner';
-import type { CreateCollectionInput } from '@cellar/shared';
 import { CollectionsToolbar } from '@/components/collections/collections-toolbar';
 import { CollectionsView } from '@/components/collections/collections-view';
-import { CollectionModal } from '@/components/collections/collection-modal';
 import { ConfirmDialog, TextLink } from '@cellar/ui';
 import { useCollectionsQuery } from '@/hooks/queries/use-collections';
 import {
-  useCreateCollectionMutation,
   useDeleteCollectionMutation,
   useToggleCollectionPinMutation,
 } from '@/hooks/mutations/use-collection-mutations';
 import { useViewMode } from '@/hooks/use-view-mode';
+import { useCollectionModal } from '@/hooks/use-collection-modal';
 
 export function CollectionsListPage() {
   const navigate = useNavigate();
   const collectionsQuery = useCollectionsQuery();
-  const createCollection = useCreateCollectionMutation();
   const deleteCollection = useDeleteCollectionMutation();
   const togglePin = useToggleCollectionPinMutation();
+  const { openCreate, openEdit } = useCollectionModal();
 
   const [searchQuery, setSearchQuery] = useQueryState('q', parseAsString.withDefault(''));
   const [viewMode, setViewMode] = useViewMode();
-  const [modalOpen, setModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [collectionToDelete, setCollectionToDelete] = useState<string | null>(null);
 
@@ -48,20 +45,6 @@ export function CollectionsListPage() {
     pinned: c.pinned,
     _count: { assets: c.assetCount },
   }));
-
-  const handleCreate = useCallback(
-    async (data: CreateCollectionInput) => {
-      try {
-        await createCollection.mutateAsync(data);
-        toast.success(`Collection "${data.name}" created`);
-        setModalOpen(false);
-      } catch {
-        toast.error('Failed to create collection');
-        throw new Error('Failed to create collection');
-      }
-    },
-    [createCollection]
-  );
 
   const handleTogglePin = useCallback(
     async (id: string) => {
@@ -98,7 +81,7 @@ export function CollectionsListPage() {
         onSearchChange={setSearchQuery}
         view={viewMode}
         onViewChange={setViewMode}
-        onNewCollection={() => setModalOpen(true)}
+        onNewCollection={openCreate}
       />
 
       {collectionsQuery.isPending ? (
@@ -111,7 +94,7 @@ export function CollectionsListPage() {
           view={viewMode}
           onCardClick={id => navigate(`/collections/${id}`)}
           onTogglePin={handleTogglePin}
-          onEdit={id => navigate(`/collections/${id}`)}
+          onEdit={id => openEdit(id)}
           onDelete={id => {
             setCollectionToDelete(id);
             setDeleteDialogOpen(true);
@@ -121,19 +104,13 @@ export function CollectionsListPage() {
               'No collections match your search.'
             ) : (
               <>
-                No collections yet. <TextLink onClick={() => setModalOpen(true)}>Create</TextLink>{' '}
-                your first collection to get started.
+                No collections yet. <TextLink onClick={openCreate}>Create</TextLink> your first
+                collection to get started.
               </>
             )
           }
         />
       )}
-
-      <CollectionModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSubmit={handleCreate}
-      />
 
       <ConfirmDialog
         open={deleteDialogOpen}

@@ -2,46 +2,27 @@ import { useCallback, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 import { Folder, ArrowLeft } from 'lucide-react';
-import type { CreateCollectionInput } from '@cellar/shared';
-import { CollectionModal } from '@/components/collections/collection-modal';
 import { AssetCard } from '@/components/assets/asset-card';
 import { Button, ConfirmDialog, IconBadge } from '@cellar/ui';
 import { getColorClasses } from '@/lib/colors';
 import { useCollectionQuery } from '@/hooks/queries/use-collections';
-import {
-  useDeleteCollectionMutation,
-  useUpdateCollectionMutation,
-} from '@/hooks/mutations/use-collection-mutations';
+import { useDeleteCollectionMutation } from '@/hooks/mutations/use-collection-mutations';
 import {
   useDeleteAssetMutation,
   useTogglePinAssetMutation,
 } from '@/hooks/mutations/use-asset-mutations';
+import { useCollectionModal } from '@/hooks/use-collection-modal';
 
 export function CollectionDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const collectionQuery = useCollectionQuery(id);
-  const updateCollection = useUpdateCollectionMutation(id ?? '');
   const deleteCollection = useDeleteCollectionMutation();
   const togglePin = useTogglePinAssetMutation();
   const deleteAsset = useDeleteAssetMutation();
+  const { openEdit } = useCollectionModal();
 
-  const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-
-  const handleEdit = useCallback(
-    async (data: CreateCollectionInput) => {
-      try {
-        await updateCollection.mutateAsync(data);
-        toast.success('Collection updated');
-        setEditModalOpen(false);
-      } catch {
-        toast.error('Failed to update collection');
-        throw new Error('Failed to update collection');
-      }
-    },
-    [updateCollection]
-  );
 
   const handleDelete = useCallback(async () => {
     if (!id) return;
@@ -100,7 +81,7 @@ export function CollectionDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="secondary" size="sm" onClick={() => setEditModalOpen(true)}>
+          <Button variant="secondary" size="sm" onClick={() => id && openEdit(id)}>
             Edit
           </Button>
           <Button variant="danger" size="sm" onClick={() => setDeleteDialogOpen(true)}>
@@ -129,17 +110,6 @@ export function CollectionDetailPage() {
           ))}
         </div>
       )}
-
-      <CollectionModal
-        open={editModalOpen}
-        onClose={() => setEditModalOpen(false)}
-        onSubmit={handleEdit}
-        initialData={{
-          name: collection.name,
-          description: collection.description || '',
-          color: collection.color || '#3b82f6',
-        }}
-      />
 
       <ConfirmDialog
         open={deleteDialogOpen}
