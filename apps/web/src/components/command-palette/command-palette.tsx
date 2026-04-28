@@ -6,6 +6,7 @@ import {
   Search,
   Pin,
   Folder,
+  Loader2,
   LayoutDashboard,
   Package,
   Code,
@@ -100,7 +101,7 @@ export function CommandPalette({ onToggleSidebar }: CommandPaletteProps) {
   const triggerRef = useRef<HTMLButtonElement | null>(null);
 
   // Fetch asset search results, recents, and collections
-  const { searchAssets, searchAssetTotal, recentAssets, collections } =
+  const { searchAssets, searchAssetTotal, recentAssets, collections, isLoading } =
     useCommandPaletteData(query);
 
   // Snapshot the element that had focus before the palette opened so we can
@@ -220,13 +221,21 @@ export function CommandPalette({ onToggleSidebar }: CommandPaletteProps) {
 
             {/* Result list */}
             <Command.List className="overflow-y-auto flex-1 p-2">
-              <Command.Empty className="py-8 text-center text-sm text-white/30">
-                No results found.
-              </Command.Empty>
-
-              {result.groups.map(group => (
-                <PaletteGroupSection key={group.id} group={group} onSelect={handleSelect} />
-              ))}
+              {query.trim() && isLoading ? (
+                <div className="py-8 flex items-center justify-center gap-2 text-sm text-white/30">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Searching…
+                </div>
+              ) : (
+                <>
+                  <Command.Empty className="py-8 text-center text-sm text-white/30">
+                    No results found.
+                  </Command.Empty>
+                  {result.groups.map(group => (
+                    <PaletteGroupSection key={group.id} group={group} onSelect={handleSelect} />
+                  ))}
+                </>
+              )}
             </Command.List>
 
             {/* Keyboard hint footer */}

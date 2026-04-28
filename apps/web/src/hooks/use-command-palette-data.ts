@@ -94,7 +94,11 @@ export function useCommandPaletteData(query: string): CommandPaletteData {
   const recentAssets = recentsQuery.data?.map(toPaletteAsset) ?? [];
   const collections = collectionsQuery.data?.map(toPaletteCollection) ?? [];
 
+  // True while debounce hasn't fired yet (user typed but request not sent)
+  const isDebouncing = query.trim().length > 0 && debouncedQuery.trim() !== query.trim();
+
   const isLoading =
+    isDebouncing ||
     (trimmedQuery.length > 0 && searchQuery.isFetching) ||
     recentsQuery.isFetching ||
     collectionsQuery.isFetching;
