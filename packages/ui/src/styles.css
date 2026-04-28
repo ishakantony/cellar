@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
+@source "./**/*.{ts,tsx}";
 
 @theme inline {
   --font-sans: 'Inter', sans-serif;
