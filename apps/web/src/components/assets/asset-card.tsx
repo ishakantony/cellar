@@ -1,7 +1,7 @@
 import { Pin, PinOff, Trash2, MoreVertical } from 'lucide-react';
 import { AssetType } from '@cellar/shared';
 import { TYPE_CONFIG } from '@/lib/asset-types';
-import { ActionMenu, Card, IconBadge, IconBadgeProps, IconButton, cn } from '@cellar/ui';
+import { ActionMenu, Card, IconBadge, IconBadgeProps, IconButton } from '@cellar/ui';
 interface AssetCardProps {
   asset: {
     id: string;
@@ -52,10 +52,7 @@ export function AssetCard({
         hoverable
         onClick={onClick}
         padding="sm"
-        className={cn(
-          'flex items-center gap-3 hover:bg-surface-container group cursor-pointer',
-          asset.pinned && '!border-l-2 !border-l-primary bg-primary/5'
-        )}
+        className="flex items-center gap-3 hover:bg-surface-container group cursor-pointer"
       >
         <IconBadge
           icon={config.icon}
@@ -63,7 +60,12 @@ export function AssetCard({
           size="sm"
         />
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold text-slate-200 truncate">{asset.title}</p>
+          <div className="flex items-center gap-1">
+            {asset.pinned && (
+              <Pin className="h-3 w-3 shrink-0 text-amber-400" aria-label="Pinned" />
+            )}
+            <p className="text-xs font-semibold text-slate-200 truncate">{asset.title}</p>
+          </div>
           <p className="text-[10px] text-outline truncate">{subtitle}</p>
         </div>
       </Card>
@@ -90,10 +92,7 @@ export function AssetCard({
       hoverable
       onClick={onClick}
       padding="sm"
-      className={cn(
-        'flex items-center gap-4 hover:bg-surface-container-high group cursor-pointer',
-        asset.pinned && '!border-l-2 !border-l-primary bg-primary/5'
-      )}
+      className="flex items-center gap-4 hover:bg-surface-container-high group cursor-pointer"
     >
       <IconBadge
         icon={config.icon}
@@ -101,7 +100,10 @@ export function AssetCard({
         size="md"
       />
       <div className="flex-1 min-w-0">
-        <h4 className="text-sm font-semibold text-slate-200 truncate">{asset.title}</h4>
+        <div className="flex items-center gap-1">
+          {asset.pinned && <Pin className="h-3 w-3 shrink-0 text-amber-400" aria-label="Pinned" />}
+          <h4 className="text-sm font-semibold text-slate-200 truncate">{asset.title}</h4>
+        </div>
         <p className="text-[10px] text-outline font-mono truncate">{subtitle}</p>
       </div>
       {actionMenu}

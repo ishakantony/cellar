@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { EmptyState, cn } from '@cellar/ui';
 import { AssetCard } from './asset-card';
 import { AssetCardSkeleton } from './asset-card-skeleton';
-import { AssetType } from '@cellar/shared';
+import type { AssetType } from '@cellar/shared';
 
 interface AssetItem {
   id: string;
@@ -53,23 +53,39 @@ export function AssetsView({
     return <EmptyState message={emptyMessage} className="mt-12" />;
   }
 
+  const pinned = assets.filter(a => a.pinned);
+  const unpinned = assets.filter(a => !a.pinned);
+
+  const gridClass = cn(
+    'grid gap-3',
+    view === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'
+  );
+
+  const renderCard = (asset: AssetItem) => (
+    <AssetCard
+      key={asset.id}
+      asset={asset}
+      onClick={() => onCardClick(asset.id)}
+      onTogglePin={() => onTogglePin(asset.id)}
+      onDelete={() => onDelete(asset.id)}
+      compact={view === 'list'}
+    />
+  );
+
+  if (pinned.length === 0) {
+    return <div className={cn(gridClass, 'mt-6')}>{unpinned.map(renderCard)}</div>;
+  }
+
   return (
-    <div
-      className={cn(
-        'grid gap-3 mt-6',
-        view === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' : 'grid-cols-1'
+    <div className="mt-6">
+      <h2 className="mb-2 text-[10px] font-bold uppercase tracking-wide text-outline">Pinned</h2>
+      <div className={gridClass}>{pinned.map(renderCard)}</div>
+      {unpinned.length > 0 && (
+        <div className="mt-6">
+          <h2 className="mb-2 text-[10px] font-bold uppercase tracking-wide text-outline">All</h2>
+          <div className={gridClass}>{unpinned.map(renderCard)}</div>
+        </div>
       )}
-    >
-      {assets.map(asset => (
-        <AssetCard
-          key={asset.id}
-          asset={asset}
-          onClick={() => onCardClick(asset.id)}
-          onTogglePin={() => onTogglePin(asset.id)}
-          onDelete={() => onDelete(asset.id)}
-          compact={view === 'list'}
-        />
-      ))}
     </div>
   );
 }

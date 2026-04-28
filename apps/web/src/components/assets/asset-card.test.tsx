@@ -49,4 +49,39 @@ describe('AssetCard', () => {
 
     expect(handleTogglePin).toHaveBeenCalledTimes(1);
   });
+
+  it('shows an amber pin icon next to the title when pinned', () => {
+    render(
+      <AssetCard
+        asset={{ ...mockAsset, pinned: true }}
+        onClick={() => {}}
+        onTogglePin={() => {}}
+        onDelete={() => {}}
+      />
+    );
+
+    expect(screen.getByLabelText('Pinned')).toBeInTheDocument();
+  });
+
+  it('shows no pin icon when unpinned', () => {
+    render(
+      <AssetCard asset={mockAsset} onClick={() => {}} onTogglePin={() => {}} onDelete={() => {}} />
+    );
+
+    expect(screen.queryByLabelText('Pinned')).not.toBeInTheDocument();
+  });
+
+  it('does not apply border or background tint classes when pinned', () => {
+    const { container } = render(
+      <AssetCard
+        asset={{ ...mockAsset, pinned: true }}
+        onClick={() => {}}
+        onTogglePin={() => {}}
+        onDelete={() => {}}
+      />
+    );
+
+    expect(container.querySelector('.\\!border-l-primary')).not.toBeInTheDocument();
+    expect(container.querySelector('.bg-primary\\/5')).not.toBeInTheDocument();
+  });
 });
