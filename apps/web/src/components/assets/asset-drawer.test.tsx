@@ -1,9 +1,9 @@
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { NuqsTestingAdapter } from 'nuqs/adapters/testing';
 import { AssetType } from '@cellar/shared';
+import { useAssetDrawer } from '@/hooks/use-asset-drawer';
 
 vi.mock('@/hooks/queries/use-assets', () => ({
   useAssetQuery: vi.fn(),
@@ -54,19 +54,24 @@ const mockAsset = {
   collections: [],
 };
 
-function makeWrapper(searchParams?: string) {
+function makeWrapper() {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>
-      <NuqsTestingAdapter searchParams={searchParams} hasMemory>
-        {children}
-      </NuqsTestingAdapter>
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }
 
 describe('AssetDrawer', () => {
   beforeEach(() => {
+    // Reset zustand store before each test
+    useAssetDrawer.setState({
+      isOpen: false,
+      mode: null,
+      assetId: null,
+      initialType: null,
+      initialCollectionId: null,
+    });
+
     vi.mocked(useAssetQuery).mockReturnValue({
       isPending: false,
       data: mockAsset,
@@ -93,19 +98,43 @@ describe('AssetDrawer', () => {
     } as unknown as ReturnType<typeof useUpdateAssetMutation>);
   });
 
-  it('is closed when neither ?id nor ?new is present', () => {
+  afterEach(() => {
+    useAssetDrawer.setState({
+      isOpen: false,
+      mode: null,
+      assetId: null,
+      initialType: null,
+      initialCollectionId: null,
+    });
+  });
+
+  it('is closed when the store is in initial state', () => {
     render(<AssetDrawer />, { wrapper: makeWrapper() });
     expect(screen.queryByRole('button', { name: 'Close drawer' })).not.toBeInTheDocument();
   });
 
-  it('opens and shows the asset title when ?id is set', () => {
-    render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+  it('opens and shows the asset title when openView is called', () => {
+    useAssetDrawer.setState({
+      isOpen: true,
+      mode: 'view',
+      assetId: 'abc123',
+      initialType: null,
+      initialCollectionId: null,
+    });
+    render(<AssetDrawer />, { wrapper: makeWrapper() });
     expect(screen.getByText('My Test Note')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Close drawer' })).toBeInTheDocument();
   });
 
-  it('closes on Escape key press and clears ?id', async () => {
-    render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+  it('closes on Escape key press', async () => {
+    useAssetDrawer.setState({
+      isOpen: true,
+      mode: 'view',
+      assetId: 'abc123',
+      initialType: null,
+      initialCollectionId: null,
+    });
+    render(<AssetDrawer />, { wrapper: makeWrapper() });
     expect(screen.getByText('My Test Note')).toBeInTheDocument();
 
     await userEvent.keyboard('{Escape}');
@@ -114,7 +143,14 @@ describe('AssetDrawer', () => {
   });
 
   it('closes when close button is clicked', async () => {
-    render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+    useAssetDrawer.setState({
+      isOpen: true,
+      mode: 'view',
+      assetId: 'abc123',
+      initialType: null,
+      initialCollectionId: null,
+    });
+    render(<AssetDrawer />, { wrapper: makeWrapper() });
     await userEvent.click(screen.getByRole('button', { name: 'Close drawer' }));
     expect(screen.queryByText('My Test Note')).not.toBeInTheDocument();
   });
@@ -125,14 +161,28 @@ describe('AssetDrawer', () => {
       mutateAsync,
     } as unknown as ReturnType<typeof useTogglePinAssetMutation>);
 
-    render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+    useAssetDrawer.setState({
+      isOpen: true,
+      mode: 'view',
+      assetId: 'abc123',
+      initialType: null,
+      initialCollectionId: null,
+    });
+    render(<AssetDrawer />, { wrapper: makeWrapper() });
     await userEvent.click(screen.getByRole('button', { name: 'Pin' }));
 
     expect(mutateAsync).toHaveBeenCalledWith('abc123');
   });
 
   it('opens confirm dialog when delete is clicked', async () => {
-    render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+    useAssetDrawer.setState({
+      isOpen: true,
+      mode: 'view',
+      assetId: 'abc123',
+      initialType: null,
+      initialCollectionId: null,
+    });
+    render(<AssetDrawer />, { wrapper: makeWrapper() });
     await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
 
     const dialog = screen.getByRole('dialog');
@@ -145,7 +195,14 @@ describe('AssetDrawer', () => {
       mutateAsync,
     } as unknown as ReturnType<typeof useDeleteAssetMutation>);
 
-    render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+    useAssetDrawer.setState({
+      isOpen: true,
+      mode: 'view',
+      assetId: 'abc123',
+      initialType: null,
+      initialCollectionId: null,
+    });
+    render(<AssetDrawer />, { wrapper: makeWrapper() });
 
     await userEvent.click(screen.getByRole('button', { name: 'Delete' }));
     const dialog = screen.getByRole('dialog');
@@ -161,13 +218,27 @@ describe('AssetDrawer', () => {
       data: undefined,
     } as unknown as ReturnType<typeof useAssetQuery>);
 
-    render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+    useAssetDrawer.setState({
+      isOpen: true,
+      mode: 'view',
+      assetId: 'abc123',
+      initialType: null,
+      initialCollectionId: null,
+    });
+    render(<AssetDrawer />, { wrapper: makeWrapper() });
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
   });
 
   describe('edit mode', () => {
     it('clicking Edit switches the drawer to edit mode', async () => {
-      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'view',
+        assetId: 'abc123',
+        initialType: null,
+        initialCollectionId: null,
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
       expect(screen.queryByTestId('asset-form')).not.toBeInTheDocument();
 
       await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
@@ -176,12 +247,31 @@ describe('AssetDrawer', () => {
     });
 
     it('edit mode passes asset values as defaultValues to AssetForm', async () => {
-      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'view',
+        assetId: 'abc123',
+        initialType: null,
+        initialCollectionId: null,
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
       await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
 
       const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
       expect(formProps?.mode).toBe('edit');
       expect(formProps?.defaultValues).toMatchObject({ title: 'My Test Note' });
+    });
+
+    it('openEdit mode opens the drawer directly in edit mode', () => {
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'edit',
+        assetId: 'abc123',
+        initialType: null,
+        initialCollectionId: null,
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
+      expect(screen.getByTestId('asset-form')).toBeInTheDocument();
     });
 
     it('Save calls useUpdateAssetMutation with the form data', async () => {
@@ -190,7 +280,14 @@ describe('AssetDrawer', () => {
         mutateAsync,
       } as unknown as ReturnType<typeof useUpdateAssetMutation>);
 
-      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'view',
+        assetId: 'abc123',
+        initialType: null,
+        initialCollectionId: null,
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
       await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
 
       const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
@@ -204,7 +301,14 @@ describe('AssetDrawer', () => {
     });
 
     it('successful save returns the drawer to view mode', async () => {
-      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'view',
+        assetId: 'abc123',
+        initialType: null,
+        initialCollectionId: null,
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
       await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
 
       const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
@@ -216,7 +320,14 @@ describe('AssetDrawer', () => {
     });
 
     it('Cancel with no changes immediately returns to view mode', async () => {
-      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'view',
+        assetId: 'abc123',
+        initialType: null,
+        initialCollectionId: null,
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
       await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
       expect(screen.getByTestId('asset-form')).toBeInTheDocument();
 
@@ -229,7 +340,14 @@ describe('AssetDrawer', () => {
     });
 
     it('Cancel with unsaved changes shows a discard confirmation dialog', async () => {
-      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'view',
+        assetId: 'abc123',
+        initialType: null,
+        initialCollectionId: null,
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
       await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
 
       await act(async () => {
@@ -245,7 +363,14 @@ describe('AssetDrawer', () => {
     });
 
     it('choosing Stay in the discard dialog keeps the user in edit mode', async () => {
-      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'view',
+        assetId: 'abc123',
+        initialType: null,
+        initialCollectionId: null,
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
       await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
 
       await act(async () => {
@@ -261,7 +386,14 @@ describe('AssetDrawer', () => {
     });
 
     it('choosing Discard in the discard dialog returns to view mode', async () => {
-      render(<AssetDrawer />, { wrapper: makeWrapper('?id=abc123') });
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'view',
+        assetId: 'abc123',
+        initialType: null,
+        initialCollectionId: null,
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
       await userEvent.click(screen.getByRole('button', { name: 'Edit' }));
 
       await act(async () => {
@@ -278,8 +410,15 @@ describe('AssetDrawer', () => {
   });
 
   describe('create mode', () => {
-    it('renders AssetForm when ?new=1 is set', () => {
-      render(<AssetDrawer />, { wrapper: makeWrapper('?new=1') });
+    it('renders AssetForm when mode is create', () => {
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'create',
+        assetId: null,
+        initialType: null,
+        initialCollectionId: null,
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
       expect(screen.getByTestId('asset-form')).toBeInTheDocument();
     });
 
@@ -300,14 +439,56 @@ describe('AssetDrawer', () => {
         ],
       } as unknown as ReturnType<typeof useCollectionsQuery>);
 
-      render(<AssetDrawer />, { wrapper: makeWrapper('?new=1') });
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'create',
+        assetId: null,
+        initialType: null,
+        initialCollectionId: null,
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
 
       const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
       expect(formProps?.availableCollections).toEqual([{ id: 'c1', name: 'Work' }]);
     });
 
-    it('cancel clears ?new param and closes the drawer', async () => {
-      render(<AssetDrawer />, { wrapper: makeWrapper('?new=1') });
+    it('passes initialType as defaultValues.type to AssetForm', () => {
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'create',
+        assetId: null,
+        initialType: 'SNIPPET',
+        initialCollectionId: null,
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
+
+      const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
+      expect(formProps?.defaultValues).toMatchObject({ type: 'SNIPPET' });
+    });
+
+    it('passes initialCollectionId as defaultValues.collectionIds to AssetForm', () => {
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'create',
+        assetId: null,
+        initialType: null,
+        initialCollectionId: 'col-42',
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
+
+      const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
+      expect(formProps?.defaultValues).toMatchObject({ collectionIds: ['col-42'] });
+    });
+
+    it('cancel closes the drawer', async () => {
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'create',
+        assetId: null,
+        initialType: null,
+        initialCollectionId: null,
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
       const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
 
       await act(async () => {
@@ -323,7 +504,14 @@ describe('AssetDrawer', () => {
         mutateAsync,
       } as unknown as ReturnType<typeof useCreateAssetMutation>);
 
-      render(<AssetDrawer />, { wrapper: makeWrapper('?new=1') });
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'create',
+        assetId: null,
+        initialType: null,
+        initialCollectionId: null,
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
       const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
 
       await act(async () => {
@@ -341,7 +529,14 @@ describe('AssetDrawer', () => {
         mutateAsync,
       } as unknown as ReturnType<typeof useCreateAssetMutation>);
 
-      render(<AssetDrawer />, { wrapper: makeWrapper('?new=1') });
+      useAssetDrawer.setState({
+        isOpen: true,
+        mode: 'create',
+        assetId: null,
+        initialType: null,
+        initialCollectionId: null,
+      });
+      render(<AssetDrawer />, { wrapper: makeWrapper() });
       const formProps = vi.mocked(AssetForm).mock.lastCall?.[0];
 
       await act(async () => {

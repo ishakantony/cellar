@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import { useQueryState } from 'nuqs';
 import { Pencil, Pin, PinOff, Trash2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { ConfirmDialog, Drawer, IconBadge, IconButton, Tooltip } from '@cellar/ui';
@@ -18,17 +17,15 @@ import {
 import { useCollectionsQuery } from '@/hooks/queries/use-collections';
 import { TYPE_CONFIG } from '@/lib/asset-types';
 import { formatRelativeTime, formatExactTime } from '@/lib/date';
+import { useAssetDrawer } from '@/hooks/use-asset-drawer';
 
 export function AssetDrawer() {
-  const [assetId, setAssetId] = useQueryState('id');
-  const [newParam, setNewParam] = useQueryState('new');
-
-  const isOpen = !!(assetId || newParam);
+  const { isOpen, mode, assetId, initialType, initialCollectionId, close, openView } =
+    useAssetDrawer();
 
   const handleClose = useCallback(() => {
-    void setAssetId(null);
-    void setNewParam(null);
-  }, [setAssetId, setNewParam]);
+    close();
+  }, [close]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -41,18 +38,24 @@ export function AssetDrawer() {
 
   const handleCreated = useCallback(
     (id: string) => {
-      void setNewParam(null);
-      void setAssetId(id);
+      openView(id);
     },
-    [setNewParam, setAssetId]
+    [openView]
   );
 
   return (
     <Drawer open={isOpen} onClose={handleClose}>
-      {assetId ? (
-        <AssetViewContent id={assetId} onClose={handleClose} />
-      ) : newParam ? (
-        <AssetCreateContent onClose={handleClose} onCreated={handleCreated} />
+      {mode === 'view' && assetId ? (
+        <AssetViewContent id={assetId} onClose={handleClose} startInEditMode={false} />
+      ) : mode === 'edit' && assetId ? (
+        <AssetViewContent id={assetId} onClose={handleClose} startInEditMode={true} />
+      ) : mode === 'create' ? (
+        <AssetCreateContent
+          onClose={handleClose}
+          onCreated={handleCreated}
+          initialType={initialType ?? undefined}
+          initialCollectionId={initialCollectionId ?? undefined}
+        />
       ) : null}
     </Drawer>
   );
@@ -61,9 +64,13 @@ export function AssetDrawer() {
 function AssetCreateContent({
   onClose,
   onCreated,
+  initialType,
+  initialCollectionId,
 }: {
   onClose: () => void;
   onCreated: (id: string) => void;
+  initialType?: string;
+  initialCollectionId?: string;
 }) {
   const createAsset = useCreateAssetMutation();
   const collectionsQuery = useCollectionsQuery();
@@ -78,6 +85,14 @@ function AssetCreateContent({
     [createAsset, onCreated]
   );
 
+  const defaultValues: Partial<CreateAssetInput & { collectionIds?: string[] }> = {};
+  if (initialType) {
+    defaultValues.type = initialType as CreateAssetInput['type'];
+  }
+  if (initialCollectionId) {
+    defaultValues.collectionIds = [initialCollectionId];
+  }
+
   return (
     <>
       <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-white/5 shrink-0">
@@ -88,6 +103,7 @@ function AssetCreateContent({
       <div className="flex-1 min-h-0 flex flex-col">
         <AssetForm
           mode="create"
+          defaultValues={Object.keys(defaultValues).length > 0 ? defaultValues : undefined}
           availableCollections={availableCollections}
           onSubmit={handleSubmit}
           onCancel={onClose}
@@ -97,13 +113,21 @@ function AssetCreateContent({
   );
 }
 
-function AssetViewContent({ id, onClose }: { id: string; onClose: () => void }) {
+function AssetViewContent({
+  id,
+  onClose,
+  startInEditMode,
+}: {
+  id: string;
+  onClose: () => void;
+  startInEditMode: boolean;
+}) {
   const assetQuery = useAssetQuery(id);
   const togglePin = useTogglePinAssetMutation();
   const deleteAsset = useDeleteAssetMutation();
   const updateAsset = useUpdateAssetMutation(id);
   const collectionsQuery = useCollectionsQuery();
-  const [mode, setMode] = useState<'view' | 'edit'>('view');
+  const [mode, setMode] = useState<'view' | 'edit'>(startInEditMode ? 'edit' : 'view');
   const [isDirty, setIsDirty] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [discardDialogOpen, setDiscardDialogOpen] = useState(false);

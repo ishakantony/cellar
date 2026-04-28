@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { CollectionModal } from '@/components/collections/collection-modal';
+import { AssetDrawer } from '@/components/assets/asset-drawer';
 import { Header } from '@/components/layout/header';
 import { Sidebar } from '@/components/layout/sidebar';
 import { SidebarToggle } from '@/components/layout/sidebar-toggle';
@@ -53,6 +54,8 @@ export function AppShell({
           }
         }}
       />
+
+      <AssetDrawer />
     </div>
   );
 }
