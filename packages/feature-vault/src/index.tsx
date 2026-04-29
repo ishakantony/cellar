@@ -1,14 +1,4 @@
-import {
-  Code,
-  FileText,
-  Folder,
-  Image,
-  LayoutDashboard,
-  Link as LinkIcon,
-  Package,
-  StickyNote,
-  Terminal,
-} from 'lucide-react';
+import { Folder, LayoutDashboard, Package } from 'lucide-react';
 import type { FeatureModule, NavItem } from '@cellar/shell-contract';
 import { VaultHomePage } from './routes/home';
 import { AssetsListPage } from './routes/assets/index';
@@ -20,13 +10,6 @@ const nav: NavItem[] = [
   { id: 'home', label: 'Dashboard', href: '/vault', icon: LayoutDashboard },
   { id: 'assets', label: 'All Items', href: '/vault/assets', icon: Package },
   { id: 'collections', label: 'All Collections', href: '/vault/collections', icon: Folder },
-  // Per-asset-type quick filters. Issue #007 moves these to in-page tabs.
-  { id: 'snippets', label: 'Snippets', href: '/vault/assets?type=SNIPPET', icon: Code },
-  { id: 'prompts', label: 'Prompts', href: '/vault/assets?type=PROMPT', icon: Terminal },
-  { id: 'links', label: 'Links', href: '/vault/assets?type=LINK', icon: LinkIcon },
-  { id: 'notes', label: 'Notes', href: '/vault/assets?type=NOTE', icon: StickyNote },
-  { id: 'images', label: 'Images', href: '/vault/assets?type=IMAGE', icon: Image },
-  { id: 'files', label: 'Files', href: '/vault/assets?type=FILE', icon: FileText },
 ];
 
 /**

@@ -1,15 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  Code,
-  FileText,
-  Folder,
-  Image,
-  LayoutDashboard,
-  Link as LinkIcon,
-  Package,
-  StickyNote,
-  Terminal,
-} from 'lucide-react';
+import { Folder, LayoutDashboard, Package } from 'lucide-react';
 import {
   commandPaletteResults,
   type NavEntry,
@@ -17,20 +7,14 @@ import {
   type PaletteCollection,
 } from './command-palette-results';
 
-// Mirrors the legacy `allNavEntries` shape so the tests below keep covering
-// the same Go-To entries the running shell publishes. The real entries come
-// from each feature module's `nav` array; #008 will introduce Toolbox and
-// future issues will expand this list.
+// Mirrors the runtime `allNavEntries` shape. Per-asset-type entries were
+// removed in #007 in favour of in-page filter tabs on the assets page, so
+// the Go-To group only carries top-level routes. The real entries come from
+// each feature module's `nav` array.
 const allNavEntries: NavEntry[] = [
   { href: '/vault', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/vault/assets', icon: Package, label: 'All Items' },
   { href: '/vault/collections', icon: Folder, label: 'All Collections' },
-  { href: '/vault/assets?type=SNIPPET', icon: Code, label: 'Snippets' },
-  { href: '/vault/assets?type=PROMPT', icon: Terminal, label: 'Prompts' },
-  { href: '/vault/assets?type=LINK', icon: LinkIcon, label: 'Links' },
-  { href: '/vault/assets?type=NOTE', icon: StickyNote, label: 'Notes' },
-  { href: '/vault/assets?type=IMAGE', icon: Image, label: 'Images' },
-  { href: '/vault/assets?type=FILE', icon: FileText, label: 'Files' },
 ];
 
 // Minimal helpers
@@ -187,11 +171,11 @@ describe('commandPaletteResults — empty query', () => {
 describe('commandPaletteResults — non-empty query', () => {
   it('returns groups in order: assets, collections, actions, goto', () => {
     const result = commandPaletteResults({
-      query: 'snip',
+      query: 'collection',
       recentAssets: [],
-      searchAssets: [makeAsset({ id: 'a1', title: 'My Snippet', type: 'SNIPPET' })],
+      searchAssets: [makeAsset({ id: 'a1', title: 'My Collection Notes', type: 'NOTE' })],
       searchAssetTotal: 1,
-      collections: [makeCollection({ id: 'c1', name: 'Snippets Collection' })],
+      collections: [makeCollection({ id: 'c1', name: 'My Collection' })],
       navEntries: allNavEntries,
     });
 
@@ -268,9 +252,9 @@ describe('commandPaletteResults — non-empty query', () => {
     expect(assetsGroup?.totalCount).toBe(12);
   });
 
-  it('fuzzy-matches "snip" against Go To nav entries (Snippets)', () => {
+  it('fuzzy-matches "items" against Go To nav entries (All Items)', () => {
     const result = commandPaletteResults({
-      query: 'snip',
+      query: 'items',
       recentAssets: [],
       searchAssets: [],
       searchAssetTotal: 0,
@@ -281,7 +265,7 @@ describe('commandPaletteResults — non-empty query', () => {
     const gotoGroup = result.groups.find(g => g.id === 'goto');
     expect(gotoGroup).toBeDefined();
     const labels = gotoGroup!.items.map(i => i.label);
-    expect(labels.some(l => l.toLowerCase().includes('snippet'))).toBe(true);
+    expect(labels.some(l => l.includes('All Items'))).toBe(true);
   });
 
   it('fuzzy-matches "snip" against Actions (New Snippet)', () => {

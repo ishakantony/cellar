@@ -1,4 +1,4 @@
-import { useLocation, useSearchParams } from 'react-router';
+import { useLocation } from 'react-router';
 import { cn } from '@cellar/ui';
 import type { NavItem } from '@cellar/shell-contract';
 import { useSidebarCollapse } from '@/shell/stores/sidebar-collapse';
@@ -50,7 +50,6 @@ export function FeatureSidebar({ resolved, className }: FeatureSidebarProps) {
   const list = resolved ?? defaultResolvedEntries;
   const { collapsed } = useSidebarCollapse();
   const { pathname } = useLocation();
-  const [searchParams] = useSearchParams();
   const { path: lastActivePath } = useLastActiveFeature();
 
   // Active feature: route match -> last-active fallback -> first rail-visible.
@@ -80,7 +79,7 @@ export function FeatureSidebar({ resolved, className }: FeatureSidebarProps) {
         )}
       >
         <FeatureSidebarHeader label={active?.entry.manifest.label ?? ''} />
-        <FeatureNavList items={nav} pathname={pathname} searchParams={searchParams} />
+        <FeatureNavList items={nav} pathname={pathname} />
       </div>
     </aside>
   );

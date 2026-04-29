@@ -5,42 +5,24 @@ import type { NavItem } from '@cellar/shell-contract';
 export interface FeatureNavListProps {
   items: NavItem[];
   pathname: string;
-  searchParams?: URLSearchParams | { get: (key: string) => string | null };
   className?: string;
 }
 
-function isItemActive(
-  item: NavItem,
-  pathname: string,
-  searchParams?: FeatureNavListProps['searchParams']
-): boolean {
-  // Items can encode a query in their href (e.g. per-asset-type quick filters);
-  // match both the path and the `type=` param for those.
-  const [hrefPath, hrefQuery] = item.href.split('?');
-  const hrefType = hrefQuery
-    ? (new URLSearchParams(hrefQuery).get('type') ?? undefined)
-    : undefined;
-
-  if (hrefType) {
-    return pathname === hrefPath && searchParams?.get('type') === hrefType;
-  }
-  // For "list" entries (no type filter), require absence of a type filter to
-  // avoid double-highlighting against the per-type entries.
-  if (hrefPath === pathname) {
-    if (!searchParams) return true;
-    return !searchParams.get('type');
-  }
-  return false;
+function isItemActive(item: NavItem, pathname: string): boolean {
+  // Strip any query string from the item href; nav items address paths only.
+  // Per-page filter state lives in-page (e.g. assets filter tabs), not in the nav.
+  const [hrefPath] = item.href.split('?');
+  return hrefPath === pathname;
 }
 
-export function FeatureNavList({ items, pathname, searchParams, className }: FeatureNavListProps) {
+export function FeatureNavList({ items, pathname, className }: FeatureNavListProps) {
   if (items.length === 0) return null;
 
   return (
     <nav className={cn('flex-1 space-y-1 overflow-y-auto px-4', className)}>
       {items.map(item => {
         const Icon = item.icon;
-        const active = isItemActive(item, pathname, searchParams);
+        const active = isItemActive(item, pathname);
         return (
           <Link
             key={item.id}

@@ -1,15 +1,5 @@
 import { Plus } from 'lucide-react';
-import { AssetType } from '@cellar/shared';
-import { Button, SearchInput, Select, Tabs, ViewToggle, cn } from '@cellar/ui';
-const TYPE_TAB_OPTIONS = [
-  { value: null as string | null, label: 'All' },
-  { value: 'SNIPPET', label: 'Snippet' },
-  { value: 'PROMPT', label: 'Prompt' },
-  { value: 'NOTE', label: 'Note' },
-  { value: 'LINK', label: 'Link' },
-  { value: 'IMAGE', label: 'Image' },
-  { value: 'FILE', label: 'File' },
-];
+import { Button, SearchInput, Select, ViewToggle, cn } from '@cellar/ui';
 
 const SORT_OPTIONS = [
   { value: 'newest', label: 'Newest' },
@@ -21,8 +11,6 @@ const SORT_OPTIONS = [
 export interface AssetsToolbarProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
-  selectedType: AssetType | null;
-  onTypeChange: (type: AssetType | null) => void;
   sort: 'newest' | 'oldest' | 'az' | 'za';
   onSortChange: (sort: 'newest' | 'oldest' | 'az' | 'za') => void;
   viewMode: 'grid' | 'list';
@@ -34,8 +22,6 @@ export interface AssetsToolbarProps {
 export function AssetsToolbar({
   searchQuery,
   onSearchChange,
-  selectedType,
-  onTypeChange,
   sort,
   onSortChange,
   viewMode,
@@ -44,38 +30,21 @@ export function AssetsToolbar({
   className,
 }: AssetsToolbarProps) {
   return (
-    <div className={cn('flex flex-col gap-3', className)}>
-      <div className="flex items-center gap-3 flex-wrap">
-        <div className="flex-1 min-w-[200px]">
-          <SearchInput
-            value={searchQuery}
-            onChange={onSearchChange}
-            placeholder="Search assets..."
-          />
-        </div>
-        <Select
-          value={sort}
-          options={SORT_OPTIONS}
-          onChange={val => onSortChange(val as 'newest' | 'oldest' | 'az' | 'za')}
-        />
-        <ViewToggle view={viewMode} onChange={onViewChange} />
-        <Button onClick={onNewAsset} className="hidden sm:flex">
-          <Plus className="h-4 w-4 mr-1" />
-          New Asset
-        </Button>
+    <div className={cn('flex items-center gap-3 flex-wrap', className)}>
+      <div className="flex-1 min-w-[200px]">
+        <SearchInput value={searchQuery} onChange={onSearchChange} placeholder="Search assets..." />
       </div>
-
-      <div className="flex items-center justify-between gap-3">
-        <Tabs
-          value={selectedType}
-          options={TYPE_TAB_OPTIONS}
-          onChange={val => onTypeChange(val as AssetType | null)}
-        />
-        <Button onClick={onNewAsset} size="sm" className="sm:hidden">
-          <Plus className="h-4 w-4 mr-1" />
-          New
-        </Button>
-      </div>
+      <Select
+        value={sort}
+        options={SORT_OPTIONS}
+        onChange={val => onSortChange(val as 'newest' | 'oldest' | 'az' | 'za')}
+      />
+      <ViewToggle view={viewMode} onChange={onViewChange} />
+      <Button onClick={onNewAsset}>
+        <Plus className="h-4 w-4 mr-1" />
+        <span className="hidden sm:inline">New Asset</span>
+        <span className="sm:hidden">New</span>
+      </Button>
     </div>
   );
 }

@@ -17,6 +17,8 @@ import {
   FileText,
   PlusCircle,
 } from 'lucide-react';
+// Asset-type icons are still used per-row for asset items, even though the
+// per-type nav entries (and their `?type=...` hrefs) were removed in #007.
 import { useCommandPalette } from '@/hooks/use-command-palette';
 import { useCollectionModal, useAssetDrawer, getIconColorClass } from '@cellar/feature-vault';
 import { useCommandPaletteData } from '@/hooks/use-command-palette-data';
@@ -63,12 +65,6 @@ const NAV_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> 
   '/vault': LayoutDashboard,
   '/vault/assets': Package,
   '/vault/collections': Folder,
-  '/vault/assets?type=SNIPPET': Code,
-  '/vault/assets?type=PROMPT': Terminal,
-  '/vault/assets?type=LINK': LinkIcon,
-  '/vault/assets?type=NOTE': StickyNote,
-  '/vault/assets?type=IMAGE': ImageIcon,
-  '/vault/assets?type=FILE': FileText,
 };
 
 /** Icon map derived from the commandPaletteActions registry — single source of truth. */

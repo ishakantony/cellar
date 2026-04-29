@@ -1,7 +1,8 @@
 import { useCallback, useState, type ReactNode } from 'react';
 import { parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
 import { toast } from 'sonner';
-import { ASSET_TYPES, AssetType, type AssetSort } from '@cellar/shared';
+import { ASSET_TYPES, type AssetSort } from '@cellar/shared';
+import { AssetsFilterTabs } from '../../components/assets/assets-filter-tabs';
 import { AssetsToolbar } from '../../components/assets/assets-toolbar';
 import { AssetsView } from '../../components/assets/assets-view';
 import { ConfirmDialog, TextLink } from '@cellar/ui';
@@ -97,13 +98,17 @@ export function AssetsListPage() {
       <AssetsToolbar
         searchQuery={searchQuery}
         onSearchChange={q => setFilters({ q })}
-        selectedType={selectedType}
-        onTypeChange={(type: AssetType | null) => setFilters({ type })}
         sort={sort}
         onSortChange={sort => setFilters({ sort })}
         viewMode={viewMode}
         onViewChange={setViewMode}
         onNewAsset={() => openCreate()}
+      />
+
+      <AssetsFilterTabs
+        selectedType={selectedType}
+        onTypeChange={type => setFilters({ type })}
+        className="mt-3 mb-4"
       />
 
       <AssetsView
