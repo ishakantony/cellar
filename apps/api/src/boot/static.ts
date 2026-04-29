@@ -5,22 +5,22 @@ import type { Hono } from 'hono';
 import { serveStatic } from '@hono/node-server/serve-static';
 
 /**
- * In production, the Hono app serves the built SPA from `apps/web/dist`.
+ * In production, the Hono app serves the built SPA from `apps/shell/dist`.
  * Mounted only when `WEB_DIST_DIR` is set or the default path exists.
  */
 export function mountStaticSpa(app: Hono) {
   const dirname = path.dirname(fileURLToPath(import.meta.url));
   const candidates = [
     process.env.WEB_DIST_DIR,
-    path.resolve(dirname, '../../web/dist'),
-    path.resolve(dirname, '../../../web/dist'),
-    path.resolve(process.cwd(), 'web/dist'),
-    path.resolve(process.cwd(), '../web/dist'),
+    path.resolve(dirname, '../../shell/dist'),
+    path.resolve(dirname, '../../../shell/dist'),
+    path.resolve(process.cwd(), 'shell/dist'),
+    path.resolve(process.cwd(), '../shell/dist'),
   ].filter((p): p is string => typeof p === 'string' && p.length > 0);
 
   const root = candidates.find(candidate => existsSync(path.join(candidate, 'index.html')));
   if (!root) {
-    console.info('[cellar] no built web/dist found — running in API-only mode');
+    console.info('[cellar] no built shell/dist found — running in API-only mode');
     return;
   }
 

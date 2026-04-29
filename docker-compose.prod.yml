@@ -1,6 +1,6 @@
 # Production deployment for Cellar
 #
-# One image. Hono serves both the API and the SPA from apps/web/dist.
+# One image. Hono serves both the API and the SPA from apps/shell/dist.
 # On boot it runs migrations, seeds the demo user (if empty), syncs OIDC
 # clients (if their secrets are set), prints the startup report, then listens.
 #

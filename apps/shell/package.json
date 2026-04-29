@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "shell",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -13,7 +13,11 @@
   },
   "dependencies": {
     "@better-auth/oauth-provider": "^1.6.8",
+    "@cellar/feature-account": "workspace:*",
+    "@cellar/feature-toolbox": "workspace:*",
+    "@cellar/feature-vault": "workspace:*",
     "@cellar/shared": "workspace:*",
+    "@cellar/shell-contract": "workspace:*",
     "@cellar/ui": "workspace:*",
     "@codemirror/commands": "^6.10.3",
     "@codemirror/lang-cpp": "^6.0.3",

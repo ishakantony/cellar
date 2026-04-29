@@ -10,10 +10,14 @@ WORKDIR /repo
 # ── deps: install workspace dependencies (cached) ─────────────────────
 FROM base AS deps
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-COPY apps/web/package.json apps/web/
+COPY apps/shell/package.json apps/shell/
 COPY apps/api/package.json apps/api/
 COPY packages/shared/package.json packages/shared/
 COPY packages/ui/package.json packages/ui/
+COPY packages/shell-contract/package.json packages/shell-contract/
+COPY packages/feature-vault/package.json packages/feature-vault/
+COPY packages/feature-toolbox/package.json packages/feature-toolbox/
+COPY packages/feature-account/package.json packages/feature-account/
 RUN pnpm install --frozen-lockfile
 
 # ── build: typecheck and build the SPA ────────────────────────────────
@@ -22,8 +26,12 @@ COPY tsconfig.base.json tsconfig.json ./
 COPY packages/shared ./packages/shared
 COPY packages/ui ./packages/ui
 COPY apps/api ./apps/api
-COPY apps/web ./apps/web
-RUN pnpm --filter web build
+COPY apps/shell ./apps/shell
+COPY packages/shell-contract ./packages/shell-contract
+COPY packages/feature-vault ./packages/feature-vault
+COPY packages/feature-toolbox ./packages/feature-toolbox
+COPY packages/feature-account ./packages/feature-account
+RUN pnpm --filter shell build
 
 # ── storybook-build: build the static Storybook for packages/ui ───────
 FROM deps AS storybook-build
@@ -54,7 +62,7 @@ COPY --from=build --chown=cellar:nodejs /repo /app
 # Writable uploads directory (mount a volume here in production)
 RUN mkdir -p /app/uploads && chown cellar:nodejs /app/uploads
 ENV UPLOAD_DIR=/app/uploads
-ENV WEB_DIST_DIR=/app/apps/web/dist
+ENV WEB_DIST_DIR=/app/apps/shell/dist
 
 USER cellar
 EXPOSE 5200

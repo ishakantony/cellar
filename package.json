@@ -4,8 +4,8 @@
   "private": true,
   "packageManager": "pnpm@10.18.0",
   "scripts": {
-    "dev": "pnpm --parallel --filter web --filter api run dev",
-    "build": "pnpm --filter @cellar/shared build && pnpm --filter @cellar/ui build && pnpm --filter web build && pnpm --filter api build",
+    "dev": "pnpm --parallel --filter shell --filter api run dev",
+    "build": "pnpm --filter @cellar/shared build && pnpm --filter @cellar/ui build && pnpm --filter @cellar/shell-contract build && pnpm --filter @cellar/feature-vault build && pnpm --filter @cellar/feature-toolbox build && pnpm --filter @cellar/feature-account build && pnpm --filter shell build && pnpm --filter api build",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
