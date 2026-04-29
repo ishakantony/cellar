@@ -1,5 +1,10 @@
-import { useState, useCallback, type ReactNode } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
+import { Copy, Clipboard } from 'lucide-react';
+import { toast } from 'sonner';
 import type { JsonNode, JsonNodeKind } from '../lib/json-tree';
+import { buildJsonPath } from '../lib/json-path';
+import { formatValueForCopy } from '../lib/json-copy';
+import { JsonTreeContextMenu } from './json-tree-context-menu';
 
 const TRUNCATE_LIMIT = 80;
 
@@ -31,6 +36,24 @@ function isExpandable(node: JsonNode): boolean {
   return (node.kind === 'object' || node.kind === 'array') && (node.count ?? 0) > 0;
 }
 
+async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    if (typeof navigator === 'undefined' || !navigator.clipboard?.writeText) {
+      return false;
+    }
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+interface ContextMenuState {
+  x: number;
+  y: number;
+  node: JsonNode;
+}
+
 export interface JsonTreeViewProps {
   root: JsonNode | null;
   placeholder?: ReactNode;
@@ -41,6 +64,7 @@ export function JsonTreeView({ root, placeholder = 'Paste JSON to begin...' }: J
   // expanded by default; deeper nodes are collapsed unless the user opens them.
   const [expanded, setExpanded] = useState<Set<string>>(() => new Set<string>());
   const [stringExpanded, setStringExpanded] = useState<Set<string>>(new Set());
+  const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
 
   // Root is implicitly expanded unless the user has explicitly collapsed it.
   // We track collapse-overrides for the root in the same `expanded` set by
@@ -82,6 +106,27 @@ export function JsonTreeView({ root, placeholder = 'Paste JSON to begin...' }: J
     });
   }, []);
 
+  const handleCopyPath = useCallback(async (node: JsonNode) => {
+    const path = buildJsonPath(node.segments);
+    const ok = await copyToClipboard(path);
+    if (ok) toast.success('Path copied');
+    else toast.error('Could not copy to clipboard');
+  }, []);
+
+  const handleCopyValue = useCallback(async (node: JsonNode) => {
+    const text = formatValueForCopy(node);
+    const ok = await copyToClipboard(text);
+    if (ok) toast.success('Value copied');
+    else toast.error('Could not copy to clipboard');
+  }, []);
+
+  const handleContextMenu = useCallback((event: React.MouseEvent, node: JsonNode) => {
+    event.preventDefault();
+    setContextMenu({ x: event.clientX, y: event.clientY, node });
+  }, []);
+
+  const closeContextMenu = useCallback(() => setContextMenu(null), []);
+
   if (root === null) {
     return (
       <div className="px-4 py-8 text-center">
@@ -91,17 +136,31 @@ export function JsonTreeView({ root, placeholder = 'Paste JSON to begin...' }: J
   }
 
   return (
-    <ul role="tree" className="font-mono text-xs leading-relaxed py-2">
-      <JsonRow
-        node={root}
-        depth={0}
-        isRoot
-        expanded={effectiveExpanded}
-        stringExpanded={stringExpanded}
-        onToggle={toggleNode}
-        onToggleString={toggleString}
-      />
-    </ul>
+    <>
+      <ul role="tree" className="font-mono text-xs leading-relaxed py-2">
+        <JsonRow
+          node={root}
+          depth={0}
+          isRoot
+          expanded={effectiveExpanded}
+          stringExpanded={stringExpanded}
+          onToggle={toggleNode}
+          onToggleString={toggleString}
+          onCopyPath={handleCopyPath}
+          onCopyValue={handleCopyValue}
+          onContextMenu={handleContextMenu}
+        />
+      </ul>
+      {contextMenu && (
+        <JsonTreeContextMenu
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onCopyPath={() => handleCopyPath(contextMenu.node)}
+          onCopyValue={() => handleCopyValue(contextMenu.node)}
+          onClose={closeContextMenu}
+        />
+      )}
+    </>
   );
 }
 
@@ -113,6 +172,9 @@ interface JsonRowProps {
   stringExpanded: Set<string>;
   onToggle: (id: string) => void;
   onToggleString: (id: string) => void;
+  onCopyPath: (node: JsonNode) => void;
+  onCopyValue: (node: JsonNode) => void;
+  onContextMenu: (event: React.MouseEvent, node: JsonNode) => void;
 }
 
 function JsonRow({
@@ -123,6 +185,9 @@ function JsonRow({
   stringExpanded,
   onToggle,
   onToggleString,
+  onCopyPath,
+  onCopyValue,
+  onContextMenu,
 }: JsonRowProps) {
   const expandable = isExpandable(node);
   const isOpen = expanded.has(node.id);
@@ -168,8 +233,9 @@ function JsonRow({
   return (
     <li role="treeitem" aria-expanded={expandable ? isOpen : undefined}>
       <div
-        className="flex items-start gap-2 px-3 py-0.5 hover:bg-surface-container/40"
+        className="group flex items-start gap-2 px-3 py-0.5 hover:bg-surface-container/40"
         style={{ paddingLeft: `${12 + indentPx}px` }}
+        onContextMenu={event => onContextMenu(event, node)}
       >
         {expandable ? (
           <button
@@ -191,7 +257,7 @@ function JsonRow({
           <span className="mt-0.5 inline-block h-4 w-4 shrink-0" aria-hidden="true" />
         )}
 
-        <div className="flex flex-wrap items-center gap-2 min-w-0">
+        <div className="flex flex-wrap items-center gap-2 min-w-0 flex-1">
           {!isRoot && (
             <span className="text-primary">
               {typeof node.key === 'number' ? node.key : node.key}
@@ -204,6 +270,25 @@ function JsonRow({
             <span className="text-[10px] font-mono text-outline">{countBadge}</span>
           )}
           {valueEl}
+        </div>
+
+        <div className="ml-auto flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+          <button
+            type="button"
+            aria-label="Copy path"
+            onClick={() => onCopyPath(node)}
+            className="inline-flex h-5 w-5 items-center justify-center rounded text-outline hover:bg-surface-container hover:text-on-surface cursor-pointer"
+          >
+            <Copy aria-hidden="true" className="h-3 w-3" />
+          </button>
+          <button
+            type="button"
+            aria-label="Copy value"
+            onClick={() => onCopyValue(node)}
+            className="inline-flex h-5 w-5 items-center justify-center rounded text-outline hover:bg-surface-container hover:text-on-surface cursor-pointer"
+          >
+            <Clipboard aria-hidden="true" className="h-3 w-3" />
+          </button>
         </div>
       </div>
 
@@ -218,6 +303,9 @@ function JsonRow({
               stringExpanded={stringExpanded}
               onToggle={onToggle}
               onToggleString={onToggleString}
+              onCopyPath={onCopyPath}
+              onCopyValue={onCopyValue}
+              onContextMenu={onContextMenu}
             />
           ))}
         </ul>
