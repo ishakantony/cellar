@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { and, count, desc, eq } from 'drizzle-orm';
-import { db } from '../db/client';
-import { asset, assetCollection, assetPublicColumns, collection } from '../db/schema';
-import { requireUser, type AuthVariables } from '../lib/session-middleware';
+import { db } from '../../db/client';
+import { asset, assetCollection, assetPublicColumns, collection } from '../../db/schema';
+import { requireUser, type AuthVariables } from '../../lib/session-middleware';
 import { ASSET_TYPES, type DashboardCounts } from '@cellar/shared';
 
 export const dashboardRoute = new Hono<{ Variables: AuthVariables }>()

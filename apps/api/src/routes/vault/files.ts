@@ -1,15 +1,15 @@
 import { readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { Hono } from 'hono';
-import { CONTENT_TYPES, INLINE_UNSAFE_EXTENSIONS } from '../lib/file-validation';
-import { requireUser, type AuthVariables } from '../lib/session-middleware';
+import { CONTENT_TYPES, INLINE_UNSAFE_EXTENSIONS } from '../../lib/file-validation';
+import { requireUser, type AuthVariables } from '../../lib/session-middleware';
 
 export const filesRoute = new Hono<{ Variables: AuthVariables }>()
   .use(requireUser)
   .get('/*', async c => {
     const user = c.get('user');
-    // Path is everything after /api/files/
-    const filePath = c.req.path.replace(/^\/api\/files\//, '');
+    // Path is everything after /api/vault/files/
+    const filePath = c.req.path.replace(/^\/api\/vault\/files\//, '');
 
     if (!filePath.startsWith(user.id + '/')) {
       return c.json({ error: 'Forbidden' }, 403);

@@ -1,5 +1,5 @@
 /**
- * Integration test for GET /api/dashboard — counts field.
+ * Integration test for GET /api/vault/dashboard — counts field.
  *
  * Strategy: vi.mock the db client so no real Postgres connection is needed,
  * and stub requireUser to inject a fake authenticated user.
@@ -7,18 +7,18 @@
 
 import { describe, test, expect, vi, beforeEach } from 'vitest';
 import { Hono } from 'hono';
-import type { AuthVariables } from '../lib/session-middleware';
+import type { AuthVariables } from '../../lib/session-middleware';
 
 // ---------------------------------------------------------------------------
 // Mock the DB client before importing dashboard route (which imports db).
 // ---------------------------------------------------------------------------
 
 const mockSelect = vi.fn();
-vi.mock('../db/client', () => ({ db: { select: mockSelect } }));
+vi.mock('../../db/client', () => ({ db: { select: mockSelect } }));
 
 // Mock session-middleware: replace requireUser with a middleware that injects
 // a fixed user, and export AuthVariables type unchanged.
-vi.mock('../lib/session-middleware', () => ({
+vi.mock('../../lib/session-middleware', () => ({
   requireUser: async (c: { set: (k: string, v: unknown) => void }, next: () => Promise<void>) => {
     c.set('user', { id: 'user-1', email: 'test@example.com', name: 'Test', emailVerified: true });
     await next();
@@ -31,7 +31,7 @@ vi.mock('../lib/session-middleware', () => ({
 
 const { dashboardRoute } = await import('./dashboard');
 
-const app = new Hono<{ Variables: AuthVariables }>().route('/api/dashboard', dashboardRoute);
+const app = new Hono<{ Variables: AuthVariables }>().route('/api/vault/dashboard', dashboardRoute);
 
 // ---------------------------------------------------------------------------
 // Helpers to build chainable Drizzle-mock call chains.
@@ -50,7 +50,7 @@ function makeChain(resolvedValue: unknown) {
   return chain;
 }
 
-describe('GET /api/dashboard — counts', () => {
+describe('GET /api/vault/dashboard — counts', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -81,7 +81,7 @@ describe('GET /api/dashboard — counts', () => {
       return makeChain(results[idx]);
     });
 
-    const res = await app.request('/api/dashboard');
+    const res = await app.request('/api/vault/dashboard');
     expect(res.status).toBe(200);
 
     const body = (await res.json()) as {
@@ -114,7 +114,7 @@ describe('GET /api/dashboard — counts', () => {
       return makeChain(results[idx]);
     });
 
-    const res = await app.request('/api/dashboard');
+    const res = await app.request('/api/vault/dashboard');
     expect(res.status).toBe(200);
 
     const body = (await res.json()) as {
@@ -141,7 +141,7 @@ describe('GET /api/dashboard — counts', () => {
       return makeChain(results[idx]);
     });
 
-    const res = await app.request('/api/dashboard');
+    const res = await app.request('/api/vault/dashboard');
     expect(res.status).toBe(200);
 
     const body = (await res.json()) as Record<string, unknown>;

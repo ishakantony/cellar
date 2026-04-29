@@ -6,8 +6,8 @@ import {
   ALLOWED_EXTENSIONS,
   validateFileContent,
   validateSvgContent,
-} from '../lib/file-validation';
-import { requireUser, type AuthVariables } from '../lib/session-middleware';
+} from '../../lib/file-validation';
+import { requireUser, type AuthVariables } from '../../lib/session-middleware';
 
 export const uploadRoute = new Hono<{ Variables: AuthVariables }>()
   .use(requireUser)

@@ -13,7 +13,7 @@ export function useCreateCollectionMutation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateCollectionInput) =>
-      apiFetch<CollectionSummary>('/api/collections', {
+      apiFetch<CollectionSummary>('/api/vault/collections', {
         method: 'POST',
         body: JSON.stringify(data),
       }),
@@ -25,7 +25,7 @@ export function useUpdateCollectionMutation(id: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: UpdateCollectionInput) =>
-      apiFetch<CollectionSummary>(`/api/collections/${id}`, {
+      apiFetch<CollectionSummary>(`/api/vault/collections/${id}`, {
         method: 'PATCH',
         body: JSON.stringify(data),
       }),
@@ -39,7 +39,8 @@ export function useUpdateCollectionMutation(id: string) {
 export function useDeleteCollectionMutation() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => apiFetch<void>(`/api/collections/${id}`, { method: 'DELETE' }),
+    mutationFn: (id: string) =>
+      apiFetch<void>(`/api/vault/collections/${id}`, { method: 'DELETE' }),
     onSuccess: () => invalidateCollectionTree(qc),
   });
 }
@@ -48,7 +49,7 @@ export function useToggleCollectionPinMutation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) =>
-      apiFetch<CollectionSummary>(`/api/collections/${id}/pin`, { method: 'POST' }),
+      apiFetch<CollectionSummary>(`/api/vault/collections/${id}/pin`, { method: 'POST' }),
     onSuccess: (_data, id) => {
       invalidateCollectionTree(qc);
       qc.invalidateQueries({ queryKey: collectionKeys.detail(id) });
@@ -60,7 +61,7 @@ export function useAddAssetToCollectionMutation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ collectionId, assetId }: { collectionId: string; assetId: string }) =>
-      apiFetch<void>(`/api/collections/${collectionId}/assets/${assetId}`, {
+      apiFetch<void>(`/api/vault/collections/${collectionId}/assets/${assetId}`, {
         method: 'POST',
       }),
     onSuccess: (_data, { collectionId }) => {
@@ -75,7 +76,7 @@ export function useRemoveAssetFromCollectionMutation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ collectionId, assetId }: { collectionId: string; assetId: string }) =>
-      apiFetch<void>(`/api/collections/${collectionId}/assets/${assetId}`, {
+      apiFetch<void>(`/api/vault/collections/${collectionId}/assets/${assetId}`, {
         method: 'DELETE',
       }),
     onSuccess: (_data, { collectionId }) => {

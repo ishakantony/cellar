@@ -13,7 +13,7 @@ export function useUploadFileMutation() {
     mutationFn: async (file: File): Promise<UploadResponse> => {
       const form = new FormData();
       form.append('file', file);
-      const response = await fetch('/api/upload', {
+      const response = await fetch('/api/vault/upload', {
         method: 'POST',
         body: form,
         credentials: 'include',

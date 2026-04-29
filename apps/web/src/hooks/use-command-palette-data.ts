@@ -63,7 +63,7 @@ export function useCommandPaletteData(query: string): CommandPaletteData {
     queryKey: assetKeys.list({ q: trimmedQuery, limit: SEARCH_LIMIT }),
     queryFn: async () => {
       const params = new URLSearchParams({ q: trimmedQuery, limit: String(SEARCH_LIMIT) });
-      const response = await fetch(`/api/assets?${params.toString()}`, {
+      const response = await fetch(`/api/vault/assets?${params.toString()}`, {
         credentials: 'include',
       });
       if (!response.ok) throw new Error(`Request failed: ${response.status}`);
@@ -78,14 +78,14 @@ export function useCommandPaletteData(query: string): CommandPaletteData {
   // Recently-edited assets — always fetched while palette is in use
   const recentsQuery = useQuery({
     queryKey: assetKeys.list({ sort: 'newest', limit: RECENT_LIMIT }),
-    queryFn: () => apiFetch<AssetSummary[]>(`/api/assets?sort=newest&limit=${RECENT_LIMIT}`),
+    queryFn: () => apiFetch<AssetSummary[]>(`/api/vault/assets?sort=newest&limit=${RECENT_LIMIT}`),
     staleTime: 30_000,
   });
 
   // Full collections list — cached
   const collectionsQuery = useQuery({
     queryKey: collectionKeys.list(),
-    queryFn: () => apiFetch<CollectionSummary[]>('/api/collections'),
+    queryFn: () => apiFetch<CollectionSummary[]>('/api/vault/collections'),
     staleTime: 60_000,
   });
 

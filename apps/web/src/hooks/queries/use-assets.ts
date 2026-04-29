@@ -50,14 +50,14 @@ function buildQueryString(filters?: AssetListQuery): string {
 export function useAssetsQuery(filters?: AssetListQuery) {
   return useQuery({
     queryKey: assetKeys.list(filters),
-    queryFn: () => apiFetch<AssetSummary[]>(`/api/assets${buildQueryString(filters)}`),
+    queryFn: () => apiFetch<AssetSummary[]>(`/api/vault/assets${buildQueryString(filters)}`),
   });
 }
 
 export function useAssetQuery(id: string | undefined) {
   return useQuery({
     queryKey: id ? assetKeys.detail(id) : assetKeys.detail('__none__'),
-    queryFn: () => apiFetch<AssetWithCollections>(`/api/assets/${id}`),
+    queryFn: () => apiFetch<AssetWithCollections>(`/api/vault/assets/${id}`),
     enabled: !!id,
   });
 }

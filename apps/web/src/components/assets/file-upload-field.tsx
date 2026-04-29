@@ -69,7 +69,7 @@ export function FileUploadField({ value, onChange, accept, error }: FileUploadFi
         {isImage ? (
           <div className="relative h-20 w-20 rounded-lg overflow-hidden bg-surface-container-high flex-shrink-0">
             <img
-              src={`/api/files/${value.filePath}`}
+              src={`/api/vault/files/${value.filePath}`}
               alt={value.fileName}
               className="absolute inset-0 h-full w-full object-cover"
             />
@@ -107,7 +107,7 @@ export function FileUploadField({ value, onChange, accept, error }: FileUploadFi
                   if (!file) return;
                   const formData = new FormData();
                   formData.append('file', file);
-                  fetch('/api/upload', { method: 'POST', body: formData })
+                  fetch('/api/vault/upload', { method: 'POST', body: formData })
                     .then(async res => {
                       if (res.ok) {
                         const data = await res.json();

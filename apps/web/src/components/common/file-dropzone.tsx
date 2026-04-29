@@ -26,7 +26,7 @@ export function FileDropzone({
     const formData = new FormData();
     formData.append('file', file);
 
-    const res = await fetch('/api/upload', {
+    const res = await fetch('/api/vault/upload', {
       method: 'POST',
       body: formData,
     });

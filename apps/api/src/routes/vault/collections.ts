@@ -8,9 +8,9 @@ import {
   AssetIdSchema,
 } from '@cellar/shared';
 
-import { db } from '../db/client';
-import { asset, assetCollection, collection, assetPublicColumns } from '../db/schema';
-import { requireUser, type AuthVariables } from '../lib/session-middleware';
+import { db } from '../../db/client';
+import { asset, assetCollection, collection, assetPublicColumns } from '../../db/schema';
+import { requireUser, type AuthVariables } from '../../lib/session-middleware';
 
 const AddAssetParamSchema = AssetIdSchema;
 

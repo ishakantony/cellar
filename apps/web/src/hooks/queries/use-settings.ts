@@ -15,6 +15,6 @@ export type SettingsData = {
 export function useSettingsQuery() {
   return useQuery({
     queryKey: settingsKey,
-    queryFn: () => apiFetch<SettingsData>('/api/settings'),
+    queryFn: () => apiFetch<SettingsData>('/api/account/settings'),
   });
 }

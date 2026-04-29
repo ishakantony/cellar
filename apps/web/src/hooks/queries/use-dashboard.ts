@@ -15,6 +15,6 @@ export type DashboardData = {
 export function useDashboardQuery() {
   return useQuery({
     queryKey: dashboardKey,
-    queryFn: () => apiFetch<DashboardData>('/api/dashboard'),
+    queryFn: () => apiFetch<DashboardData>('/api/vault/dashboard'),
   });
 }

@@ -16,7 +16,7 @@ export function useCreateAssetMutation() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateAssetPayload) =>
-      apiFetch<AssetSummary>('/api/assets', {
+      apiFetch<AssetSummary>('/api/vault/assets', {
         method: 'POST',
         body: JSON.stringify(data),
       }),
@@ -31,7 +31,7 @@ export function useUpdateAssetMutation(id: string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (data: UpdateAssetPayload) =>
-      apiFetch<AssetSummary>(`/api/assets/${id}`, {
+      apiFetch<AssetSummary>(`/api/vault/assets/${id}`, {
         method: 'PATCH',
         body: JSON.stringify(data),
       }),
@@ -46,7 +46,7 @@ export function useUpdateAssetMutation(id: string) {
 export function useDeleteAssetMutation() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => apiFetch<void>(`/api/assets/${id}`, { method: 'DELETE' }),
+    mutationFn: (id: string) => apiFetch<void>(`/api/vault/assets/${id}`, { method: 'DELETE' }),
     onSuccess: () => {
       invalidateAssetTree(qc);
       qc.invalidateQueries({ queryKey: collectionKeys.all });
@@ -57,7 +57,8 @@ export function useDeleteAssetMutation() {
 export function useTogglePinAssetMutation() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => apiFetch<AssetSummary>(`/api/assets/${id}/pin`, { method: 'POST' }),
+    mutationFn: (id: string) =>
+      apiFetch<AssetSummary>(`/api/vault/assets/${id}/pin`, { method: 'POST' }),
     onSuccess: (_data, id) => {
       invalidateAssetTree(qc);
       qc.invalidateQueries({ queryKey: assetKeys.detail(id) });

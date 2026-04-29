@@ -26,14 +26,14 @@ export type CollectionWithAssets = CollectionSummary & {
 export function useCollectionsQuery() {
   return useQuery({
     queryKey: collectionKeys.list(),
-    queryFn: () => apiFetch<CollectionSummary[]>('/api/collections'),
+    queryFn: () => apiFetch<CollectionSummary[]>('/api/vault/collections'),
   });
 }
 
 export function useCollectionQuery(id: string | undefined) {
   return useQuery({
     queryKey: id ? collectionKeys.detail(id) : collectionKeys.detail('__none__'),
-    queryFn: () => apiFetch<CollectionWithAssets>(`/api/collections/${id}`),
+    queryFn: () => apiFetch<CollectionWithAssets>(`/api/vault/collections/${id}`),
     enabled: !!id,
   });
 }

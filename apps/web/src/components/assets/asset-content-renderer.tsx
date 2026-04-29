@@ -156,7 +156,7 @@ function ImageRenderer({
         onClick={() => setLightboxOpen(true)}
       >
         <img
-          src={`/api/files/${filePath}`}
+          src={`/api/vault/files/${filePath}`}
           alt={fileName || 'Asset image'}
           loading="lazy"
           className="absolute inset-0 h-full w-full object-contain"
@@ -174,7 +174,7 @@ function ImageRenderer({
       >
         <div className="relative h-[80vh] w-full">
           <img
-            src={`/api/files/${filePath}`}
+            src={`/api/vault/files/${filePath}`}
             alt={fileName || 'Asset image'}
             loading="lazy"
             className="absolute inset-0 h-full w-full object-contain rounded-lg"
@@ -228,7 +228,7 @@ function FileRenderer({
       </div>
       <div className="mt-4">
         <a
-          href={`/api/files/${filePath}`}
+          href={`/api/vault/files/${filePath}`}
           download={fileName || true}
           className="inline-flex items-center gap-2 rounded-lg bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-primary hover:bg-primary/20 transition-colors"
         >

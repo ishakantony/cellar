@@ -10,9 +10,9 @@ import {
   UpdateAssetSchema,
 } from '@cellar/shared';
 
-import { db } from '../db/client';
-import { asset, assetCollection, assetPublicColumns, type AssetRow } from '../db/schema';
-import { requireUser, type AuthVariables } from '../lib/session-middleware';
+import { db } from '../../db/client';
+import { asset, assetCollection, assetPublicColumns, type AssetRow } from '../../db/schema';
+import { requireUser, type AuthVariables } from '../../lib/session-middleware';
 
 const PUBLIC_COLUMNS = assetPublicColumns;
 
@@ -82,7 +82,7 @@ export const assetsRoute = new Hono<{ Variables: AuthVariables }>()
 
     return c.json(rows);
   })
-  .get('/dashboard', async c => c.text('use /api/dashboard', 410))
+  .get('/dashboard', async c => c.text('use /api/vault/dashboard', 410))
   .get('/:id', async c => {
     const user = c.get('user');
     const idResult = AssetIdSchema.safeParse(c.req.param('id'));

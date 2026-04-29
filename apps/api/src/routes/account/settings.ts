@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
 import { and, eq, isNotNull } from 'drizzle-orm';
-import { db } from '../db/client';
-import { account } from '../db/schema';
-import { requireUser, type AuthVariables } from '../lib/session-middleware';
+import { db } from '../../db/client';
+import { account } from '../../db/schema';
+import { requireUser, type AuthVariables } from '../../lib/session-middleware';
 
 export const settingsRoute = new Hono<{ Variables: AuthVariables }>()
   .use(requireUser)
