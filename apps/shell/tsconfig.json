@@ -16,7 +16,7 @@
       "@cellar/feature-vault/manifest": ["../../packages/feature-vault/src/manifest.ts"],
       "@cellar/feature-toolbox": ["../../packages/feature-toolbox/src/index.ts"],
       "@cellar/feature-toolbox/manifest": ["../../packages/feature-toolbox/src/manifest.ts"],
-      "@cellar/feature-account": ["../../packages/feature-account/src/index.ts"],
+      "@cellar/feature-account": ["../../packages/feature-account/src/index.tsx"],
       "@cellar/feature-account/manifest": ["../../packages/feature-account/src/manifest.ts"],
       "@cellar/api/app-type": ["../api/src/app.ts"]
     }

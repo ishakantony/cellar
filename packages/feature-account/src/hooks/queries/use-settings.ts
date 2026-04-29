@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '../../lib/api-fetch';
-import { settingsKey } from '../keys';
+import { settingsKey } from '../../lib/query-keys';
 
 export type SettingsData = {
   user: {

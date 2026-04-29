@@ -42,12 +42,7 @@ export function Sidebar({ collapsed, user, className }: SidebarProps) {
         <SidebarLogo />
         <div className="mx-6 mb-6 mt-6 border-t border-white/5" />
         <SidebarNavigation activePath={pathname} searchParams={searchParams} />
-        <SidebarFooter
-          activePath={pathname}
-          user={user}
-          onSignOut={handleSignOut}
-          className="mt-auto"
-        />
+        <SidebarFooter user={user} onSignOut={handleSignOut} className="mt-auto" />
       </div>
     </aside>
   );

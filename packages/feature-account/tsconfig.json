@@ -4,7 +4,15 @@
     "jsx": "react-jsx",
     "noEmit": true,
     "lib": ["ES2022", "DOM"],
-    "baseUrl": "."
+    "baseUrl": ".",
+    "types": ["@testing-library/jest-dom"],
+    "paths": {
+      "@cellar/shared": ["../shared/src/index.ts"],
+      "@cellar/shared/*": ["../shared/src/*"],
+      "@cellar/ui": ["../ui/src/index.ts"],
+      "@cellar/ui/*": ["../ui/src/*"],
+      "@cellar/shell-contract": ["../shell-contract/src/index.ts"]
+    }
   },
   "include": ["src"],
   "exclude": ["dist", "node_modules"]

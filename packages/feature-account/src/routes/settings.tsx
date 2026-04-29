@@ -1,8 +1,8 @@
 import { toast } from 'sonner';
 import type { ChangePasswordData, UpdateProfileData } from '@cellar/shared';
-import { authClient } from '@/lib/auth-client';
-import { ProfileForm, PasswordForm } from '@/components/settings';
-import { useSettingsQuery } from '@/hooks/queries/use-settings';
+import { authClient } from '../lib/auth-client';
+import { ProfileForm, PasswordForm } from '../components/settings';
+import { useSettingsQuery } from '../hooks/queries/use-settings';
 
 export function SettingsPage() {
   const settingsQuery = useSettingsQuery();

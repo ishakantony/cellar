@@ -42,7 +42,7 @@ export default defineConfig({
       ),
       '@cellar/feature-account': path.resolve(
         dirname,
-        '../../packages/feature-account/src/index.ts'
+        '../../packages/feature-account/src/index.tsx'
       ),
     },
   },

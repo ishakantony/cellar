@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./src/index.tsx",
+  "types": "./src/index.tsx",
   "exports": {
-    ".": "./src/index.ts",
+    ".": "./src/index.tsx",
     "./manifest": "./src/manifest.ts"
   },
   "scripts": {
@@ -16,18 +16,36 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@cellar/shell-contract": "workspace:*"
+    "@better-auth/oauth-provider": "^1.6.8",
+    "@cellar/shared": "workspace:*",
+    "@cellar/shell-contract": "workspace:*",
+    "@cellar/ui": "workspace:*",
+    "@hookform/resolvers": "^5.2.2",
+    "@tanstack/react-query": "^5.62.7",
+    "better-auth": "^1.6.8",
+    "react-hook-form": "^7.55.0",
+    "sonner": "^2.0.7",
+    "zod": "^4.3.6"
   },
   "peerDependencies": {
     "lucide-react": "^1.8.0",
     "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "react-router": "^7.1.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "happy-dom": "^20.9.0",
     "lucide-react": "^1.8.0",
     "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "react-router": "^7.1.1",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^4.1.4"
   }
 }

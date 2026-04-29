@@ -1,10 +1,7 @@
-import { Settings } from 'lucide-react';
-import { NavItem } from './nav-item';
 import { UserMenu } from './user-menu';
 import { cn } from '@cellar/ui';
 
 export interface SidebarFooterProps {
-  activePath: string;
   user: {
     name: string;
     email: string;
@@ -14,17 +11,14 @@ export interface SidebarFooterProps {
   className?: string;
 }
 
-export function SidebarFooter({ activePath, user, onSignOut, className }: SidebarFooterProps) {
+/**
+ * Sidebar footer hosts only the user chip. The "Settings" link that lived
+ * here in the legacy shell was removed in issue #004 — Account is reachable
+ * by URL only until issue #006 wires a user-menu entry to `/account/settings`.
+ */
+export function SidebarFooter({ user, onSignOut, className }: SidebarFooterProps) {
   return (
     <div className={cn('px-4', className)}>
-      <div className="border-t border-white/5 pt-3 mb-2 px-4">
-        <NavItem
-          href="/settings"
-          icon={Settings}
-          label="Settings"
-          active={activePath === '/settings'}
-        />
-      </div>
       <UserMenu user={user} onSignOut={onSignOut} />
     </div>
   );

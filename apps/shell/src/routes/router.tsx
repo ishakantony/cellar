@@ -5,7 +5,6 @@ import { AuthLayout } from './auth-layout';
 import { SignInPage } from './sign-in';
 import { SignUpPage } from './sign-up';
 import { AppLayout } from './app-layout';
-import { SettingsPage } from './settings';
 import { ConsentPage } from './consent';
 import { composeRegisteredFeatureRoutes } from '@/shell/route-composer';
 import { registry, resolvedEntries } from '@/shell/feature-registry';
@@ -37,11 +36,7 @@ export const router = createBrowserRouter([
         <AppLayout />
       </AuthGuard>
     ),
-    children: [
-      ...featureRoutes,
-      // Settings stays in the shell until issue #004 moves it to feature-account.
-      { path: '/settings', element: <SettingsPage /> },
-    ],
+    children: [...featureRoutes],
   },
   {
     path: '*',
