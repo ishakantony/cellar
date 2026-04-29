@@ -27,7 +27,7 @@ export default defineConfig({
         dirname,
         '../../packages/feature-vault/src/manifest.ts'
       ),
-      '@cellar/feature-vault': path.resolve(dirname, '../../packages/feature-vault/src/index.ts'),
+      '@cellar/feature-vault': path.resolve(dirname, '../../packages/feature-vault/src/index.tsx'),
       '@cellar/feature-toolbox/manifest': path.resolve(
         dirname,
         '../../packages/feature-toolbox/src/manifest.ts'

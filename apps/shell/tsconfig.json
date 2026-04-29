@@ -12,7 +12,7 @@
       "@cellar/ui": ["../../packages/ui/src/index.ts"],
       "@cellar/ui/*": ["../../packages/ui/src/*"],
       "@cellar/shell-contract": ["../../packages/shell-contract/src/index.ts"],
-      "@cellar/feature-vault": ["../../packages/feature-vault/src/index.ts"],
+      "@cellar/feature-vault": ["../../packages/feature-vault/src/index.tsx"],
       "@cellar/feature-vault/manifest": ["../../packages/feature-vault/src/manifest.ts"],
       "@cellar/feature-toolbox": ["../../packages/feature-toolbox/src/index.ts"],
       "@cellar/feature-toolbox/manifest": ["../../packages/feature-toolbox/src/manifest.ts"],

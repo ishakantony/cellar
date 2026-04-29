@@ -1,16 +1,7 @@
-import type { AssetListQuery } from '@cellar/shared';
-
-export const assetKeys = {
-  all: ['assets'] as const,
-  list: (filters?: AssetListQuery) => ['assets', 'list', filters ?? {}] as const,
-  detail: (id: string) => ['assets', 'detail', id] as const,
-};
-
-export const collectionKeys = {
-  all: ['collections'] as const,
-  list: () => ['collections', 'list'] as const,
-  detail: (id: string) => ['collections', 'detail', id] as const,
-};
-
-export const dashboardKey = ['dashboard'] as const;
+/**
+ * Shell-owned TanStack Query keys.
+ *
+ * Vault keys moved to `@cellar/feature-vault/lib/query-keys` in issue #003.
+ * Account keys move out in issue #004.
+ */
 export const settingsKey = ['settings'] as const;

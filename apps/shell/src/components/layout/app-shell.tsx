@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { CollectionModal } from '@/components/collections/collection-modal';
-import { AssetDrawer } from '@/components/assets/asset-drawer';
+import { AssetDrawer, CollectionModal } from '@cellar/feature-vault';
 import { CommandPalette } from '@/components/command-palette/command-palette';
 import { Header } from '@/components/layout/header';
 import { Sidebar } from '@/components/layout/sidebar';

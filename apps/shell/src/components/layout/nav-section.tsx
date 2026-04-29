@@ -21,13 +21,20 @@ function isItemActive(
   pathname: string,
   searchParams?: NavSectionProps['searchParams']
 ): boolean {
-  if (item.type) {
-    return pathname === '/assets' && searchParams?.get('type') === item.type;
+  // Per-asset-type entries embed `?type=…` in the href; check for an exact
+  // pathname match plus matching search-param.
+  const [hrefPath, hrefQuery] = item.href.split('?');
+  const hrefType = hrefQuery
+    ? (new URLSearchParams(hrefQuery).get('type') ?? undefined)
+    : undefined;
+
+  if (hrefType) {
+    return pathname === hrefPath && searchParams?.get('type') === hrefType;
   }
-  if (item.href === '/assets') {
-    return pathname === '/assets' && !searchParams?.get('type');
+  if (hrefPath === '/vault/assets') {
+    return pathname === '/vault/assets' && !searchParams?.get('type');
   }
-  return pathname === item.href;
+  return pathname === hrefPath;
 }
 
 export function NavSection({ title, items, activePath, searchParams, className }: NavSectionProps) {

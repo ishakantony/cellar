@@ -33,11 +33,11 @@ export function SignInPage() {
     }
 
     const url = (result.data as { url?: string } | null)?.url ?? callbackURL;
-    navigate(url ?? '/dashboard');
+    navigate(url ?? '/vault');
   };
 
   const handleGitHub = async () => {
-    await signIn.social({ provider: 'github', callbackURL: callbackURL ?? '/dashboard' });
+    await signIn.social({ provider: 'github', callbackURL: callbackURL ?? '/vault' });
   };
 
   return (

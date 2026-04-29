@@ -1,6 +1,6 @@
 import { Suspense, lazy, type ComponentType, type ReactElement } from 'react';
-import type { RouteObject } from 'react-router';
-import type { FeatureRegistryEntry } from '@cellar/shell-contract';
+import { Outlet, type RouteObject } from 'react-router';
+import type { FeatureModule, FeatureRegistryEntry } from '@cellar/shell-contract';
 import { FeatureErrorBoundary } from './error-boundary';
 import type { FeatureRegistry } from './registry';
 
@@ -18,15 +18,13 @@ function FeatureRouteHost({ entry, registry }: FeatureRouteHostProps): ReactElem
   const Skeleton = entry.manifest.Skeleton;
 
   // We dynamic-import the module via the registry's memoized loader. React's
-  // `lazy` requires a default export of a component; we wrap the routes into
-  // an Outlet-equivalent component. For the scaffold, the inner routes array
-  // is empty, so the host renders nothing meaningful — the route composer
-  // itself is what's load-bearing here.
+  // `lazy` requires a default export of a component; we wrap the loaded
+  // module into a component that simply renders <Outlet/> so the composed
+  // child routes (the feature's own `module.routes`) render in the shell's
+  // route tree.
   const LazyOutlet = lazy(async () => {
     await registry.loadModule(entry.manifest.id);
-    // Render nothing once loaded — child routes (if any) take over via the
-    // route tree the shell composed below.
-    return { default: (() => null) as ComponentType };
+    return { default: (() => <Outlet />) as ComponentType };
   });
 
   return (
@@ -46,13 +44,42 @@ function FeatureRouteHost({ entry, registry }: FeatureRouteHostProps): ReactElem
  * each feature's `basePath`. The shell owns the per-feature error boundary
  * and the Suspense fallback; the feature module supplies the children.
  *
- * For the scaffold this is exercised only by tests — the running app keeps
- * using its existing route tree until #003/#004/#005 wire the registry in.
+ * The lazy variant: only the manifest is known up-front. Used by tests and
+ * by callers that defer full module loading. For the running app, see
+ * {@link composeRegisteredFeatureRoutes} which mounts eagerly-imported
+ * feature modules so their child routes participate in the route tree.
  */
 export function composeFeatureRoutes(registry: FeatureRegistry): RouteObject[] {
   return registry.list().map(entry => ({
     path: entry.manifest.basePath,
     element: <FeatureRouteHost entry={entry} registry={registry} />,
     children: [],
+  }));
+}
+
+/**
+ * A registry entry plus its eagerly-imported feature module. Used when the
+ * shell wants to inline-mount a feature's child routes into the static route
+ * tree (the running-app path).
+ */
+export interface ResolvedFeatureRegistryEntry {
+  entry: FeatureRegistryEntry;
+  module: FeatureModule;
+}
+
+/**
+ * Compose feature routes for resolved (eagerly-imported) feature modules.
+ * Each entry contributes its `module.routes` as children of a host route at
+ * its `manifest.basePath`. The host wraps everything in the shell-owned
+ * error boundary so a crash in one feature can't blow up the whole shell.
+ */
+export function composeRegisteredFeatureRoutes(
+  registry: FeatureRegistry,
+  resolved: ResolvedFeatureRegistryEntry[]
+): RouteObject[] {
+  return resolved.map(({ entry, module }) => ({
+    path: entry.manifest.basePath,
+    element: <FeatureRouteHost entry={entry} registry={registry} />,
+    children: module.routes,
   }));
 }

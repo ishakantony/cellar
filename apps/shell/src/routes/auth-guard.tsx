@@ -32,7 +32,7 @@ export function PublicOnly({ children }: AuthGuardProps) {
   const { data, isPending } = useSession();
   if (isPending) return null;
   if (data?.user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/vault" replace />;
   }
   return <>{children}</>;
 }

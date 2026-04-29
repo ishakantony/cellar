@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '../lib/api-fetch';
-import { assetKeys, collectionKeys } from './keys';
-import type { AssetSummary } from './queries/use-assets';
-import type { CollectionSummary } from './queries/use-collections';
+// Vault-owned types/keys imported from the feature package per issue #003;
+// the palette UI itself moves out of the shell in #014.
+import {
+  assetKeys,
+  collectionKeys,
+  type AssetSummary,
+  type CollectionSummary,
+} from '@cellar/feature-vault';
 import type { PaletteAsset, PaletteCollection } from '../lib/command-palette-results';
 
 // ---------------------------------------------------------------------------

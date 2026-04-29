@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./src/index.tsx",
+  "types": "./src/index.tsx",
   "exports": {
-    ".": "./src/index.ts",
+    ".": "./src/index.tsx",
     "./manifest": "./src/manifest.ts"
   },
   "scripts": {
@@ -16,18 +16,56 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@cellar/shell-contract": "workspace:*"
+    "@cellar/shared": "workspace:*",
+    "@cellar/shell-contract": "workspace:*",
+    "@cellar/ui": "workspace:*",
+    "@codemirror/commands": "^6.10.3",
+    "@codemirror/lang-cpp": "^6.0.3",
+    "@codemirror/lang-css": "^6.3.1",
+    "@codemirror/lang-html": "^6.4.11",
+    "@codemirror/lang-java": "^6.0.2",
+    "@codemirror/lang-javascript": "^6.2.5",
+    "@codemirror/lang-json": "^6.0.2",
+    "@codemirror/lang-markdown": "^6.5.0",
+    "@codemirror/lang-php": "^6.0.2",
+    "@codemirror/lang-python": "^6.2.1",
+    "@codemirror/lang-rust": "^6.0.2",
+    "@codemirror/lang-sql": "^6.10.0",
+    "@codemirror/lang-xml": "^6.1.0",
+    "@codemirror/language": "^6.12.3",
+    "@codemirror/state": "^6.6.0",
+    "@codemirror/view": "^6.41.1",
+    "@hookform/resolvers": "^5.2.2",
+    "@tanstack/react-query": "^5.62.7",
+    "nuqs": "^2.8.9",
+    "prettier": "^3.8.3",
+    "react-hook-form": "^7.55.0",
+    "react-markdown": "^10.1.0",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.1",
+    "sonner": "^2.0.7",
+    "zod": "^4.3.6",
+    "zustand": "^5.0.2"
   },
   "peerDependencies": {
     "lucide-react": "^1.8.0",
     "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "react-router": "^7.1.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "happy-dom": "^20.9.0",
     "lucide-react": "^1.8.0",
     "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "react-router": "^7.1.1",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^4.1.4"
   }
 }

@@ -5,18 +5,20 @@ import { AuthLayout } from './auth-layout';
 import { SignInPage } from './sign-in';
 import { SignUpPage } from './sign-up';
 import { AppLayout } from './app-layout';
-import { DashboardPage } from './dashboard';
-import { AssetsListPage } from './assets/index';
-
-import { CollectionsListPage } from './collections/index';
-import { CollectionDetailPage } from './collections/$id';
 import { SettingsPage } from './settings';
 import { ConsentPage } from './consent';
+import { composeRegisteredFeatureRoutes } from '@/shell/route-composer';
+import { registry, resolvedEntries } from '@/shell/feature-registry';
+
+// Mount each registered feature under its `manifest.basePath`. The composer
+// wraps every feature in the shell-owned error boundary so a crash in one
+// feature can't take down the whole app.
+const featureRoutes = composeRegisteredFeatureRoutes(registry, resolvedEntries);
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate to="/dashboard" replace />,
+    element: <Navigate to="/vault" replace />,
   },
   {
     element: <AuthLayout />,
@@ -36,15 +38,13 @@ export const router = createBrowserRouter([
       </AuthGuard>
     ),
     children: [
-      { path: '/dashboard', element: <DashboardPage /> },
-      { path: '/assets', element: <AssetsListPage /> },
-      { path: '/collections', element: <CollectionsListPage /> },
-      { path: '/collections/:id', element: <CollectionDetailPage /> },
+      ...featureRoutes,
+      // Settings stays in the shell until issue #004 moves it to feature-account.
       { path: '/settings', element: <SettingsPage /> },
     ],
   },
   {
     path: '*',
-    element: <Navigate to="/dashboard" replace />,
+    element: <Navigate to="/vault" replace />,
   },
 ]);

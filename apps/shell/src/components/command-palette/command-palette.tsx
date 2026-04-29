@@ -18,8 +18,7 @@ import {
   PlusCircle,
 } from 'lucide-react';
 import { useCommandPalette } from '@/hooks/use-command-palette';
-import { useCollectionModal } from '@/hooks/use-collection-modal';
-import { useAssetDrawer } from '@/hooks/use-asset-drawer';
+import { useCollectionModal, useAssetDrawer, getIconColorClass } from '@cellar/feature-vault';
 import { useCommandPaletteData } from '@/hooks/use-command-palette-data';
 import { allNavEntries } from '@/lib/nav-config';
 import {
@@ -29,7 +28,6 @@ import {
 } from '@/lib/command-palette-results';
 import { commandPaletteActions } from '@/lib/command-palette-actions';
 import { cn } from '@cellar/ui';
-import { getIconColorClass } from '@/lib/colors';
 
 // ---------------------------------------------------------------------------
 // Relative time helper
@@ -59,15 +57,15 @@ function relativeTime(isoString: string): string {
 // ---------------------------------------------------------------------------
 
 const NAV_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  '/dashboard': LayoutDashboard,
-  '/assets': Package,
-  '/collections': Folder,
-  '/assets?type=SNIPPET': Code,
-  '/assets?type=PROMPT': Terminal,
-  '/assets?type=LINK': LinkIcon,
-  '/assets?type=NOTE': StickyNote,
-  '/assets?type=IMAGE': ImageIcon,
-  '/assets?type=FILE': FileText,
+  '/vault': LayoutDashboard,
+  '/vault/assets': Package,
+  '/vault/collections': Folder,
+  '/vault/assets?type=SNIPPET': Code,
+  '/vault/assets?type=PROMPT': Terminal,
+  '/vault/assets?type=LINK': LinkIcon,
+  '/vault/assets?type=NOTE': StickyNote,
+  '/vault/assets?type=IMAGE': ImageIcon,
+  '/vault/assets?type=FILE': FileText,
 };
 
 /** Icon map derived from the commandPaletteActions registry — single source of truth. */
@@ -129,7 +127,7 @@ export function CommandPalette({ onToggleSidebar }: CommandPaletteProps) {
           break;
 
         case 'collection':
-          if (item.collection) navigate(`/collections/${item.collection.id}`);
+          if (item.collection) navigate(`/vault/collections/${item.collection.id}`);
           break;
 
         case 'asset':
