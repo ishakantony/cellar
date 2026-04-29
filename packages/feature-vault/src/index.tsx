@@ -5,6 +5,7 @@ import { AssetsListPage } from './routes/assets/index';
 import { AssetDetailPage } from './routes/assets/$id';
 import { CollectionsListPage } from './routes/collections/index';
 import { CollectionDetailPage } from './routes/collections/$id';
+import { vaultPaletteProvider } from './lib/palette-provider';
 
 const nav: NavItem[] = [
   { id: 'home', label: 'Dashboard', href: '/vault', icon: LayoutDashboard },
@@ -25,27 +26,17 @@ const featureModule: FeatureModule = {
     { path: 'collections/:id', element: <CollectionDetailPage /> },
   ],
   nav,
+  paletteProvider: vaultPaletteProvider,
 };
 
 export default featureModule;
 
 /**
  * Re-export overlay UI that the shell hosts at the layout level (drawer for
- * asset CRUD, modal for collection CRUD). Issue #014 may relocate the
- * command palette UI out of the shell; until then, the shell mounts these
- * overlays once and the feature drives them via Zustand stores.
+ * asset CRUD, modal for collection CRUD). The shell mounts these overlays
+ * once and the feature drives them via Zustand stores.
  */
 export { AssetDrawer } from './components/assets/asset-drawer';
 export { CollectionModal } from './components/collections/collection-modal';
 export { useAssetDrawer } from './hooks/use-asset-drawer';
 export { useCollectionModal } from './hooks/use-collection-modal';
-export { getIconColorClass } from './lib/colors';
-
-/**
- * Re-export query keys so the shell's command palette (which queries Vault
- * caches directly) and other features can invalidate without duplicating
- * the key tuples. Palette code itself moves out of the shell in issue #014.
- */
-export { assetKeys, collectionKeys, dashboardKey } from './lib/query-keys';
-export type { AssetSummary, AssetWithCollections } from './hooks/queries/use-assets';
-export type { CollectionSummary, CollectionWithAssets } from './hooks/queries/use-collections';

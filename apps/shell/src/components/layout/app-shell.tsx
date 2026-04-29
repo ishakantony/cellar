@@ -9,18 +9,18 @@ import { useCommandPalette } from '@/hooks/use-command-palette';
 import { useSidebarCollapse } from '@/shell/stores/sidebar-collapse';
 import { useSyncLastActiveFeature } from '@/shell/use-sync-last-active-feature';
 import { useSidebarToggleShortcut } from '@/shell/use-sidebar-toggle-shortcut';
+import { isShortcutSuppressed } from '@/shell/shortcut-suppression';
 import { signOut } from '@/lib/auth-client';
+
+/** DOM event key dispatched by the vault's "Toggle sidebar" palette command. */
+const TOGGLE_SIDEBAR_EVENT = 'cellar:toggle-sidebar';
 
 function useCommandPaletteShortcut() {
   const { setOpen } = useCommandPalette();
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      // Suppress when focus is in a text field
-      const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
-        return;
-      }
+      if (isShortcutSuppressed(e.target)) return;
 
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
@@ -33,6 +33,19 @@ function useCommandPaletteShortcut() {
   }, [setOpen]);
 }
 
+/** Listen for the custom toggle-sidebar event dispatched by the vault manifest. */
+function useToggleSidebarEvent() {
+  const { toggle } = useSidebarCollapse();
+
+  useEffect(() => {
+    function handleToggle() {
+      toggle();
+    }
+    document.addEventListener(TOGGLE_SIDEBAR_EVENT, handleToggle);
+    return () => document.removeEventListener(TOGGLE_SIDEBAR_EVENT, handleToggle);
+  }, [toggle]);
+}
+
 export function AppShell({
   children,
   user,
@@ -40,7 +53,6 @@ export function AppShell({
   children: React.ReactNode;
   user: { name: string; email: string; image?: string | null };
 }) {
-  const { toggle: toggleSidebar } = useSidebarCollapse();
   const navigate = useNavigate();
 
   // Install global ⌘K / Ctrl+K shortcut
@@ -53,7 +65,8 @@ export function AppShell({
   // redirect and refresh land back on the right feature.
   useSyncLastActiveFeature();
 
-  const handleToggleSidebar = useCallback(() => toggleSidebar(), [toggleSidebar]);
+  // Subscribe to the vault palette "Toggle sidebar" event
+  useToggleSidebarEvent();
 
   const handleSignOut = useCallback(() => {
     void signOut().then(() => navigate('/sign-in'));
@@ -79,7 +92,7 @@ export function AppShell({
 
       <CollectionModal />
       <AssetDrawer />
-      <CommandPalette onToggleSidebar={handleToggleSidebar} />
+      <CommandPalette />
     </div>
   );
 }
