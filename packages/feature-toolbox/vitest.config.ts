@@ -9,6 +9,8 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
+      '@cellar/ui/styles.css': path.resolve(dirname, '../ui/src/styles.css'),
+      '@cellar/ui': path.resolve(dirname, '../ui/src/index.ts'),
       '@cellar/shell-contract': path.resolve(dirname, '../shell-contract/src/index.ts'),
     },
   },

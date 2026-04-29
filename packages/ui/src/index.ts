@@ -24,6 +24,7 @@ export * from './components/search-input';
 export * from './components/select';
 export * from './components/separator';
 export * from './components/sonner';
+export * from './components/split-pane';
 export * from './components/tabs';
 export * from './components/text-link';
 export * from './components/textarea';

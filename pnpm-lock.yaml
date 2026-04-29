@@ -388,6 +388,9 @@ importers:
       '@cellar/shell-contract':
         specifier: workspace:*
         version: link:../shell-contract
+      '@cellar/ui':
+        specifier: workspace:*
+        version: link:../ui
     devDependencies:
       '@testing-library/jest-dom':
         specifier: ^6.9.1
@@ -410,6 +413,9 @@ importers:
       react:
         specifier: ^19.2.4
         version: 19.2.5
+      react-dom:
+        specifier: ^19.2.4
+        version: 19.2.5(react@19.2.5)
       react-router:
         specifier: ^7.1.1
         version: 7.14.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
