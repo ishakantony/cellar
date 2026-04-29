@@ -1,4 +1,4 @@
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useRef, useState, type ReactNode } from 'react';
 import { parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
 import { toast } from 'sonner';
 import { ASSET_TYPES, type AssetSort } from '@cellar/shared';
@@ -13,11 +13,14 @@ import {
 } from '../../hooks/mutations/use-asset-mutations';
 import { useViewMode } from '../../hooks/use-view-mode';
 import { useAssetDrawer } from '../../hooks/use-asset-drawer';
+import { useSlashFocus } from '../../hooks/use-slash-focus';
 
 const SORT_VALUES = ['newest', 'oldest', 'az', 'za'] as const satisfies readonly AssetSort[];
 
 export function AssetsListPage() {
   const { openCreate } = useAssetDrawer();
+  const searchRef = useRef<HTMLInputElement>(null);
+  useSlashFocus(searchRef);
 
   const [filters, setFilters] = useQueryStates(
     {
@@ -103,6 +106,7 @@ export function AssetsListPage() {
         viewMode={viewMode}
         onViewChange={setViewMode}
         onNewAsset={() => openCreate()}
+        searchRef={searchRef}
       />
 
       <AssetsFilterTabs

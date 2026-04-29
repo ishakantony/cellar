@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, forwardRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { cn } from '../lib/cn';
 
@@ -10,13 +10,10 @@ export interface SearchInputProps {
   className?: string;
 }
 
-export function SearchInput({
-  value,
-  onChange,
-  placeholder = 'Search...',
-  debounceMs = 300,
-  className,
-}: SearchInputProps) {
+export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(function SearchInput(
+  { value, onChange, placeholder = 'Search...', debounceMs = 300, className },
+  ref
+) {
   const [internalValue, setInternalValue] = useState(value);
 
   useEffect(() => {
@@ -39,6 +36,7 @@ export function SearchInput({
     <div className={cn('relative', className)}>
       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-outline pointer-events-none" />
       <input
+        ref={ref}
         type="text"
         value={internalValue}
         onChange={e => setInternalValue(e.target.value)}
@@ -58,4 +56,4 @@ export function SearchInput({
       )}
     </div>
   );
-}
+});

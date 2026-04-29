@@ -1,3 +1,4 @@
+import { type RefObject } from 'react';
 import { Plus } from 'lucide-react';
 import { Button, SearchInput, Select, ViewToggle, cn } from '@cellar/ui';
 
@@ -17,6 +18,7 @@ export interface AssetsToolbarProps {
   onViewChange: (view: 'grid' | 'list') => void;
   onNewAsset: () => void;
   className?: string;
+  searchRef?: RefObject<HTMLInputElement | null>;
 }
 
 export function AssetsToolbar({
@@ -28,11 +30,17 @@ export function AssetsToolbar({
   onViewChange,
   onNewAsset,
   className,
+  searchRef,
 }: AssetsToolbarProps) {
   return (
     <div className={cn('flex items-center gap-3 flex-wrap', className)}>
       <div className="flex-1 min-w-[200px]">
-        <SearchInput value={searchQuery} onChange={onSearchChange} placeholder="Search assets..." />
+        <SearchInput
+          ref={searchRef}
+          value={searchQuery}
+          onChange={onSearchChange}
+          placeholder="Search assets..."
+        />
       </div>
       <Select
         value={sort}

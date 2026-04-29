@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { parseAsString, useQueryState } from 'nuqs';
 import { toast } from 'sonner';
@@ -12,10 +12,13 @@ import {
 } from '../../hooks/mutations/use-collection-mutations';
 import { useViewMode } from '../../hooks/use-view-mode';
 import { useCollectionModal } from '../../hooks/use-collection-modal';
+import { useSlashFocus } from '../../hooks/use-slash-focus';
 
 export function CollectionsListPage() {
   const navigate = useNavigate();
   const collectionsQuery = useCollectionsQuery();
+  const searchRef = useRef<HTMLInputElement>(null);
+  useSlashFocus(searchRef);
   const deleteCollection = useDeleteCollectionMutation();
   const togglePin = useToggleCollectionPinMutation();
   const { openCreate, openEdit } = useCollectionModal();
@@ -82,6 +85,7 @@ export function CollectionsListPage() {
         view={viewMode}
         onViewChange={setViewMode}
         onNewCollection={openCreate}
+        searchRef={searchRef}
       />
 
       {collectionsQuery.isPending ? (

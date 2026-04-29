@@ -1,11 +1,14 @@
+import { type RefObject } from 'react';
 import { Plus } from 'lucide-react';
 import { Button, SearchInput, ViewToggle } from '@cellar/ui';
+
 export interface CollectionsToolbarProps {
   searchValue: string;
   onSearchChange: (value: string) => void;
   view: 'grid' | 'list';
   onViewChange: (view: 'grid' | 'list') => void;
   onNewCollection: () => void;
+  searchRef?: RefObject<HTMLInputElement | null>;
 }
 
 export function CollectionsToolbar({
@@ -14,10 +17,12 @@ export function CollectionsToolbar({
   view,
   onViewChange,
   onNewCollection,
+  searchRef,
 }: CollectionsToolbarProps) {
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
       <SearchInput
+        ref={searchRef}
         value={searchValue}
         onChange={onSearchChange}
         placeholder="Search collections..."
