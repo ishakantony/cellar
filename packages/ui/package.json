@@ -33,6 +33,7 @@
     "@codemirror/lang-sql": "^6.10.0",
     "@codemirror/lang-xml": "^6.1.0",
     "@codemirror/language": "^6.12.3",
+    "@codemirror/lint": "^6.9.5",
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.41.1",
     "clsx": "^2.1.1",

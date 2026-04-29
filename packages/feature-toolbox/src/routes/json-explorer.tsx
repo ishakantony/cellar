@@ -1,7 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
 import { CodeMirrorEditor, SplitPane } from '@cellar/ui';
+import type { EditorDiagnostic } from '@cellar/ui';
 import { buildJsonTree, type JsonNode, type JsonValue } from '../lib/json-tree';
 import { formatJson, minifyJson } from '../lib/json-format';
+import { parseJson } from '../lib/json-parse';
+import { filterJsonTree } from '../lib/json-tree-filter';
 import { JsonTreeView } from '../components/json-tree-view';
 import { RightPaneTabs } from '../components/right-pane-tabs';
 import { EditorToolbar } from '../components/editor-toolbar';
@@ -9,6 +12,11 @@ import { useJsonDrop } from '../hooks/use-json-drop';
 
 const PLACEHOLDER = 'Paste JSON to begin…';
 const PANE_RATIO_KEY = 'cellar:json-explorer:pane-ratio';
+
+/** ~5 MB soft warning threshold (in bytes) */
+const SIZE_WARN = 5_000_000;
+/** ~50 MB hard rejection threshold (in bytes) */
+const SIZE_LIMIT = 50_000_000;
 
 /**
  * Controlled view component. The page is a thin shell around this so tests
@@ -20,16 +28,43 @@ export interface JsonExplorerViewProps {
 }
 
 export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const parseResult = useMemo(() => parseJson(value), [value]);
+
   const tree: JsonNode | null = useMemo(() => {
-    if (value.trim() === '') return null;
-    try {
-      const parsed = JSON.parse(value) as JsonValue;
-      return buildJsonTree(parsed);
-    } catch {
-      // invalid JSON: error UI ships in #013; for now we show the placeholder.
-      return null;
+    if (!parseResult.ok || parseResult.value === undefined) return null;
+    return buildJsonTree(parseResult.value as JsonValue);
+  }, [parseResult]);
+
+  const filteredTree: JsonNode | null = useMemo(() => {
+    if (tree === null) return null;
+    if (searchQuery.trim() === '') return tree;
+    return filterJsonTree(tree, searchQuery);
+  }, [tree, searchQuery]);
+
+  /** Lint diagnostic to show in the CodeMirror gutter when JSON is invalid. */
+  const diagnostics: EditorDiagnostic[] = useMemo(() => {
+    if (parseResult.ok || value.trim() === '') return [];
+    // Compute the `from` offset for the reported line/col
+    const lines = value.split('\n');
+    const line = Math.max(1, parseResult.line);
+    const col = Math.max(1, parseResult.col);
+    let from = 0;
+    for (let i = 0; i < line - 1 && i < lines.length; i++) {
+      from += lines[i].length + 1; // +1 for the newline
     }
-  }, [value]);
+    from += col - 1;
+    from = Math.min(from, Math.max(0, value.length - 1));
+    return [
+      {
+        from,
+        to: from + 1,
+        severity: 'error',
+        message: parseResult.message,
+      },
+    ];
+  }, [parseResult, value]);
 
   const handleFormat = useCallback(() => {
     onChange(formatJson(value));
@@ -40,6 +75,10 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
   }, [value, onChange]);
 
   const { isDragOver, dragHandlers } = useJsonDrop({ onChange });
+
+  const byteLength = value.length; // ASCII-safe proxy; good enough for thresholds
+  const isTooLarge = byteLength >= SIZE_LIMIT;
+  const isLarge = !isTooLarge && byteLength >= SIZE_WARN;
 
   return (
     <SplitPane
@@ -58,7 +97,12 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
               .join(' ')}
             {...dragHandlers}
           >
-            <CodeMirrorEditor value={value} onChange={onChange} language="json" />
+            <CodeMirrorEditor
+              value={value}
+              onChange={onChange}
+              language="json"
+              diagnostics={diagnostics}
+            />
             {value === '' && (
               <div
                 aria-hidden="true"
@@ -83,8 +127,63 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
       right={
         <div className="flex h-full w-full flex-col bg-surface-container-lowest">
           <RightPaneTabs activeId="tree" />
+
+          {/* Search input */}
+          <div className="border-b border-outline-variant/20 px-3 py-2">
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search keys and values…"
+              className="w-full rounded border border-outline-variant/40 bg-surface-container px-2 py-1 text-xs text-on-surface placeholder:text-outline focus:border-primary focus:outline-none"
+              aria-label="Search JSON tree"
+            />
+          </div>
+
+          {/* Size banners */}
+          {isTooLarge && (
+            <div
+              role="alert"
+              className="mx-3 mt-2 rounded border border-error/40 bg-error/10 px-3 py-2 text-xs text-error"
+            >
+              Document is too large (~{Math.round(byteLength / 1_000_000)} MB). Tree rendering is
+              disabled to avoid freezing the browser. Use a dedicated tool for large files.
+            </div>
+          )}
+          {isLarge && (
+            <div
+              role="status"
+              className="mx-3 mt-2 rounded border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning"
+            >
+              Large document — tree may be slow (~{Math.round(byteLength / 1_000_000)} MB).
+            </div>
+          )}
+
+          {/* Invalid JSON error card */}
+          {!parseResult.ok && value.trim() !== '' && (
+            <div
+              role="alert"
+              className="mx-3 mt-2 rounded border border-error/40 bg-error/10 px-3 py-2 text-xs text-error"
+            >
+              <p className="font-semibold">Invalid JSON</p>
+              <p className="mt-0.5 font-mono">{parseResult.message}</p>
+              <p className="mt-0.5 text-outline">
+                Line {parseResult.line}, Col {parseResult.col}
+              </p>
+            </div>
+          )}
+
           <div className="flex-1 min-h-0 overflow-auto">
-            <JsonTreeView root={tree} placeholder={PLACEHOLDER} />
+            {!isTooLarge && (
+              <JsonTreeView
+                root={filteredTree}
+                placeholder={
+                  parseResult.ok && tree !== null && filteredTree === null
+                    ? 'No matches found'
+                    : PLACEHOLDER
+                }
+              />
+            )}
           </div>
         </div>
       }

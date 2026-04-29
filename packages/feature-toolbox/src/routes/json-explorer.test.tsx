@@ -40,13 +40,12 @@ describe('JsonExplorerView', () => {
     expect(right.textContent).toContain('"Ada"');
   });
 
-  it('renders the placeholder (no error) when JSON is invalid', () => {
-    const { container } = render(<JsonExplorerView value="not-valid-json" onChange={() => {}} />);
-    const right = getRightPane(container);
-    // Per #010, invalid JSON shows the placeholder. The real error card lands in #013.
-    expect(right.textContent).toMatch(/Paste JSON to begin/i);
-    // No error styling
-    expect(screen.queryByRole('alert')).toBeNull();
+  it('renders an error card when JSON is invalid', () => {
+    render(<JsonExplorerView value="not-valid-json" onChange={() => {}} />);
+    // #013: invalid JSON shows an error card with role="alert"
+    const alert = screen.getByRole('alert');
+    expect(alert).toBeInTheDocument();
+    expect(alert.textContent).toMatch(/invalid json/i);
   });
 
   it('updates the tree when controlled value changes', () => {

@@ -15,7 +15,18 @@ import {
   bracketMatching,
   indentOnInput,
 } from '@codemirror/language';
+import { linter, lintGutter, type Diagnostic } from '@codemirror/lint';
 import { getLanguageExtension } from '../lib/codemirror-languages';
+
+/** A single lint diagnostic to display in the editor gutter. */
+export interface EditorDiagnostic {
+  /** Absolute character offset for the start of the offending region. */
+  from: number;
+  /** Absolute character offset for the end. If omitted, `from + 1` is used. */
+  to?: number;
+  severity: 'error' | 'warning' | 'info';
+  message: string;
+}
 
 const appTheme = EditorView.theme({
   '&': {
@@ -58,6 +69,11 @@ export interface CodeMirrorEditorProps {
   language?: string;
   readOnly?: boolean;
   lineNumbers?: boolean;
+  /**
+   * Optional list of diagnostics to display in the lint gutter.
+   * Changing this prop causes a live re-lint without rebuilding the editor.
+   */
+  diagnostics?: EditorDiagnostic[];
 }
 
 export function CodeMirrorEditor({
@@ -66,13 +82,21 @@ export function CodeMirrorEditor({
   language = 'plaintext',
   readOnly = false,
   lineNumbers: showLineNumbers = true,
+  diagnostics,
 }: CodeMirrorEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const onChangeRef = useRef(onChange);
+  // Keep a mutable ref so the linter closure always reads the latest diagnostics
+  // without requiring the editor to be rebuilt.
+  const diagnosticsRef = useRef<EditorDiagnostic[] | undefined>(diagnostics);
 
   useEffect(() => {
     onChangeRef.current = onChange;
+  });
+
+  useEffect(() => {
+    diagnosticsRef.current = diagnostics;
   });
 
   useEffect(() => {
@@ -83,6 +107,21 @@ export function CodeMirrorEditor({
         onChangeRef.current?.(update.state.doc.toString());
       }
     });
+
+    // Linter that reads from the diagnosticsRef so it always sees latest values.
+    const linterExtension = linter(
+      (): Diagnostic[] => {
+        const diags = diagnosticsRef.current;
+        if (!diags || diags.length === 0) return [];
+        return diags.map(d => ({
+          from: d.from,
+          to: d.to ?? d.from + 1,
+          severity: d.severity,
+          message: d.message,
+        }));
+      },
+      { delay: 0 }
+    );
 
     const extensions = [
       updateListener,
@@ -98,6 +137,8 @@ export function CodeMirrorEditor({
       appTheme,
       ...(showLineNumbers ? [lineNumbers()] : []),
       getLanguageExtension(language),
+      lintGutter(),
+      linterExtension,
     ].flat();
 
     const view = new EditorView({
@@ -110,7 +151,7 @@ export function CodeMirrorEditor({
       view.destroy();
       viewRef.current = null;
     };
-    // Intentionally excluding `value` and `onChange` — they are synced separately
+    // Intentionally excluding `value`, `onChange`, `diagnostics` — they are synced separately
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [language, readOnly, showLineNumbers]);
 
@@ -121,6 +162,22 @@ export function CodeMirrorEditor({
     if (current === value) return;
     view.dispatch({ changes: { from: 0, to: current.length, insert: value } });
   }, [value]);
+
+  // When diagnostics change, force the linter to re-run
+  useEffect(() => {
+    const view = viewRef.current;
+    if (!view) return;
+    // Dispatch an empty transaction to trigger the update listener → linter re-run
+    // The standard way is to use forceLinting from @codemirror/lint.
+    import('@codemirror/lint')
+      .then(({ forceLinting }) => {
+        if (viewRef.current) forceLinting(viewRef.current);
+      })
+      .catch(() => {
+        /* ignore */
+      });
+     
+  }, [diagnostics]);
 
   return <div ref={containerRef} className="h-full" />;
 }
