@@ -2,14 +2,27 @@ import { useRef, useState, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { cn } from '../lib/cn';
 
+export type TooltipSide = 'top' | 'right' | 'bottom' | 'left';
+
 export interface TooltipProps {
   content: string;
   children: React.ReactNode;
   placement?: 'start' | 'center' | 'end';
+  /** Side of the trigger to position the tooltip on. Defaults to "top". */
+  side?: TooltipSide;
+  /** When true, the tooltip is suppressed and never opens. */
+  disabled?: boolean;
   className?: string;
 }
 
-export function Tooltip({ content, children, placement = 'center', className }: TooltipProps) {
+export function Tooltip({
+  content,
+  children,
+  placement = 'center',
+  side = 'top',
+  disabled = false,
+  className,
+}: TooltipProps) {
   const triggerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -23,15 +36,30 @@ export function Tooltip({ content, children, placement = 'center', className }: 
     const margin = 4;
 
     let left: number;
-    if (placement === 'start') left = trigger.left;
-    else if (placement === 'end') left = trigger.right - tip.width;
-    else left = trigger.left + trigger.width / 2 - tip.width / 2;
+    let top: number;
 
-    left = Math.max(margin, Math.min(left, window.innerWidth - tip.width - margin));
-    const top = trigger.top - tip.height - gap;
+    if (side === 'right' || side === 'left') {
+      // For horizontal sides, `placement` orients along the vertical axis.
+      if (placement === 'start') top = trigger.top;
+      else if (placement === 'end') top = trigger.bottom - tip.height;
+      else top = trigger.top + trigger.height / 2 - tip.height / 2;
+
+      top = Math.max(margin, Math.min(top, window.innerHeight - tip.height - margin));
+      left = side === 'right' ? trigger.right + gap : trigger.left - tip.width - gap;
+    } else {
+      // top / bottom — placement orients along the horizontal axis.
+      if (placement === 'start') left = trigger.left;
+      else if (placement === 'end') left = trigger.right - tip.width;
+      else left = trigger.left + trigger.width / 2 - tip.width / 2;
+
+      left = Math.max(margin, Math.min(left, window.innerWidth - tip.width - margin));
+      top = side === 'bottom' ? trigger.bottom + gap : trigger.top - tip.height - gap;
+    }
 
     setPos({ top, left });
-  }, [open, placement, content]);
+  }, [open, placement, side, content]);
+
+  const isOpen = open && !disabled;
 
   return (
     <>
@@ -45,7 +73,7 @@ export function Tooltip({ content, children, placement = 'center', className }: 
       >
         {children}
       </div>
-      {open &&
+      {isOpen &&
         createPortal(
           <div
             ref={tooltipRef}

@@ -1,10 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { AssetDrawer, CollectionModal } from '@cellar/feature-vault';
 import { CommandPalette } from '@/components/command-palette/command-palette';
 import { Header } from '@/components/layout/header';
-import { Sidebar } from '@/components/layout/sidebar';
 import { SidebarToggle } from '@/components/layout/sidebar-toggle';
+import { AppSwitcherRail } from '@/components/layout/rail/app-switcher-rail';
+import { FeatureSidebar } from '@/components/layout/feature-sidebar/feature-sidebar';
 import { useCommandPalette } from '@/hooks/use-command-palette';
+import { useSidebarCollapse } from '@/shell/stores/sidebar-collapse';
+import { useSyncLastActiveFeature } from '@/shell/use-sync-last-active-feature';
 
 function useCommandPaletteShortcut() {
   const { setOpen } = useCommandPalette();
@@ -30,29 +33,37 @@ function useCommandPaletteShortcut() {
 
 export function AppShell({
   children,
-  user,
+  // The user prop is consumed by future iterations of the header/user-menu
+  // (see #006). It stays in the public signature so the call-site stays
+  // stable across the redesign.
+  user: _user,
 }: {
   children: React.ReactNode;
   user: { name: string; email: string; image?: string | null };
 }) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { collapsed, toggle: toggleSidebar } = useSidebarCollapse();
 
   // Install global ⌘K / Ctrl+K shortcut
   useCommandPaletteShortcut();
 
-  const toggleSidebar = useCallback(() => setSidebarCollapsed(c => !c), []);
+  // Keep the last-active-feature store in sync with the URL so the `/`
+  // redirect and refresh land back on the right feature.
+  useSyncLastActiveFeature();
+
+  const handleToggleSidebar = useCallback(() => toggleSidebar(), [toggleSidebar]);
 
   return (
     <div className="flex h-full">
-      <Sidebar collapsed={sidebarCollapsed} user={user} />
-      <main className="flex-1 flex flex-col min-w-0 bg-surface h-full">
+      <AppSwitcherRail />
+      <FeatureSidebar />
+      <main className="flex flex-1 flex-col min-w-0 bg-surface h-full">
         <Header
           onMobileMenuToggle={() => {}}
-          sidebarCollapsed={sidebarCollapsed}
+          sidebarCollapsed={collapsed}
           sidebarToggle={
             <SidebarToggle
-              onClick={toggleSidebar}
-              collapsed={sidebarCollapsed}
+              onClick={handleToggleSidebar}
+              collapsed={collapsed}
               className="hidden md:flex"
             />
           }
@@ -62,7 +73,7 @@ export function AppShell({
 
       <CollectionModal />
       <AssetDrawer />
-      <CommandPalette onToggleSidebar={toggleSidebar} />
+      <CommandPalette onToggleSidebar={handleToggleSidebar} />
     </div>
   );
 }

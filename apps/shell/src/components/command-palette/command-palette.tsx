@@ -20,12 +20,15 @@ import {
 import { useCommandPalette } from '@/hooks/use-command-palette';
 import { useCollectionModal, useAssetDrawer, getIconColorClass } from '@cellar/feature-vault';
 import { useCommandPaletteData } from '@/hooks/use-command-palette-data';
-import { allNavEntries } from '@/lib/nav-config';
+import { resolvedEntries } from '@/shell/feature-registry';
+import { buildNavEntries } from '@/lib/feature-nav';
 import {
   commandPaletteResults,
   type PaletteItem,
   type PaletteGroup,
 } from '@/lib/command-palette-results';
+
+const allNavEntries = buildNavEntries(resolvedEntries);
 import { commandPaletteActions } from '@/lib/command-palette-actions';
 import { cn } from '@cellar/ui';
 

@@ -1,10 +1,37 @@
 import { describe, it, expect } from 'vitest';
 import {
+  Code,
+  FileText,
+  Folder,
+  Image,
+  LayoutDashboard,
+  Link as LinkIcon,
+  Package,
+  StickyNote,
+  Terminal,
+} from 'lucide-react';
+import {
   commandPaletteResults,
+  type NavEntry,
   type PaletteAsset,
   type PaletteCollection,
 } from './command-palette-results';
-import { allNavEntries } from './nav-config';
+
+// Mirrors the legacy `allNavEntries` shape so the tests below keep covering
+// the same Go-To entries the running shell publishes. The real entries come
+// from each feature module's `nav` array; #008 will introduce Toolbox and
+// future issues will expand this list.
+const allNavEntries: NavEntry[] = [
+  { href: '/vault', icon: LayoutDashboard, label: 'Dashboard' },
+  { href: '/vault/assets', icon: Package, label: 'All Items' },
+  { href: '/vault/collections', icon: Folder, label: 'All Collections' },
+  { href: '/vault/assets?type=SNIPPET', icon: Code, label: 'Snippets' },
+  { href: '/vault/assets?type=PROMPT', icon: Terminal, label: 'Prompts' },
+  { href: '/vault/assets?type=LINK', icon: LinkIcon, label: 'Links' },
+  { href: '/vault/assets?type=NOTE', icon: StickyNote, label: 'Notes' },
+  { href: '/vault/assets?type=IMAGE', icon: Image, label: 'Images' },
+  { href: '/vault/assets?type=FILE', icon: FileText, label: 'Files' },
+];
 
 // Minimal helpers
 function makeAsset(overrides: Partial<PaletteAsset> = {}): PaletteAsset {

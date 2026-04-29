@@ -1,6 +1,17 @@
-import type { NavEntry } from './nav-config';
+import type { LucideIcon } from 'lucide-react';
 import type { AssetType } from '@cellar/shared';
 import { commandPaletteActions } from './command-palette-actions';
+
+/**
+ * Shape of a "Go To" nav entry surfaced by the command palette. Built by the
+ * shell from the registered features' `module.nav` arrays — the source of
+ * truth for nav items lives in each feature module.
+ */
+export interface NavEntry {
+  href: string;
+  icon: LucideIcon;
+  label: string;
+}
 
 // ---------------------------------------------------------------------------
 // Types exposed to consumers
