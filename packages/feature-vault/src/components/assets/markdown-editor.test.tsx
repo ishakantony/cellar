@@ -2,11 +2,15 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MarkdownEditor } from './markdown-editor';
 
-vi.mock('../common/codemirror-editor', () => ({
-  CodeMirrorEditor: ({ value, onChange }: { value: string; onChange?: (v: string) => void }) => (
-    <textarea value={value} onChange={e => onChange?.(e.target.value)} />
-  ),
-}));
+vi.mock('@cellar/ui', async () => {
+  const actual = await vi.importActual<typeof import('@cellar/ui')>('@cellar/ui');
+  return {
+    ...actual,
+    CodeMirrorEditor: ({ value, onChange }: { value: string; onChange?: (v: string) => void }) => (
+      <textarea value={value} onChange={e => onChange?.(e.target.value)} />
+    ),
+  };
+});
 
 describe('MarkdownEditor', () => {
   it('renders edit tab by default', () => {

@@ -2,20 +2,24 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { AssetContentRenderer } from './asset-content-renderer';
 
-vi.mock('../common/codemirror-editor', () => ({
-  CodeMirrorEditor: ({
-    value,
-    readOnly,
-  }: {
-    value: string;
-    readOnly?: boolean;
-    language?: string;
-  }) => (
-    <div data-testid="cm-editor" data-readonly={readOnly}>
-      {value}
-    </div>
-  ),
-}));
+vi.mock('@cellar/ui', async () => {
+  const actual = await vi.importActual<typeof import('@cellar/ui')>('@cellar/ui');
+  return {
+    ...actual,
+    CodeMirrorEditor: ({
+      value,
+      readOnly,
+    }: {
+      value: string;
+      readOnly?: boolean;
+      language?: string;
+    }) => (
+      <div data-testid="cm-editor" data-readonly={readOnly}>
+        {value}
+      </div>
+    ),
+  };
+});
 
 vi.mock('../common/markdown-preview', () => ({
   MarkdownPreview: ({ content }: { content: string }) => (

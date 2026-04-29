@@ -15,7 +15,7 @@ import {
   bracketMatching,
   indentOnInput,
 } from '@codemirror/language';
-import { getLanguageExtension } from '../../lib/codemirror-languages';
+import { getLanguageExtension } from '../lib/codemirror-languages';
 
 const appTheme = EditorView.theme({
   '&': {

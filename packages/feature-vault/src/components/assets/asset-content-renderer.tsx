@@ -3,8 +3,7 @@ import { Copy, ExternalLink, Download, X, ZoomIn } from 'lucide-react';
 import { toast } from 'sonner';
 import { AssetType } from '@cellar/shared';
 import { MarkdownPreview } from '../common/markdown-preview';
-import { CodeMirrorEditor } from '../common/codemirror-editor';
-import { IconButton, Modal, cn } from '@cellar/ui';
+import { IconButton, Modal, cn, CodeMirrorEditor } from '@cellar/ui';
 interface AssetContentRendererProps {
   asset: {
     type: AssetType;

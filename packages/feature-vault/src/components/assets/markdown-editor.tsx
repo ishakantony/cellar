@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { cn } from '@cellar/ui';
+import { cn, CodeMirrorEditor } from '@cellar/ui';
 import { MarkdownPreview } from '../common/markdown-preview';
-import { CodeMirrorEditor } from '../common/codemirror-editor';
 
 export interface MarkdownEditorProps {
   value: string;

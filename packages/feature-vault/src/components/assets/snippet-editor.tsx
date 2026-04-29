@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type { Plugin } from 'prettier';
-import { Select } from '@cellar/ui';
-import { CodeMirrorEditor } from '../common/codemirror-editor';
+import { Select, CodeMirrorEditor } from '@cellar/ui';
 import { getPrettierParser, getPrettierPluginLoaders } from '../../lib/codemirror-languages';
 
 const LANGUAGE_OPTIONS = [

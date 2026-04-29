@@ -7,6 +7,7 @@ export * from './components/avatar';
 export * from './components/badge';
 export * from './components/button';
 export * from './components/card';
+export * from './components/codemirror-editor';
 export * from './components/color-picker';
 export * from './components/confirm-dialog';
 export * from './components/divider';
