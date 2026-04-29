@@ -1,16 +1,32 @@
-import { Wrench } from 'lucide-react';
-import type { FeatureManifest } from '@cellar/shell-contract';
+import { Wrench, Braces, FileJson } from 'lucide-react';
+import type { FeatureManifest, PaletteCommand } from '@cellar/shell-contract';
 
-/**
- * Eager Toolbox manifest. Real tool routes (e.g. JSON Explorer) are added in
- * issues #004/#008.
- */
+export const toolboxStaticCommands: PaletteCommand[] = [
+  {
+    id: 'toolbox-open-json-explorer',
+    label: 'Open JSON Explorer',
+    icon: Braces,
+    group: 'Toolbox',
+    kind: 'navigate',
+    href: '/toolbox/json-explorer',
+  },
+  {
+    id: 'toolbox-format-json',
+    label: 'Format JSON',
+    icon: FileJson,
+    group: 'Toolbox',
+    kind: 'navigate',
+    href: '/toolbox/json-explorer',
+  },
+];
+
 export const manifest: FeatureManifest = {
   id: 'toolbox',
   label: 'Toolbox',
   icon: Wrench,
   basePath: '/toolbox',
   rail: true,
+  staticCommands: toolboxStaticCommands,
 };
 
 export default manifest;
