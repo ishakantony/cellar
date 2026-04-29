@@ -14,7 +14,7 @@
       "@cellar/shell-contract": ["../../packages/shell-contract/src/index.ts"],
       "@cellar/feature-vault": ["../../packages/feature-vault/src/index.tsx"],
       "@cellar/feature-vault/manifest": ["../../packages/feature-vault/src/manifest.ts"],
-      "@cellar/feature-toolbox": ["../../packages/feature-toolbox/src/index.ts"],
+      "@cellar/feature-toolbox": ["../../packages/feature-toolbox/src/index.tsx"],
       "@cellar/feature-toolbox/manifest": ["../../packages/feature-toolbox/src/manifest.ts"],
       "@cellar/feature-account": ["../../packages/feature-account/src/index.tsx"],
       "@cellar/feature-account/manifest": ["../../packages/feature-account/src/manifest.ts"],

@@ -25,7 +25,7 @@ export default defineConfig({
       ),
       '@cellar/feature-toolbox': path.resolve(
         dirname,
-        '../../packages/feature-toolbox/src/index.ts'
+        '../../packages/feature-toolbox/src/index.tsx'
       ),
       '@cellar/feature-account/manifest': path.resolve(
         dirname,
