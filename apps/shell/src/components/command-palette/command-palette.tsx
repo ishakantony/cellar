@@ -7,6 +7,7 @@ import { useCommandPalette } from '@/hooks/use-command-palette';
 import { registry } from '@/shell/feature-registry';
 import { aggregatePaletteResults } from '@/shell/palette-aggregator';
 import { shellStaticCommands } from '@/shell/shell-static-commands';
+import { filterCommandsByScope } from '@/shell/filter-commands-by-scope';
 import { cn } from '@cellar/ui';
 import type { FeatureModule, PaletteCommand, PaletteItem } from '@cellar/shell-contract';
 import type { NamedPaletteProvider } from '@/shell/palette-aggregator';
@@ -208,8 +209,9 @@ export function CommandPalette() {
     const actions: PaletteCommand[] = [];
 
     const trimmed = query.trim().toLowerCase();
+    const scopeFiltered = filterCommandsByScope(allStaticCommands, activeFeatureId);
 
-    for (const cmd of allStaticCommands) {
+    for (const cmd of scopeFiltered) {
       const matchesSearch =
         !trimmed ||
         cmd.label.toLowerCase().includes(trimmed) ||
@@ -225,7 +227,7 @@ export function CommandPalette() {
     }
 
     return { navCommands: nav, actionCommands: actions };
-  }, [allStaticCommands, query]);
+  }, [allStaticCommands, activeFeatureId, query]);
 
   // Sort item groups: active feature first, then alphabetically
   const sortedItemGroups = useMemo(() => {

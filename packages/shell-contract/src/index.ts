@@ -44,6 +44,8 @@ export interface PaletteCommand {
   action?: () => void | Promise<void>;
   /** Whether this command is always visible ('global') or only in its feature context ('feature'). Defaults to 'global'. */
   scope?: 'global' | 'feature';
+  /** The feature that owns this command. Required when scope is 'feature'. Must match the FeatureManifest.id. */
+  featureId?: string;
 }
 
 /**

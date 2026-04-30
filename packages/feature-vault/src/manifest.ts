@@ -47,13 +47,15 @@ export const vaultStaticCommands: PaletteCommand[] = [
     href: '/vault/collections',
   },
 
-  // --- Quick Actions ---
+  // --- Quick Actions (feature-scoped: only visible when Vault is the active feature) ---
   {
     id: 'vault-new-snippet',
     label: 'New Snippet',
     icon: Code,
     group: 'Quick Actions',
     kind: 'action',
+    scope: 'feature',
+    featureId: 'vault',
     action: () => useAssetDrawer.getState().openCreate({ type: 'SNIPPET' }),
   },
   {
@@ -62,6 +64,8 @@ export const vaultStaticCommands: PaletteCommand[] = [
     icon: Terminal,
     group: 'Quick Actions',
     kind: 'action',
+    scope: 'feature',
+    featureId: 'vault',
     action: () => useAssetDrawer.getState().openCreate({ type: 'PROMPT' }),
   },
   {
@@ -70,6 +74,8 @@ export const vaultStaticCommands: PaletteCommand[] = [
     icon: LinkIcon,
     group: 'Quick Actions',
     kind: 'action',
+    scope: 'feature',
+    featureId: 'vault',
     action: () => useAssetDrawer.getState().openCreate({ type: 'LINK' }),
   },
   {
@@ -78,6 +84,8 @@ export const vaultStaticCommands: PaletteCommand[] = [
     icon: StickyNote,
     group: 'Quick Actions',
     kind: 'action',
+    scope: 'feature',
+    featureId: 'vault',
     action: () => useAssetDrawer.getState().openCreate({ type: 'NOTE' }),
   },
   {
@@ -86,6 +94,8 @@ export const vaultStaticCommands: PaletteCommand[] = [
     icon: ImageIcon,
     group: 'Quick Actions',
     kind: 'action',
+    scope: 'feature',
+    featureId: 'vault',
     action: () => useAssetDrawer.getState().openCreate({ type: 'IMAGE' }),
   },
   {
@@ -94,6 +104,8 @@ export const vaultStaticCommands: PaletteCommand[] = [
     icon: FileText,
     group: 'Quick Actions',
     kind: 'action',
+    scope: 'feature',
+    featureId: 'vault',
     action: () => useAssetDrawer.getState().openCreate({ type: 'FILE' }),
   },
   {
@@ -102,6 +114,8 @@ export const vaultStaticCommands: PaletteCommand[] = [
     icon: FolderPlus,
     group: 'Quick Actions',
     kind: 'action',
+    scope: 'feature',
+    featureId: 'vault',
     action: () => useCollectionModal.getState().openCreate(),
   },
 ];
