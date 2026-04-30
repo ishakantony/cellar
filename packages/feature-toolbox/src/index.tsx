@@ -1,17 +1,7 @@
 import { Navigate } from 'react-router';
-import { Braces } from 'lucide-react';
+import { Braces, Binary } from 'lucide-react';
 import type { FeatureModule } from '@cellar/shell-contract';
 
-/**
- * Toolbox feature module. Routes are mounted under `/toolbox` by the shell's
- * route composer.
- *
- * The page component itself is loaded via React Router's `lazy:` so the
- * Toolbox page bundle is split out of the main shell chunk and only fetched
- * on first navigation into `/toolbox/json-explorer`. The real JSON Explorer
- * implementation lands in issue #010; until then the lazy chunk only carries
- * the placeholder page.
- */
 const featureModule: FeatureModule = {
   routes: [
     { index: true, element: <Navigate to="json-explorer" replace /> },
@@ -20,6 +10,13 @@ const featureModule: FeatureModule = {
       lazy: async () => {
         const m = await import('./routes/json-explorer');
         return { Component: m.JsonExplorerPage };
+      },
+    },
+    {
+      path: 'base64',
+      lazy: async () => {
+        const m = await import('./routes/base64');
+        return { Component: m.Base64Page };
       },
     },
   ],
@@ -31,6 +28,12 @@ const featureModule: FeatureModule = {
           label: 'JSON Explorer',
           href: '/toolbox/json-explorer',
           icon: Braces,
+        },
+        {
+          id: 'base64',
+          label: 'Base64',
+          href: '/toolbox/base64',
+          icon: Binary,
         },
       ],
     },

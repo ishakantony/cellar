@@ -28,14 +28,36 @@ describe('feature-toolbox manifest', () => {
     expect(typeof jsonExplorer?.lazy).toBe('function');
   });
 
+  it('declares a base64 route that loads its component lazily', () => {
+    const base64 = featureModule.routes.find(r => 'path' in r && r.path === 'base64');
+    expect(base64).toBeDefined();
+    expect(typeof base64?.lazy).toBe('function');
+  });
+
   it('exposes the JSON Explorer nav item', () => {
     expect(featureModule.nav).toHaveLength(1);
-    expect(featureModule.nav[0]?.items).toEqual([
-      expect.objectContaining({
-        id: 'json-explorer',
-        label: 'JSON Explorer',
-        href: '/toolbox/json-explorer',
-      }),
-    ]);
+    const items = featureModule.nav[0]?.items;
+    expect(items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: 'json-explorer',
+          label: 'JSON Explorer',
+          href: '/toolbox/json-explorer',
+        }),
+      ])
+    );
+  });
+
+  it('exposes the Base64 nav item', () => {
+    const items = featureModule.nav[0]?.items;
+    expect(items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: 'base64',
+          label: 'Base64',
+          href: '/toolbox/base64',
+        }),
+      ])
+    );
   });
 });
