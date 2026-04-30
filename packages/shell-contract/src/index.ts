@@ -62,13 +62,26 @@ export interface PaletteItem {
 }
 
 /**
+ * A single result group reported by a feature's palette connector.
+ * Connectors can report multiple independent groups (e.g. Assets + Collections)
+ * so each group can show its own loading state.
+ */
+export interface PaletteResultGroup {
+  id: string;
+  label: string;
+  items: PaletteItem[];
+  isPending: boolean;
+  isError: boolean;
+}
+
+/**
  * Props passed to a feature's palette connector component.
  * The connector renders null and reports results via onResults.
  */
 export interface PaletteConnectorProps {
   /** Debounced, trimmed query string. Empty string means "show recents". */
   query: string;
-  onResults: (result: { items: PaletteItem[]; isPending: boolean; isError: boolean }) => void;
+  onResults: (groups: PaletteResultGroup[]) => void;
 }
 
 /**

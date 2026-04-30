@@ -9,7 +9,12 @@ import { resolvedEntries } from '@/shell/feature-registry';
 import { shellStaticCommands } from '@/shell/shell-static-commands';
 import { filterCommandsByScope } from '@/shell/filter-commands-by-scope';
 import { cn } from '@cellar/ui';
-import type { PaletteCommand, PaletteItem, PaletteConnectorProps } from '@cellar/shell-contract';
+import type {
+  PaletteCommand,
+  PaletteItem,
+  PaletteConnectorProps,
+  PaletteResultGroup,
+} from '@cellar/shell-contract';
 import type { ComponentType } from 'react';
 
 // ---------------------------------------------------------------------------
@@ -23,7 +28,7 @@ interface ItemGroup {
   status: 'ok' | 'loading' | 'error';
 }
 
-type ConnectorResult = { items: PaletteItem[]; isPending: boolean; isError: boolean };
+type ConnectorResult = PaletteResultGroup[];
 
 interface NamedConnector {
   id: string;
@@ -64,8 +69,8 @@ export function CommandPalette() {
   // Connector result state — updated by each feature's PaletteConnector
   const [connectorResults, setConnectorResults] = useState<Map<string, ConnectorResult>>(new Map());
 
-  const updateResults = useCallback((id: string, result: ConnectorResult) => {
-    setConnectorResults(prev => new Map(prev).set(id, result));
+  const updateResults = useCallback((id: string, groups: ConnectorResult) => {
+    setConnectorResults(prev => new Map(prev).set(id, groups));
   }, []);
 
   // Clear stale results when the palette closes so it starts clean on reopen
@@ -133,30 +138,29 @@ export function CommandPalette() {
     [handleClose, navigate]
   );
 
-  // Build item groups from connector results
+  // Build item groups from connector results — each connector can report multiple groups
   const itemGroups = useMemo((): ItemGroup[] => {
-    return connectors
-      .map(({ id }) => {
-        const r = connectorResults.get(id);
-        const label = registry.list().find(e => e.manifest.id === id)?.manifest.label ?? id;
-        if (!r) return { id, label, items: [], status: 'loading' as const };
-        return {
-          id,
-          label,
-          items: r.items,
-          status: r.isPending
+    return connectors.flatMap(({ id }) => {
+      const groups = connectorResults.get(id);
+      if (!groups) return [];
+      return groups
+        .filter(g => g.items.length > 0 || g.isPending || g.isError)
+        .map(g => ({
+          id: g.id,
+          label: g.label,
+          items: g.items,
+          status: g.isPending
             ? ('loading' as const)
-            : r.isError
+            : g.isError
               ? ('error' as const)
               : ('ok' as const),
-        };
-      })
-      .filter(g => g.items.length > 0 || g.status === 'error');
+        }));
+    });
   }, [connectors, connectorResults]);
 
-  // Recents are the connector items when query is empty
+  // Recents are all items from all connector groups when query is empty
   const recentItems = useMemo(
-    () => connectors.flatMap(({ id }) => connectorResults.get(id)?.items ?? []),
+    () => connectors.flatMap(({ id }) => (connectorResults.get(id) ?? []).flatMap(g => g.items)),
     [connectors, connectorResults]
   );
 
@@ -187,24 +191,21 @@ export function CommandPalette() {
   }, [allStaticCommands, activeFeatureId, query]);
 
   // Sort item groups: active feature first, then alphabetically
-  const sortedItemGroups = useMemo(() => {
-    return [...itemGroups].sort((a, b) => {
-      if (a.id === activeFeatureId) return -1;
-      if (b.id === activeFeatureId) return 1;
-      return a.label.localeCompare(b.label);
-    });
-  }, [itemGroups, activeFeatureId]);
+  const anyGroupHasItems = connectors.some(({ id }) =>
+    (connectorResults.get(id) ?? []).some(g => g.items.length > 0)
+  );
 
   const isSearching =
     debouncedQuery.length > 0 &&
+    !anyGroupHasItems &&
     connectors.some(({ id }) => {
-      const r = connectorResults.get(id);
-      return !r || r.isPending;
+      const groups = connectorResults.get(id);
+      return !groups || groups.some(g => g.isPending);
     });
 
   const hasNoResults =
     query.trim().length > 0 &&
-    sortedItemGroups.every(g => g.items.length === 0 && g.status === 'ok') &&
+    itemGroups.every(g => g.items.length === 0 && g.status === 'ok') &&
     navCommands.length === 0 &&
     actionCommands.length === 0;
 
@@ -284,15 +285,16 @@ export function CommandPalette() {
                 ) : (
                   <>
                     {/* Dynamic provider results (non-empty query) */}
-                    {sortedItemGroups
-                      .filter(g => g.items.length > 0 || g.status === 'error')
-                      .map(group => (
-                        <ItemGroupSection
-                          key={group.id}
-                          group={group}
-                          onSelect={handleSelectItem}
-                        />
-                      ))}
+                    {query.trim() &&
+                      itemGroups
+                        .filter(g => g.items.length > 0 || g.status === 'error')
+                        .map(group => (
+                          <ItemGroupSection
+                            key={group.id}
+                            group={group}
+                            onSelect={handleSelectItem}
+                          />
+                        ))}
 
                     {/* Recents (empty query) */}
                     {showRecents && (
@@ -374,6 +376,17 @@ function ItemGroupSection({
         <div className="flex items-center gap-2 px-2 py-2 text-sm text-white/30">
           <AlertCircle className="h-4 w-4 shrink-0" />
           Failed to load results.
+        </div>
+      </Command.Group>
+    );
+  }
+
+  if (group.items.length === 0 && group.status === 'loading') {
+    return (
+      <Command.Group heading={group.label} className={GROUP_HEADING_CLASS}>
+        <div className="flex items-center gap-2 px-2 py-2 text-sm text-white/30">
+          <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+          Searching…
         </div>
       </Command.Group>
     );
