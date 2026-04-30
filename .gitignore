@@ -49,3 +49,6 @@ storybook-static
 /oidc-dummy-app/node_modules
 /oidc-dummy-app/.env*
 !/oidc-dummy-app/.env.example
+
+# Dev Workflow
+issues/
