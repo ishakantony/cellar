@@ -2,15 +2,15 @@
 
 Personal developer vault for snippets, prompts, notes, links, images, and files.
 
-**Stack:** React 19 + Vite + React Router + TanStack Query + Zustand · Hono + Drizzle ORM · Better Auth (with OIDC provider plugin) · PostgreSQL 17 · Tailwind v4 · Storybook · Vitest · Playwright · pnpm workspaces.
+**Stack:** React 19 + Vite + React Router + TanStack Query + Zustand · Hono + Drizzle ORM · Better Auth (with OIDC provider plugin) · PostgreSQL 17 · Tailwind v4 · Storybook · Vitest · Playwright · Bun workspaces.
 
 ## Getting Started
 
 ```bash
 docker compose up -d postgres
-pnpm install
-cp .env.example apps/api/.env  # fill in BETTER_AUTH_SECRET (>= 32 chars)
-pnpm dev
+bun install
+cp .env.example .env  # fill in BETTER_AUTH_SECRET (>= 32 chars)
+bun dev
 ```
 
 - SPA: http://localhost:5200 (Vite dev server, proxies `/api` to the backend)
@@ -32,18 +32,18 @@ e2e/                   # Playwright tests
 
 ## Scripts
 
-| Command                | Description                                      |
-| ---------------------- | ------------------------------------------------ |
-| `pnpm dev`             | Run web + api in parallel                        |
-| `pnpm build`           | Build SPA, typecheck shared, typecheck api       |
-| `pnpm test`            | Vitest across all workspaces                     |
-| `pnpm test-storybook`  | Run stories as tests via @storybook/addon-vitest |
-| `pnpm storybook`       | Start Storybook on :6006                         |
-| `pnpm e2e`             | Run Playwright e2e tests                         |
-| `pnpm db:generate`     | Generate a new Drizzle migration                 |
-| `pnpm db:migrate`      | Apply pending migrations                         |
-| `pnpm format` / `lint` | Prettier / ESLint                                |
-| `pnpm check:all`       | Format check + lint + tests + e2e + build        |
+| Command                   | Description                                      |
+| ------------------------- | ------------------------------------------------ |
+| `bun dev`                 | Run shell + api in parallel                      |
+| `bun run build`           | Build all packages in dependency order           |
+| `bun test`                | Vitest across all workspaces                     |
+| `bun run test-storybook`  | Run stories as tests via @storybook/addon-vitest |
+| `bun run storybook`       | Start Storybook on :6006                         |
+| `bun run e2e`             | Run Playwright e2e tests                         |
+| `bun run db:generate`     | Generate a new Drizzle migration                 |
+| `bun run db:migrate`      | Apply pending migrations                         |
+| `bun run format` / `lint` | Prettier / ESLint                                |
+| `bun run check:all`       | Format check + lint + tests + e2e + build        |
 
 ## Deployment
 

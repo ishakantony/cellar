@@ -80,7 +80,7 @@ export default defineConfig({
 
   /* Run local dev server before starting the tests */
   webServer: {
-    command: 'pnpm --filter api dev',
+    command: 'bun run --filter api dev',
     url: 'http://localhost:5201/api/health',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,

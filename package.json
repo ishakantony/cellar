@@ -7,8 +7,8 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "bun run --filter shell dev & bun run --filter api dev",
-    "build": "bun run --filter @cellar/shared build && bun run --filter @cellar/ui build && bun run --filter @cellar/shell-contract build && bun run --filter @cellar/feature-vault build && bun run --filter @cellar/feature-toolbox build && bun run --filter @cellar/feature-account build && bun run --filter shell build && bun run --filter api build",
+    "dev": "bun run --parallel --filter shell --filter api dev",
+    "build": "bun run --workspaces build",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -27,7 +27,7 @@
     "db:migrate": "bun run --filter api db:migrate",
     "db:reset": "bun run --filter api db:reset",
     "db:studio": "bun run --filter api db:studio",
-    "auth:sync-clients": "bun run --filter api exec tsx src/auth/oidc/sync-cli.ts",
+    "auth:sync-clients": "bun run --filter api auth:sync-clients",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky",

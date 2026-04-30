@@ -15,7 +15,8 @@
     "db:migrate": "bun src/boot/migrate.ts",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:reset": "bun scripts/reset-db.ts"
+    "db:reset": "bun scripts/reset-db.ts",
+    "auth:sync-clients": "bun src/auth/oidc/sync-cli.ts"
   },
   "dependencies": {
     "@better-auth/oauth-provider": "^1.6.8",
