@@ -62,12 +62,13 @@ export interface PaletteItem {
 }
 
 /**
- * Each feature can contribute a palette provider that the shell aggregates
- * across all loaded features.
+ * Props passed to a feature's palette connector component.
+ * The connector renders null and reports results via onResults.
  */
-export interface PaletteProvider {
-  search(query: string, signal: AbortSignal): Promise<PaletteItem[]>;
-  getRecent?(): Promise<PaletteItem[]>;
+export interface PaletteConnectorProps {
+  /** Debounced, trimmed query string. Empty string means "show recents". */
+  query: string;
+  onResults: (result: { items: PaletteItem[]; isPending: boolean; isError: boolean }) => void;
 }
 
 /**
@@ -94,7 +95,7 @@ export interface FeatureManifest {
 export interface FeatureModule {
   routes: RouteObject[];
   nav: NavSection[];
-  paletteProvider?: PaletteProvider;
+  PaletteConnector?: ComponentType<PaletteConnectorProps>;
 }
 
 /** Registry entry binds an eager manifest to its lazy loader. */

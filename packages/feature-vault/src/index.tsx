@@ -15,7 +15,7 @@ import { AssetsListPage } from './routes/assets/index';
 import { AssetDetailPage } from './routes/assets/$id';
 import { CollectionsListPage } from './routes/collections/index';
 import { CollectionDetailPage } from './routes/collections/$id';
-import { vaultPaletteProvider } from './lib/palette-provider';
+import { VaultPaletteConnector } from './lib/palette-connector';
 
 const nav: NavSection[] = [
   {
@@ -58,7 +58,7 @@ const featureModule: FeatureModule = {
     { path: 'collections/:id', element: <CollectionDetailPage /> },
   ],
   nav,
-  paletteProvider: vaultPaletteProvider,
+  PaletteConnector: VaultPaletteConnector,
 };
 
 export default featureModule;

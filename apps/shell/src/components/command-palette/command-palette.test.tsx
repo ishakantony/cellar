@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CommandPalette } from './command-palette';
 
 // ---------------------------------------------------------------------------
@@ -20,7 +21,19 @@ vi.mock('@/shell/feature-registry', () => ({
   registry: {
     list: () => [],
   },
+  resolvedEntries: [],
 }));
+
+function makeWrapper() {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return function Wrapper({ children }: { children: React.ReactNode }) {
+    return (
+      <QueryClientProvider client={client}>
+        <MemoryRouter>{children}</MemoryRouter>
+      </QueryClientProvider>
+    );
+  };
+}
 
 // ---------------------------------------------------------------------------
 // Smoke tests
@@ -28,29 +41,17 @@ vi.mock('@/shell/feature-registry', () => ({
 
 describe('CommandPalette', () => {
   it('renders without crashing when open with no providers', () => {
-    render(
-      <MemoryRouter>
-        <CommandPalette />
-      </MemoryRouter>
-    );
+    render(<CommandPalette />, { wrapper: makeWrapper() });
     expect(screen.getByRole('dialog')).toBeDefined();
   });
 
   it('renders the search input', () => {
-    render(
-      <MemoryRouter>
-        <CommandPalette />
-      </MemoryRouter>
-    );
+    render(<CommandPalette />, { wrapper: makeWrapper() });
     expect(screen.getByPlaceholderText('Search or run a command…')).toBeDefined();
   });
 
   it('renders the keyboard hint footer', () => {
-    render(
-      <MemoryRouter>
-        <CommandPalette />
-      </MemoryRouter>
-    );
+    render(<CommandPalette />, { wrapper: makeWrapper() });
     expect(screen.getByText('select')).toBeDefined();
     expect(screen.getByText('navigate')).toBeDefined();
     expect(screen.getByText('close')).toBeDefined();
@@ -65,16 +66,8 @@ describe('CommandPalette', () => {
         setQuery: vi.fn(),
       }),
     }));
-    // Component renders nothing visible when closed — no dialog role
-    // (Radix Dialog with open=false renders nothing into the DOM)
-    const { container } = render(
-      <MemoryRouter>
-        <CommandPalette />
-      </MemoryRouter>
-    );
-    // With open=false the dialog content is not in the document
+    const { container } = render(<CommandPalette />, { wrapper: makeWrapper() });
     const dialog = container.querySelector('[role="dialog"]');
-    // Either null or the dialog is not open (implementation may vary)
     expect(dialog === null || !dialog.isConnected).toBe(true);
   });
 });

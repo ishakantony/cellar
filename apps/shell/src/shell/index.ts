@@ -8,12 +8,6 @@ export { createFeatureLoader, type FeatureLoader } from './feature-loader';
 export { createFeatureRegistry, type FeatureRegistry } from './registry';
 export { composeFeatureRoutes } from './route-composer';
 export { FeatureErrorBoundary, type FeatureErrorBoundaryProps } from './error-boundary';
-export {
-  aggregatePaletteResults,
-  type NamedPaletteProvider,
-  type PaletteGroupResult,
-  type PaletteGroupStatus,
-} from './palette-aggregator';
 export { shellStaticCommands, SHELL_TOGGLE_SIDEBAR_EVENT } from './shell-static-commands';
 export {
   useLastActiveFeature,
