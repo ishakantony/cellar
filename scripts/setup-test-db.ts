@@ -33,7 +33,7 @@ async function setupTestDatabase() {
     await client.end();
 
     console.log('Running Drizzle migrations...');
-    execSync('pnpm --filter api exec tsx src/boot/migrate.ts', {
+    execSync('bun run --filter api src/boot/migrate.ts', {
       env: { ...process.env, DATABASE_URL: databaseUrl },
       stdio: 'inherit',
     });

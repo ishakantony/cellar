@@ -31,7 +31,6 @@
       "dependencies": {
         "@better-auth/oauth-provider": "^1.6.8",
         "@cellar/shared": "workspace:*",
-        "@hono/node-server": "^1.13.7",
         "@hono/zod-validator": "^0.7.0",
         "@paralleldrive/cuid2": "^2.2.2",
         "better-auth": "^1.6.8",
@@ -45,7 +44,6 @@
         "@types/node": "^22.10.0",
         "@types/pg": "^8.20.0",
         "drizzle-kit": "^0.31.4",
-        "tsx": "^4.21.0",
         "typescript": "^5.7.2",
         "vitest": "^4.1.4",
       },
@@ -506,8 +504,6 @@
     "@eslint/object-schema": ["@eslint/object-schema@2.1.7", "", {}, "sha512-VtAOaymWVfZcmZbp6E2mympDIHvyjXs/12LqWYjVw6qjrfF+VK+fyG33kChz3nnK+SU5/NeHOqrTEHS8sXO3OA=="],
 
     "@eslint/plugin-kit": ["@eslint/plugin-kit@0.4.1", "", { "dependencies": { "@eslint/core": "^0.17.0", "levn": "^0.4.1" } }, "sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA=="],
-
-    "@hono/node-server": ["@hono/node-server@1.19.14", "", { "peerDependencies": { "hono": "^4" } }, "sha512-GwtvgtXxnWsucXvbQXkRgqksiH2Qed37H9xHZocE5sA3N8O8O8/8FA3uclQXxXVzc9XBZuEOMK7+r02FmSpHtw=="],
 
     "@hono/zod-validator": ["@hono/zod-validator@0.7.6", "", { "peerDependencies": { "hono": ">=3.9.0", "zod": "^3.25.0 || ^4.0.0" } }, "sha512-Io1B6d011Gj1KknV4rXYz4le5+5EubcWEU/speUjuw9XMMIaP3n78yXLhjd2A3PXaXaUwEAluOiAyLqhBEJgsw=="],
 

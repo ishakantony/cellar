@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import type { Hono } from 'hono';
-import { serveStatic } from '@hono/node-server/serve-static';
+import { serveStatic } from 'hono/bun';
 
 /**
  * In production, the Hono app serves the built SPA from `apps/shell/dist`.

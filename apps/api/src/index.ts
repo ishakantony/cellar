@@ -1,5 +1,4 @@
 import './load-env';
-import { serve } from '@hono/node-server';
 import { app } from './app';
 import { runMigrations } from './boot/migrate';
 import { seedIfEmpty } from './boot/seed';
@@ -36,16 +35,13 @@ async function bootstrap() {
   }
 
   const port = Number(process.env.PORT ?? 5201);
-  serve(
-    {
-      fetch: app.fetch,
-      port,
-      hostname: '0.0.0.0',
-    },
-    info => {
-      console.info(`[cellar] listening on http://${info.address}:${info.port}`);
-    }
-  );
+  const server = Bun.serve({
+    fetch: app.fetch,
+    port,
+    hostname: '0.0.0.0',
+  });
+
+  console.info(`[cellar] listening on http://${server.hostname}:${server.port}`);
 }
 
 bootstrap().catch(error => {
