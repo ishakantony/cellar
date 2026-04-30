@@ -126,17 +126,23 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
             <section
               role="region"
               aria-label="JSON editor"
-              className="relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-white/5 bg-surface-container-lowest"
+              className={[
+                'relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container shadow-inner transition-colors',
+                isDragOver ? 'border-primary/50 bg-surface-container-high' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              {...dragHandlers}
             >
               <EditorToolbar value={value} onFormat={handleFormat} onMinify={handleMinify} />
               <div
                 className={[
-                  'relative min-h-0 flex-1 transition-colors',
-                  isDragOver ? 'outline outline-2 outline-primary/60 bg-primary/5' : '',
+                  'relative min-h-0 flex-1 bg-surface-container-low/70 transition-colors',
+                  '[&_.cm-editor]:bg-transparent [&_.cm-gutters]:bg-surface-container-low/60 [&_.cm-gutters]:backdrop-blur [&_.cm-content]:text-on-surface [&_.cm-activeLine]:bg-primary/5 [&_.cm-activeLineGutter]:bg-primary/10',
+                  isDragOver ? 'bg-primary/5' : '',
                 ]
                   .filter(Boolean)
                   .join(' ')}
-                {...dragHandlers}
               >
                 <CodeMirrorEditor
                   value={value}
@@ -147,7 +153,7 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
                 {value === '' && (
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 flex items-start px-12 pt-4 text-xs text-outline font-mono"
+                    className="pointer-events-none absolute inset-0 flex items-start px-12 pt-4 font-mono text-xs text-outline/80"
                   >
                     {PLACEHOLDER}
                   </div>
@@ -155,10 +161,10 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
                 {isDragOver && (
                   <div
                     aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 flex items-center justify-center"
+                    className="pointer-events-none absolute inset-0 flex items-center justify-center bg-surface/30 backdrop-blur-[1px]"
                   >
-                    <p className="rounded-md bg-surface-container px-4 py-2 text-sm text-on-surface shadow">
-                      Drop .json file here
+                    <p className="rounded-xl border border-primary/30 bg-surface-container-high px-4 py-2 text-sm font-medium text-on-surface shadow-lg shadow-black/20">
+                      Drop JSON file here
                     </p>
                   </div>
                 )}

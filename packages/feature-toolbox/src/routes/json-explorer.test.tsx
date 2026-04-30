@@ -146,6 +146,20 @@ describe('JsonExplorerView interactions', () => {
     expect(container.querySelector('.cm-editor')).toBeTruthy();
   });
 
+  it('keeps editor toolbar actions and drop prompt in the editor pane', () => {
+    render(<JsonExplorerView value='{"name":"Ada"}' onChange={() => {}} />);
+
+    const editorPane = screen.getByRole('region', { name: /json editor/i });
+    const toolbar = within(editorPane).getByRole('toolbar', { name: /editor actions/i });
+    expect(within(toolbar).getByRole('button', { name: /format/i })).toBeInTheDocument();
+    expect(within(toolbar).getByRole('button', { name: /minify/i })).toBeInTheDocument();
+    expect(within(toolbar).getByRole('button', { name: /copy/i })).toBeInTheDocument();
+
+    fireEvent.dragEnter(editorPane);
+
+    expect(within(editorPane).getByText(/drop json file here/i)).toBeInTheDocument();
+  });
+
   it('expands long string truncation on click', () => {
     const long = 'y'.repeat(200);
     const json = JSON.stringify({ msg: long });
