@@ -30,6 +30,13 @@ describe('JsonTreeView', () => {
     expect(screen.getByText('# null')).toBeInTheDocument();
   });
 
+  it('keeps tree rows named with their key, type, and value for scanning', () => {
+    const tree = buildJsonTree({ name: 'Ada' });
+    render(<JsonTreeView root={tree} />);
+
+    expect(screen.getByRole('treeitem', { name: /name # str "Ada"/i })).toBeInTheDocument();
+  });
+
   it('renders count badges for arrays and objects', () => {
     const tree = buildJsonTree({ list: [1, 2, 3], nested: { a: 1, b: 2, c: 3, d: 4 } });
     render(<JsonTreeView root={tree} />);

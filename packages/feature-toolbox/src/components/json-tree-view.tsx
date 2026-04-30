@@ -32,6 +32,14 @@ function formatPrimitive(node: JsonNode): string {
   }
 }
 
+function getRowLabel(node: JsonNode, isRoot: boolean, countBadge: string | null): string {
+  const parts = [isRoot ? 'root' : String(node.key), KIND_BADGE[node.kind]];
+  if (countBadge !== null) parts.push(countBadge);
+  const primitive = formatPrimitive(node);
+  if (primitive !== '') parts.push(primitive);
+  return parts.join(' ');
+}
+
 function isExpandable(node: JsonNode): boolean {
   return (node.kind === 'object' || node.kind === 'array') && (node.count ?? 0) > 0;
 }
@@ -233,11 +241,12 @@ function JsonRow({
 
   const countBadge =
     node.kind === 'array' ? `[${node.count}]` : node.kind === 'object' ? `{${node.count}}` : null;
+  const rowLabel = getRowLabel(node, isRoot, countBadge);
 
   return (
-    <li role="treeitem" aria-expanded={expandable ? isOpen : undefined}>
+    <li role="treeitem" aria-label={rowLabel} aria-expanded={expandable ? isOpen : undefined}>
       <div
-        className="group flex items-start gap-2 px-3 py-0.5 hover:bg-surface-container/40"
+        className="group mx-1 flex items-start gap-2 rounded-lg px-3 py-0.5 transition-colors hover:bg-white/[0.04] focus-within:bg-white/[0.05]"
         style={{ paddingLeft: `${12 + indentPx}px` }}
         onContextMenu={event => onContextMenu(event, node)}
       >
@@ -247,7 +256,7 @@ function JsonRow({
             onClick={() => onToggle(node.id)}
             aria-label={`Toggle ${node.id}`}
             aria-expanded={isOpen}
-            className="mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center text-outline hover:text-on-surface cursor-pointer"
+            className="mt-0.5 inline-flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded text-outline transition-colors hover:bg-surface-container-high/70 hover:text-on-surface"
           >
             <span
               aria-hidden="true"
@@ -261,13 +270,13 @@ function JsonRow({
           <span className="mt-0.5 inline-block h-4 w-4 shrink-0" aria-hidden="true" />
         )}
 
-        <div className="flex flex-wrap items-center gap-2 min-w-0 flex-1">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
           {!isRoot && (
-            <span className="text-primary">
+            <span className="text-primary/90">
               {typeof node.key === 'number' ? node.key : node.key}
             </span>
           )}
-          <span className="text-[10px] font-bold uppercase tracking-widest text-outline bg-surface-container px-1.5 py-0.5 rounded">
+          <span className="rounded-full border border-outline-variant/25 bg-surface-container-high/70 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-outline shadow-sm shadow-black/10">
             {KIND_BADGE[node.kind]}
           </span>
           {countBadge !== null && (
@@ -276,12 +285,12 @@ function JsonRow({
           {valueEl}
         </div>
 
-        <div className="ml-auto flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+        <div className="ml-auto flex shrink-0 items-center gap-1 rounded-md bg-surface-container-low/60 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
           <button
             type="button"
             aria-label="Copy path"
             onClick={() => onCopyPath(node)}
-            className="inline-flex h-5 w-5 items-center justify-center rounded text-outline hover:bg-surface-container hover:text-on-surface cursor-pointer"
+            className="inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded-md text-outline transition-colors hover:bg-surface-container-high hover:text-on-surface focus-visible:bg-surface-container-high focus-visible:text-on-surface"
           >
             <Copy aria-hidden="true" className="h-3 w-3" />
           </button>
@@ -289,7 +298,7 @@ function JsonRow({
             type="button"
             aria-label="Copy value"
             onClick={() => onCopyValue(node)}
-            className="inline-flex h-5 w-5 items-center justify-center rounded text-outline hover:bg-surface-container hover:text-on-surface cursor-pointer"
+            className="inline-flex h-5 w-5 cursor-pointer items-center justify-center rounded-md text-outline transition-colors hover:bg-surface-container-high hover:text-on-surface focus-visible:bg-surface-container-high focus-visible:text-on-surface"
           >
             <Clipboard aria-hidden="true" className="h-3 w-3" />
           </button>
