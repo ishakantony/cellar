@@ -30,7 +30,7 @@ export function EditorToolbar({ value, onFormat, onMinify }: EditorToolbarProps)
     <div
       role="toolbar"
       aria-label="Editor actions"
-      className="flex min-h-[34px] items-center gap-1 border-b border-outline-variant/20 bg-surface-container-low/80 px-2 py-1"
+      className="flex h-11 shrink-0 items-center gap-1 border-b border-outline-variant/20 bg-surface-container-low/80 px-2 py-1"
     >
       <Button
         type="button"

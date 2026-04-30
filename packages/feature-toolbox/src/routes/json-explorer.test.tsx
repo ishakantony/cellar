@@ -20,15 +20,16 @@ vi.mock('@cellar/ui', async () => {
 });
 
 describe('JsonExplorerPage', () => {
-  it('renders the explorer as a framed workspace with editor and tree panes', () => {
+  it('renders the explorer as a full-page tool with header and split panes', () => {
     render(<JsonExplorerPage />);
-    expect(screen.getByRole('region', { name: /json explorer workspace/i })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: /^json explorer$/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /json explorer/i })).toBeInTheDocument();
+    expect(screen.getByText(/paste, format, and inspect json/i)).toBeInTheDocument();
     expect(screen.getByRole('region', { name: /json editor/i })).toBeInTheDocument();
-    expect(screen.getByRole('region', { name: /json tree/i })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: /json viewer/i })).toBeInTheDocument();
     // Split pane separator
     expect(screen.getByRole('separator')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /^tree$/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^viewer$/i })).not.toBeInTheDocument();
   });
 
   it('keeps pane-ratio persistence without persisting editor text', () => {
@@ -46,7 +47,7 @@ describe('JsonExplorerPage', () => {
     const { container } = render(<JsonExplorerPage />);
     const right = container.querySelector('[data-slot="right"]') as HTMLElement;
     expect(right).toBeTruthy();
-    expect(right.textContent).toMatch(/Paste JSON to begin/i);
+    expect(right.textContent).toMatch(/Parsed keys and values/i);
   });
 });
 
@@ -56,33 +57,17 @@ function getRightPane(container: HTMLElement): HTMLElement {
   return right;
 }
 
-function getDocumentStatus(): HTMLElement {
-  return screen.getByRole('status', { name: /document status/i });
-}
-
 describe('JsonExplorerView', () => {
-  it.each([
-    { value: '', status: /empty/i },
-    { value: '{"name":"Ada"}', status: /valid/i },
-    { value: 'not-valid-json', status: /invalid/i },
-  ])('shows $status in the workspace header', ({ value, status }) => {
-    render(<JsonExplorerView value={value} onChange={() => {}} />);
-
-    expect(within(getDocumentStatus()).getByText(status)).toBeInTheDocument();
-  });
-
-  it('shows empty editor and tree guidance as state cards', () => {
+  it('shows simple empty editor and viewer guidance', () => {
     render(<JsonExplorerView value="" onChange={() => {}} />);
 
     const editorPane = screen.getByRole('region', { name: /json editor/i });
-    const treePane = screen.getByRole('region', { name: /json tree/i });
+    const viewerPane = screen.getByRole('region', { name: /json viewer/i });
 
-    expect(within(editorPane).getByRole('note', { name: /empty editor/i })).toHaveTextContent(
-      /paste json to begin/i
-    );
-    expect(within(treePane).getByRole('note', { name: /empty tree/i })).toHaveTextContent(
-      /paste json to begin/i
-    );
+    expect(within(editorPane).getByText(/paste json to begin/i)).toBeInTheDocument();
+    expect(within(viewerPane).getByText(/parsed keys and values/i)).toBeInTheDocument();
+    expect(screen.queryByRole('note', { name: /empty editor/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('note', { name: /empty tree/i })).not.toBeInTheDocument();
   });
 
   it('renders the tree when value parses', () => {
@@ -103,13 +88,10 @@ describe('JsonExplorerView', () => {
     );
   });
 
-  it('shows warning-sized documents in the workspace header', () => {
+  it('shows warning-sized documents in the viewer', () => {
     const warningSizedJson = JSON.stringify({ payload: 'a'.repeat(5_000_000) });
     render(<JsonExplorerView value={warningSizedJson} onChange={() => {}} />);
 
-    const workspace = screen.getByRole('region', { name: /json explorer workspace/i });
-    const documentStatus = within(workspace).getByRole('status', { name: /document status/i });
-    expect(within(documentStatus).getByText(/large/i)).toBeInTheDocument();
     expect(screen.getByRole('status', { name: /large document/i })).toHaveTextContent(
       /tree may be slow/i
     );
@@ -137,13 +119,16 @@ describe('JsonExplorerView', () => {
     expect(right.textContent).toContain('name');
   });
 
-  it('labels the right pane as the JSON tree', () => {
+  it('labels the right pane as the JSON viewer', () => {
     render(<JsonExplorerView value="" onChange={() => {}} />);
-    expect(screen.getByRole('region', { name: /json tree/i })).toBeInTheDocument();
-    expect(screen.getByText('Tree')).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: /json viewer/i })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /search/i })).toHaveAttribute(
+      'placeholder',
+      'Filter nodes...'
+    );
   });
 
-  it('scopes shared tree search to the tree pane and filters rendered results', async () => {
+  it('scopes shared tree search to the viewer pane and filters rendered results', async () => {
     render(
       <JsonExplorerView
         value='{"name":"Ada","city":"Paris","nested":{"language":"TypeScript"}}'
@@ -151,24 +136,45 @@ describe('JsonExplorerView', () => {
       />
     );
 
-    const treePane = screen.getByRole('region', { name: /json tree/i });
-    expect(within(treePane).getByText('Tree')).toBeInTheDocument();
-    expect(within(treePane).queryByRole('tab')).not.toBeInTheDocument();
+    const viewerPane = screen.getByRole('region', { name: /json viewer/i });
+    expect(within(viewerPane).queryByRole('tab')).not.toBeInTheDocument();
 
-    const search = within(treePane).getByRole('textbox', { name: /search/i });
+    const search = within(viewerPane).getByRole('textbox', { name: /search/i });
     fireEvent.change(search, { target: { value: 'city' } });
 
     await waitFor(() => {
-      expect(within(treePane).getByText('city')).toBeInTheDocument();
-      expect(within(treePane).queryByText('name')).not.toBeInTheDocument();
+      expect(within(viewerPane).getByText('city')).toBeInTheDocument();
+      expect(within(viewerPane).queryByText('name')).not.toBeInTheDocument();
     });
 
-    fireEvent.click(within(treePane).getByRole('button', { name: /clear search/i }));
+    fireEvent.click(within(viewerPane).getByRole('button', { name: /clear search/i }));
 
     await waitFor(() => {
-      expect(within(treePane).getByText('name')).toBeInTheDocument();
-      expect(within(treePane).getByText('nested')).toBeInTheDocument();
+      expect(within(viewerPane).getByText('name')).toBeInTheDocument();
+      expect(within(viewerPane).getByText('nested')).toBeInTheDocument();
     });
+  });
+
+  it('expands and collapses all visible tree nodes from the viewer header', () => {
+    render(
+      <JsonExplorerView
+        value='{"settings":{"theme":"dark","nested":{"enabled":true}},"items":[1]}'
+        onChange={() => {}}
+      />
+    );
+
+    const viewerPane = screen.getByRole('region', { name: /json viewer/i });
+    expect(within(viewerPane).getByRole('button', { name: /collapse all/i })).toBeInTheDocument();
+    expect(within(viewerPane).getByRole('button', { name: /expand all/i })).toBeInTheDocument();
+    expect(within(viewerPane).getByText('enabled')).toBeInTheDocument();
+
+    fireEvent.click(within(viewerPane).getByRole('button', { name: /collapse all/i }));
+    expect(within(viewerPane).queryByText('settings')).not.toBeInTheDocument();
+    expect(within(viewerPane).queryByText('enabled')).not.toBeInTheDocument();
+
+    fireEvent.click(within(viewerPane).getByRole('button', { name: /expand all/i }));
+    expect(within(viewerPane).getByText('enabled')).toBeInTheDocument();
+    expect(within(viewerPane).getByText('true')).toBeInTheDocument();
   });
 });
 

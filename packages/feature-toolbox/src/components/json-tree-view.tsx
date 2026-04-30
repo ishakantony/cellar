@@ -1,5 +1,5 @@
-import { useCallback, useState, type ReactNode } from 'react';
-import { Copy, Clipboard } from 'lucide-react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { ChevronRight, Clipboard, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import type { JsonNode, JsonNodeKind } from '../lib/json-tree';
 import { buildJsonPath } from '../lib/json-path';
@@ -65,12 +65,26 @@ interface ContextMenuState {
 export interface JsonTreeViewProps {
   root: JsonNode | null;
   placeholder?: ReactNode;
+  expandAllSignal?: number;
+  collapseAllSignal?: number;
 }
 
-export function JsonTreeView({ root, placeholder = 'Paste JSON to begin...' }: JsonTreeViewProps) {
-  // The user's manual expand/collapse state. The root node is always rendered
-  // expanded by default; deeper nodes are collapsed unless the user opens them.
-  const [expanded, setExpanded] = useState<Set<string>>(() => new Set<string>());
+function collectExpandableIds(node: JsonNode | null): string[] {
+  if (node === null) return [];
+  const ids: string[] = [];
+  if (isExpandable(node)) ids.push(node.id);
+  for (const child of node.children ?? []) ids.push(...collectExpandableIds(child));
+  return ids;
+}
+
+export function JsonTreeView({
+  root,
+  placeholder = 'Paste JSON to begin...',
+  expandAllSignal = 0,
+  collapseAllSignal = 0,
+}: JsonTreeViewProps) {
+  // New JSON opens expanded so paste-and-inspect starts with the full structure visible.
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set(collectExpandableIds(root)));
   const [stringExpanded, setStringExpanded] = useState<Set<string>>(new Set());
   const [contextMenu, setContextMenu] = useState<ContextMenuState | null>(null);
 
@@ -83,6 +97,20 @@ export function JsonTreeView({ root, placeholder = 'Paste JSON to begin...' }: J
       : expanded;
 
   const isRootId = (id: string) => root !== null && id === root.id;
+
+  useEffect(() => {
+    setExpanded(new Set(collectExpandableIds(root)));
+  }, [root]);
+
+  useEffect(() => {
+    if (expandAllSignal === 0) return;
+    setExpanded(new Set(collectExpandableIds(root)));
+  }, [expandAllSignal, root]);
+
+  useEffect(() => {
+    if (collapseAllSignal === 0 || root === null) return;
+    setExpanded(new Set([`__collapsed:${root.id}`]));
+  }, [collapseAllSignal, root]);
 
   const toggleNode = useCallback(
     (id: string) => {
@@ -258,13 +286,11 @@ function JsonRow({
             aria-expanded={isOpen}
             className="mt-0.5 inline-flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded text-outline transition-colors hover:bg-surface-container-high/70 hover:text-on-surface"
           >
-            <span
+            <ChevronRight
               aria-hidden="true"
-              className="inline-block transition-transform"
+              className="h-3 w-3 transition-transform"
               style={{ transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}
-            >
-              {'>'}
-            </span>
+            />
           </button>
         ) : (
           <span className="mt-0.5 inline-block h-4 w-4 shrink-0" aria-hidden="true" />

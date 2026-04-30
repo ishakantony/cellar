@@ -53,13 +53,13 @@ describe('JsonTreeView', () => {
     expect(screen.getByText('{0}')).toBeInTheDocument();
   });
 
-  it('expands the root by default and collapses deeper levels', () => {
+  it('expands all nodes by default', () => {
     const tree = buildJsonTree({ outer: { inner: 'value' } });
     render(<JsonTreeView root={tree} />);
-    // outer key is visible (root expanded)
+
     expect(screen.getByText('outer')).toBeInTheDocument();
-    // inner key is NOT yet visible (outer is collapsed by default)
-    expect(screen.queryByText('inner')).toBeNull();
+    expect(screen.getByText('inner')).toBeInTheDocument();
+    expect(screen.getByText('"value"')).toBeInTheDocument();
   });
 
   it('toggles children visibility when caret is clicked', () => {
@@ -71,8 +71,6 @@ describe('JsonTreeView', () => {
     // root caret + outer caret -> 2 carets
     expect(carets.length).toBeGreaterThanOrEqual(2);
     const outerCaret = carets[1];
-    fireEvent.click(outerCaret);
-
     expect(screen.getByText('inner')).toBeInTheDocument();
     expect(screen.getByText('"value"')).toBeInTheDocument();
 

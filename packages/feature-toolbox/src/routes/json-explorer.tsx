@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState, type ReactNode } from 'react';
-import { CodeMirrorEditor, SearchInput, SplitPane } from '@cellar/ui';
+import { Button, CodeMirrorEditor, SearchInput, SplitPane } from '@cellar/ui';
+import { ChevronsDownUp, ChevronsUpDown } from 'lucide-react';
 import type { EditorDiagnostic } from '@cellar/ui';
 import { buildJsonTree, type JsonNode, type JsonValue } from '../lib/json-tree';
 import { formatJson, minifyJson } from '../lib/json-format';
@@ -63,6 +64,8 @@ function StateCard({
 
 export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [expandAllSignal, setExpandAllSignal] = useState(0);
+  const [collapseAllSignal, setCollapseAllSignal] = useState(0);
 
   const parseResult = useMemo(() => parseJson(value), [value]);
   const byteLength = value.length; // ASCII-safe proxy; good enough for thresholds
@@ -114,60 +117,36 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
 
   const { isDragOver, dragHandlers } = useJsonDrop({ onChange });
 
-  const documentStatus =
-    value.trim() === ''
-      ? 'Empty'
-      : !parseResult.ok
-        ? 'Invalid'
-        : isLarge
-          ? 'Large'
-          : isTooLarge
-            ? 'Too large'
-            : 'Valid';
-
   return (
     <section
       role="region"
-      aria-label="JSON Explorer workspace"
-      className="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-2xl border border-white/5 bg-surface-container-low shadow-sm"
+      aria-label="JSON Explorer"
+      className="flex h-full min-h-0 w-full flex-col space-y-4 overflow-hidden bg-surface"
     >
-      <header className="flex flex-col gap-3 border-b border-white/5 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <header>
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-outline">Toolbox</p>
-          <h1 className="text-lg font-semibold text-on-surface">JSON Explorer</h1>
-          <p className="text-xs text-outline">Editor and parsed tree</p>
-        </div>
-        <div
-          role="status"
-          aria-label="Document status"
-          className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-outline"
-        >
-          <span className="rounded-full border border-white/10 bg-surface-container px-2.5 py-1">
-            {documentStatus}
-          </span>
-          {value.trim() !== '' && (
-            <span className="rounded-full border border-white/10 bg-surface-container px-2.5 py-1">
-              {byteLength.toLocaleString()} bytes
-            </span>
-          )}
+          <h1 className="text-xl font-semibold text-on-surface">JSON Explorer</h1>
+          <p className="mt-1 max-w-2xl text-sm text-outline">
+            Paste, format, and inspect JSON as an editable document alongside a parsed tree viewer.
+          </p>
         </div>
       </header>
 
-      <div className="min-h-0 flex-1 p-2 md:p-3">
+      <div className="min-h-0 flex-1">
         <SplitPane
           persistKey={PANE_RATIO_KEY}
           defaultRatio={0.4}
-          className="h-full w-full"
+          className={[
+            'h-full w-full overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container shadow-inner transition-colors',
+            isDragOver ? 'border-primary/50 bg-surface-container-high' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
           left={
             <section
               role="region"
               aria-label="JSON editor"
-              className={[
-                'relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-outline-variant/20 bg-surface-container shadow-inner transition-colors',
-                isDragOver ? 'border-primary/50 bg-surface-container-high' : '',
-              ]
-                .filter(Boolean)
-                .join(' ')}
+              className="relative flex h-full w-full flex-col overflow-hidden"
               {...dragHandlers}
             >
               <EditorToolbar value={value} onFormat={handleFormat} onMinify={handleMinify} />
@@ -187,13 +166,8 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
                   diagnostics={diagnostics}
                 />
                 {value === '' && (
-                  <div className="pointer-events-none absolute inset-0 flex items-start px-6 pt-5 sm:px-10">
-                    <StateCard title="Empty editor" label="Empty editor" className="max-w-sm">
-                      <p className="font-mono">{PLACEHOLDER}</p>
-                      <p className="mt-1 text-outline">
-                        Drop a file or paste JSON to inspect the tree.
-                      </p>
-                    </StateCard>
+                  <div className="pointer-events-none absolute inset-0 flex items-start pl-14 pr-6 pt-5 sm:pl-16 sm:pr-10">
+                    <p className="font-mono text-xs text-outline">{PLACEHOLDER}</p>
                   </div>
                 )}
                 {isDragOver && (
@@ -212,25 +186,41 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
           right={
             <section
               role="region"
-              aria-label="JSON tree"
-              className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-white/5 bg-surface-container-lowest"
+              aria-label="JSON viewer"
+              className="flex h-full w-full flex-col overflow-hidden bg-surface-container-lowest"
             >
-              <div className="flex items-center justify-between border-b border-outline-variant/20 px-3 py-2">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-outline">
-                    Tree
-                  </p>
-                  <p className="text-[11px] text-outline">Parsed structure</p>
-                </div>
-              </div>
-
-              <div className="border-b border-outline-variant/20 px-3 py-2">
+              <div className="flex h-11 shrink-0 items-center gap-2 border-b border-outline-variant/20 bg-surface-container-low/80 px-3 py-1">
                 <SearchInput
                   value={searchQuery}
                   onChange={setSearchQuery}
-                  placeholder="Search keys and values…"
+                  placeholder="Filter nodes..."
                   debounceMs={0}
+                  className="min-w-0 flex-1 [&_input]:!h-7 [&_input]:!py-0 [&_input]:!text-xs [&_svg]:!h-3.5 [&_svg]:!w-3.5"
                 />
+                <div className="flex shrink-0 items-center gap-1">
+                  <Button
+                    type="button"
+                    onClick={() => setCollapseAllSignal(signal => signal + 1)}
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 px-2 py-0 normal-case tracking-normal"
+                    title="Collapse all nodes"
+                  >
+                    <ChevronsDownUp aria-hidden="true" className="h-3 w-3" />
+                    Collapse all
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => setExpandAllSignal(signal => signal + 1)}
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 px-2 py-0 normal-case tracking-normal"
+                    title="Expand all nodes"
+                  >
+                    <ChevronsUpDown aria-hidden="true" className="h-3 w-3" />
+                    Expand all
+                  </Button>
+                </div>
               </div>
 
               {isTooLarge && (
@@ -276,21 +266,12 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
                 {!isTooLarge && (
                   <JsonTreeView
                     root={filteredTree}
+                    expandAllSignal={expandAllSignal}
+                    collapseAllSignal={collapseAllSignal}
                     placeholder={
-                      parseResult.ok && tree !== null && filteredTree === null ? (
-                        'No matches found'
-                      ) : (
-                        <StateCard
-                          title="Empty tree"
-                          label="Empty tree"
-                          className="mx-auto max-w-sm"
-                        >
-                          <p className="font-mono">{PLACEHOLDER}</p>
-                          <p className="mt-1 text-outline">
-                            Parsed keys and values will appear here once the document is valid.
-                          </p>
-                        </StateCard>
-                      )
+                      parseResult.ok && tree !== null && filteredTree === null
+                        ? 'No matches found'
+                        : 'Parsed keys and values will appear here once the document is valid.'
                     }
                   />
                 )}
@@ -311,7 +292,7 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
 export function JsonExplorerPage() {
   const [text, setText] = useState('');
   return (
-    <div className="h-full min-h-0 w-full p-2 md:p-4">
+    <div className="h-full min-h-0 w-full">
       <JsonExplorerView value={text} onChange={setText} />
     </div>
   );
