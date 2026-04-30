@@ -48,10 +48,10 @@ export function Base64View({ input, output, onInputChange, onOutputChange }: Bas
     <section
       role="region"
       aria-label="Base64"
-      className="flex h-full min-h-0 w-full flex-col gap-4 overflow-hidden bg-surface p-6"
+      className="flex h-full min-h-0 w-full flex-col gap-4 overflow-hidden bg-surface"
     >
       <header>
-        <h1 className="text-xl font-semibold text-on-surface">Base64</h1>
+        <h1 className="text-xl font-semibold text-on-surface">Base64 Encoder / Decoder</h1>
         <p className="mt-1 max-w-2xl text-sm text-outline">
           Encode text to Base64 or decode Base64 back to text.
         </p>
@@ -69,11 +69,11 @@ export function Base64View({ input, output, onInputChange, onOutputChange }: Bas
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="primary" size="sm" onClick={handleEncode}>
+          <Button variant="primary" size="sm" onClick={handleEncode} disabled={!input.trim()}>
             <Lock aria-hidden="true" className="h-3.5 w-3.5" />
             Encode
           </Button>
-          <Button variant="secondary" size="sm" onClick={handleDecode}>
+          <Button variant="secondary" size="sm" onClick={handleDecode} disabled={!input.trim()}>
             <Unlock aria-hidden="true" className="h-3.5 w-3.5" />
             Decode
           </Button>

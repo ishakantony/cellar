@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Button, Textarea } from '@cellar/ui';
-import { Copy, ArrowUpDown, Check } from 'lucide-react';
+import { ArrowRightLeft, ClipboardCopy, Trash2, Unlock, Lock } from 'lucide-react';
 
 type OutputState =
   | { kind: 'idle' }
@@ -10,13 +10,12 @@ type OutputState =
 export function UrlEncoderPage() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState<OutputState>({ kind: 'idle' });
-  const [copied, setCopied] = useState(false);
 
-  function handleEncode() {
+  const handleEncode = useCallback(() => {
     setOutput({ kind: 'result', value: encodeURIComponent(input) });
-  }
+  }, [input]);
 
-  function handleDecode() {
+  const handleDecode = useCallback(() => {
     try {
       setOutput({ kind: 'result', value: decodeURIComponent(input) });
     } catch {
@@ -25,27 +24,29 @@ export function UrlEncoderPage() {
         message: 'URI malformed — input contains an invalid percent-sequence.',
       });
     }
-  }
+  }, [input]);
 
-  function handleCopy() {
-    if (output.kind !== 'result') return;
-    navigator.clipboard.writeText(output.value).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    });
-  }
-
-  function handleSwap() {
+  const handleSwap = useCallback(() => {
     if (output.kind !== 'result') return;
     setInput(output.value);
     setOutput({ kind: 'idle' });
-  }
+  }, [output]);
+
+  const handleClear = useCallback(() => {
+    setInput('');
+    setOutput({ kind: 'idle' });
+  }, []);
+
+  const handleCopy = useCallback(async () => {
+    if (output.kind !== 'result') return;
+    await navigator.clipboard.writeText(output.value);
+  }, [output]);
 
   return (
     <section
       role="region"
       aria-label="URL Encoder"
-      className="flex h-full min-h-0 w-full flex-col space-y-4 overflow-auto bg-surface"
+      className="flex h-full min-h-0 w-full flex-col gap-4 overflow-hidden bg-surface"
     >
       <header>
         <h1 className="text-xl font-semibold text-on-surface">URL Encoder / Decoder</h1>
@@ -55,95 +56,76 @@ export function UrlEncoderPage() {
         </p>
       </header>
 
-      <div className="flex max-w-2xl flex-col gap-3">
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="url-encoder-input" className="text-xs font-medium text-on-surface/70">
-            Input
-          </label>
+      <div className="flex min-h-0 flex-1 flex-col gap-3">
+        <div className="flex min-h-0 flex-[1] flex-col">
           <Textarea
-            id="url-encoder-input"
             value={input}
             onChange={setInput}
-            placeholder="Paste text to encode or decode…"
-            rows={5}
-            className="font-mono text-xs"
+            placeholder="Enter text or URL…"
+            aria-label="Input"
+            className="min-h-[120px] flex-1 resize-none font-mono text-sm"
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant="filled"
-            size="sm"
-            onClick={handleEncode}
-            disabled={input.trim() === ''}
-          >
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="primary" size="sm" onClick={handleEncode} disabled={!input.trim()}>
+            <Lock aria-hidden="true" className="h-3.5 w-3.5" />
             Encode
           </Button>
-          <Button
-            type="button"
-            variant="outlined"
-            size="sm"
-            onClick={handleDecode}
-            disabled={input.trim() === ''}
-          >
+          <Button variant="secondary" size="sm" onClick={handleDecode} disabled={!input.trim()}>
+            <Unlock aria-hidden="true" className="h-3.5 w-3.5" />
             Decode
+          </Button>
+          <div className="flex-1" />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleSwap}
+            disabled={output.kind !== 'result'}
+          >
+            <ArrowRightLeft aria-hidden="true" className="h-3.5 w-3.5" />
+            Swap
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleClear}
+            disabled={!input && output.kind === 'idle'}
+          >
+            <Trash2 aria-hidden="true" className="h-3.5 w-3.5" />
+            Clear
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleCopy}
+            disabled={output.kind !== 'result'}
+          >
+            <ClipboardCopy aria-hidden="true" className="h-3.5 w-3.5" />
+            Copy
           </Button>
         </div>
 
-        {output.kind === 'error' && (
-          <div
-            role="alert"
-            aria-label="Invalid encoding"
-            className="rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-error shadow-sm shadow-black/10"
-          >
-            <p className="text-[10px] font-bold uppercase tracking-widest">Invalid encoding</p>
-            <p className="mt-1 text-xs leading-relaxed">{output.message}</p>
-          </div>
-        )}
-
-        <div className="flex flex-col gap-1.5">
-          <div className="flex items-center justify-between">
-            <label className="text-xs font-medium text-on-surface/70">Output</label>
-            <div className="flex items-center gap-1">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-6 gap-1 px-2 py-0 normal-case tracking-normal"
-                onClick={handleSwap}
-                disabled={output.kind !== 'result'}
-                title="Move output to input"
-              >
-                <ArrowUpDown aria-hidden="true" className="h-3 w-3" />
-                Swap
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-6 gap-1 px-2 py-0 normal-case tracking-normal"
-                onClick={handleCopy}
-                disabled={output.kind !== 'result'}
-                title="Copy output"
-              >
-                {copied ? (
-                  <Check aria-hidden="true" className="h-3 w-3 text-primary" />
-                ) : (
-                  <Copy aria-hidden="true" className="h-3 w-3" />
-                )}
-                {copied ? 'Copied' : 'Copy'}
-              </Button>
+        <div className="flex min-h-0 flex-[1] flex-col">
+          {output.kind === 'error' ? (
+            <div
+              role="alert"
+              aria-label="Invalid encoding"
+              className="rounded-lg border border-error/40 bg-error/10 px-4 py-3 text-sm text-error"
+            >
+              <p className="font-bold uppercase tracking-widest text-[10px]">Invalid encoding</p>
+              <p className="mt-1 font-mono text-xs">{output.message}</p>
             </div>
-          </div>
-          <textarea
-            readOnly
-            value={output.kind === 'result' ? output.value : ''}
-            rows={5}
-            aria-label="Encoded/decoded output"
-            placeholder="Result will appear here…"
-            className="w-full resize-y rounded-lg bg-surface-container px-4 py-2.5 font-mono text-xs text-on-surface placeholder:text-outline/50 focus:outline-none focus:ring-1 focus:ring-primary/30"
-          />
+          ) : (
+            <Textarea
+              value={output.kind === 'result' ? output.value : ''}
+              onChange={() => {}}
+              placeholder="Result will appear here…"
+              aria-label="Output"
+              disabled={output.kind !== 'result'}
+              className="min-h-[120px] flex-1 resize-none font-mono text-sm"
+            />
+          )}
         </div>
       </div>
     </section>

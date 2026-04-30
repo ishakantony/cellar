@@ -37,17 +37,17 @@ const featureModule: FeatureModule = {
           href: '/toolbox/json-explorer',
           icon: Braces,
         },
+      ],
+    },
+    {
+      title: 'Encoders',
+      items: [
         {
           id: 'base64',
           label: 'Base64',
           href: '/toolbox/base64',
           icon: Binary,
         },
-      ],
-    },
-    {
-      title: 'Encoders',
-      items: [
         {
           id: 'url-encoder',
           label: 'URL Encoder',
