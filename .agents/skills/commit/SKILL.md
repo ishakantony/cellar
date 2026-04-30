@@ -25,20 +25,17 @@ Run `git add -A` to stage all modified, added, and deleted files.
 ### 2. Review changes
 
 Run in parallel:
-
 - `git status`
 - `git diff --staged`
 - `git log --oneline -5` (for context)
 
 Identify:
-
 - [ ] Modified, added, deleted files
 - [ ] The nature of changes (feature, fix, refactor, docs, test, chore)
 
 ### 3. Draft commit message
 
 Follow [Conventional Commits](https://www.conventionalcommits.org/):
-
 - **feat**: new feature
 - **fix**: bug fix
 - **docs**: documentation changes
@@ -50,7 +47,6 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 Format: `type(scope): subject`
 
 Rules:
-
 - Subject is lowercase, no trailing period
 - Max 50 chars for subject line
 - Include body only if change needs explanation
@@ -59,7 +55,6 @@ Rules:
 ### 4. Present to user
 
 Show:
-
 ```
 ## Changes to be committed
 
@@ -75,7 +70,6 @@ Show:
 ### 5. Ask for confirmation
 
 Use the `question` tool with options:
-
 - "Yes, commit" (Recommended)
 - "Edit message first"
 - "Cancel"

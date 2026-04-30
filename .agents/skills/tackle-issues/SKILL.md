@@ -63,7 +63,6 @@ Do not use todo names like `Tackle 001-add-login.md`, `001-add-login.md: Add log
 4. **Filename order** (alphabetical) — the final, always-decisive tie-breaker. Never spend cycles deciding between two same-tier issues; the filename wins.
 
 Once the TODO list is written, treat it as immutable order. Do not re-sort. The only allowed mutations are:
-
 - marking a todo done / partial / blocked after its subagent returns,
 - appending newly-discovered issue files to the **end** of the list,
 - unblocking a todo when its blocker moves to `issues/done/`.
