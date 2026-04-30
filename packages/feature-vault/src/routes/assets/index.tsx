@@ -29,7 +29,7 @@ export function AssetsListPage() {
 
   // Derive the selected asset type from the URL path segment (e.g. /vault/assets/snippets → SNIPPET).
   const slug = pathname.split('/').pop();
-  const selectedType: AssetType | null = (slug && SLUG_TO_TYPE[slug]) ?? null;
+  const selectedType: AssetType | null = slug ? (SLUG_TO_TYPE[slug] ?? null) : null;
 
   const [filters, setFilters] = useQueryStates(
     {

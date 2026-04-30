@@ -28,7 +28,14 @@ describe('feature-toolbox manifest', () => {
     expect(typeof jsonExplorer?.lazy).toBe('function');
   });
 
-  it('exposes an empty nav array (no per-feature sidebar entries yet)', () => {
-    expect(featureModule.nav).toEqual([]);
+  it('exposes the JSON Explorer nav item', () => {
+    expect(featureModule.nav).toHaveLength(1);
+    expect(featureModule.nav[0]?.items).toEqual([
+      expect.objectContaining({
+        id: 'json-explorer',
+        label: 'JSON Explorer',
+        href: '/toolbox/json-explorer',
+      }),
+    ]);
   });
 });

@@ -10,13 +10,17 @@ You are working a single AFK issue end-to-end. Stay focused on this one task.
 File: `{{issue_path}}` (e.g. issues/003-add-rate-limit.md)
 
 ```
+
 {{full issue file content, verbatim}}
+
 ```
 
 ## Recent commits (for context — don't repeat work already shipped)
 
 ```
+
 {{output of `git log --oneline -20`}}
+
 ```
 
 ## Project feedback loops (run these before committing)
@@ -40,18 +44,23 @@ Make ONE commit when the task is complete (or when you've made meaningful partia
 Commit message format:
 
 ```
+
 <type>(<scope>): <subject>
 
 Decisions:
+
 - <key decision 1>
 - <key decision 2>
 
 Files changed:
+
 - <path 1>
 - <path 2>
 
 Notes for next iteration:
+
 - <blocker or follow-up, if any>
+
 ```
 
 Use Conventional Commit types (feat, fix, refactor, test, chore, docs).

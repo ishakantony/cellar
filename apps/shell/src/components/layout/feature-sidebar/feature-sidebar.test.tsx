@@ -30,15 +30,19 @@ function makeResolved(
 const vaultModule: FeatureModule = {
   routes: [],
   nav: [
-    { id: 'home', label: 'Dashboard', href: '/vault', icon: LayoutDashboard },
-    { id: 'assets', label: 'All Items', href: '/vault/assets', icon: Package },
-    { id: 'collections', label: 'All Collections', href: '/vault/collections', icon: Folder },
+    {
+      items: [
+        { id: 'home', label: 'Dashboard', href: '/vault', icon: LayoutDashboard },
+        { id: 'assets', label: 'All Items', href: '/vault/assets', icon: Package },
+        { id: 'collections', label: 'All Collections', href: '/vault/collections', icon: Folder },
+      ],
+    },
   ],
 };
 
 const accountModule: FeatureModule = {
   routes: [],
-  nav: [{ id: 'settings', label: 'Settings', href: '/account/settings', icon: User }],
+  nav: [{ items: [{ id: 'settings', label: 'Settings', href: '/account/settings', icon: User }] }],
 };
 
 const resolved: ResolvedFeatureRegistryEntry[] = [

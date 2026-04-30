@@ -4,12 +4,26 @@ import { act } from 'react';
 import { JsonExplorerPage, JsonExplorerView } from './json-explorer';
 
 describe('JsonExplorerPage', () => {
-  it('renders the split-pane layout with editor and tree pane', () => {
+  it('renders the explorer as a framed workspace with editor and tree panes', () => {
     render(<JsonExplorerPage />);
+    expect(screen.getByRole('region', { name: /json explorer workspace/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /json explorer/i })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: /json editor/i })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: /json tree/i })).toBeInTheDocument();
     // Split pane separator
     expect(screen.getByRole('separator')).toBeInTheDocument();
-    // Right pane Tree tab
-    expect(screen.getByRole('button', { name: /tree/i })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^tree$/i })).not.toBeInTheDocument();
+  });
+
+  it('keeps pane-ratio persistence without persisting editor text', () => {
+    window.localStorage.setItem('cellar:json-explorer:pane-ratio', '0.7');
+    window.localStorage.setItem('cellar:json-explorer:text', '{"leaked":true}');
+
+    const { container } = render(<JsonExplorerPage />);
+
+    expect(screen.getByRole('separator')).toHaveAttribute('aria-valuenow', '70');
+    expect(container.textContent).toMatch(/Paste JSON to begin/i);
+    expect(container.textContent).not.toContain('leaked');
   });
 
   it('shows a placeholder in the right pane when the editor is empty', () => {
@@ -60,10 +74,10 @@ describe('JsonExplorerView', () => {
     expect(right.textContent).toContain('name');
   });
 
-  it('Tree tab is the active tab in the right pane', () => {
+  it('labels the right pane as the JSON tree', () => {
     render(<JsonExplorerView value="" onChange={() => {}} />);
-    const treeTab = screen.getByRole('button', { name: /tree/i });
-    expect(treeTab).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: /json tree/i })).toBeInTheDocument();
+    expect(screen.getByText('Tree')).toBeInTheDocument();
   });
 });
 

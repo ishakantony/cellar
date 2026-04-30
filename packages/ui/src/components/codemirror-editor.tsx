@@ -176,7 +176,6 @@ export function CodeMirrorEditor({
       .catch(() => {
         /* ignore */
       });
-     
   }, [diagnostics]);
 
   return <div ref={containerRef} className="h-full" />;

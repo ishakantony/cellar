@@ -6,7 +6,6 @@ import { formatJson, minifyJson } from '../lib/json-format';
 import { parseJson } from '../lib/json-parse';
 import { filterJsonTree } from '../lib/json-tree-filter';
 import { JsonTreeView } from '../components/json-tree-view';
-import { RightPaneTabs } from '../components/right-pane-tabs';
 import { EditorToolbar } from '../components/editor-toolbar';
 import { useJsonDrop } from '../hooks/use-json-drop';
 
@@ -79,115 +78,163 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
   const byteLength = value.length; // ASCII-safe proxy; good enough for thresholds
   const isTooLarge = byteLength >= SIZE_LIMIT;
   const isLarge = !isTooLarge && byteLength >= SIZE_WARN;
+  const documentStatus =
+    value.trim() === ''
+      ? 'Empty'
+      : !parseResult.ok
+        ? 'Invalid'
+        : isTooLarge
+          ? 'Too large'
+          : 'Valid';
 
   return (
-    <SplitPane
-      persistKey={PANE_RATIO_KEY}
-      defaultRatio={0.4}
-      className="h-full w-full"
-      left={
-        <div className="relative flex h-full w-full flex-col bg-surface-container-lowest">
-          <EditorToolbar value={value} onFormat={handleFormat} onMinify={handleMinify} />
-          <div
-            className={[
-              'relative min-h-0 flex-1 transition-colors',
-              isDragOver ? 'outline outline-2 outline-primary/60 bg-primary/5' : '',
-            ]
-              .filter(Boolean)
-              .join(' ')}
-            {...dragHandlers}
-          >
-            <CodeMirrorEditor
-              value={value}
-              onChange={onChange}
-              language="json"
-              diagnostics={diagnostics}
-            />
-            {value === '' && (
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 flex items-start px-12 pt-4 text-xs text-outline font-mono"
-              >
-                {PLACEHOLDER}
-              </div>
-            )}
-            {isDragOver && (
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 flex items-center justify-center"
-              >
-                <p className="rounded-md bg-surface-container px-4 py-2 text-sm text-on-surface shadow">
-                  Drop .json file here
-                </p>
-              </div>
-            )}
-          </div>
+    <section
+      role="region"
+      aria-label="JSON Explorer workspace"
+      className="flex h-full min-h-0 w-full flex-col overflow-hidden rounded-2xl border border-white/5 bg-surface-container-low shadow-sm"
+    >
+      <header className="flex flex-col gap-3 border-b border-white/5 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-outline">Toolbox</p>
+          <h1 className="text-lg font-semibold text-on-surface">JSON Explorer</h1>
         </div>
-      }
-      right={
-        <div className="flex h-full w-full flex-col bg-surface-container-lowest">
-          <RightPaneTabs activeId="tree" />
-
-          {/* Search input */}
-          <div className="border-b border-outline-variant/20 px-3 py-2">
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search keys and values…"
-              className="w-full rounded border border-outline-variant/40 bg-surface-container px-2 py-1 text-xs text-on-surface placeholder:text-outline focus:border-primary focus:outline-none"
-              aria-label="Search JSON tree"
-            />
-          </div>
-
-          {/* Size banners */}
-          {isTooLarge && (
-            <div
-              role="alert"
-              className="mx-3 mt-2 rounded border border-error/40 bg-error/10 px-3 py-2 text-xs text-error"
-            >
-              Document is too large (~{Math.round(byteLength / 1_000_000)} MB). Tree rendering is
-              disabled to avoid freezing the browser. Use a dedicated tool for large files.
-            </div>
+        <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-outline">
+          <span className="rounded-full border border-white/10 bg-surface-container px-2.5 py-1">
+            {documentStatus}
+          </span>
+          {value.trim() !== '' && (
+            <span className="rounded-full border border-white/10 bg-surface-container px-2.5 py-1">
+              {byteLength.toLocaleString()} bytes
+            </span>
           )}
-          {isLarge && (
-            <div
-              role="status"
-              className="mx-3 mt-2 rounded border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning"
-            >
-              Large document — tree may be slow (~{Math.round(byteLength / 1_000_000)} MB).
-            </div>
-          )}
-
-          {/* Invalid JSON error card */}
-          {!parseResult.ok && value.trim() !== '' && (
-            <div
-              role="alert"
-              className="mx-3 mt-2 rounded border border-error/40 bg-error/10 px-3 py-2 text-xs text-error"
-            >
-              <p className="font-semibold">Invalid JSON</p>
-              <p className="mt-0.5 font-mono">{parseResult.message}</p>
-              <p className="mt-0.5 text-outline">
-                Line {parseResult.line}, Col {parseResult.col}
-              </p>
-            </div>
-          )}
-
-          <div className="flex-1 min-h-0 overflow-auto">
-            {!isTooLarge && (
-              <JsonTreeView
-                root={filteredTree}
-                placeholder={
-                  parseResult.ok && tree !== null && filteredTree === null
-                    ? 'No matches found'
-                    : PLACEHOLDER
-                }
-              />
-            )}
-          </div>
         </div>
-      }
-    />
+      </header>
+
+      <div className="min-h-0 flex-1 p-2 md:p-3">
+        <SplitPane
+          persistKey={PANE_RATIO_KEY}
+          defaultRatio={0.4}
+          className="h-full w-full"
+          left={
+            <section
+              role="region"
+              aria-label="JSON editor"
+              className="relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-white/5 bg-surface-container-lowest"
+            >
+              <EditorToolbar value={value} onFormat={handleFormat} onMinify={handleMinify} />
+              <div
+                className={[
+                  'relative min-h-0 flex-1 transition-colors',
+                  isDragOver ? 'outline outline-2 outline-primary/60 bg-primary/5' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                {...dragHandlers}
+              >
+                <CodeMirrorEditor
+                  value={value}
+                  onChange={onChange}
+                  language="json"
+                  diagnostics={diagnostics}
+                />
+                {value === '' && (
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 flex items-start px-12 pt-4 text-xs text-outline font-mono"
+                  >
+                    {PLACEHOLDER}
+                  </div>
+                )}
+                {isDragOver && (
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 flex items-center justify-center"
+                  >
+                    <p className="rounded-md bg-surface-container px-4 py-2 text-sm text-on-surface shadow">
+                      Drop .json file here
+                    </p>
+                  </div>
+                )}
+              </div>
+            </section>
+          }
+          right={
+            <section
+              role="region"
+              aria-label="JSON tree"
+              className="flex h-full w-full flex-col overflow-hidden rounded-xl border border-white/5 bg-surface-container-lowest"
+            >
+              <div className="flex items-center justify-between border-b border-outline-variant/20 px-3 py-2">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-outline">
+                    Tree
+                  </p>
+                  <p className="text-[11px] text-outline">Parsed structure</p>
+                </div>
+              </div>
+
+              {/* Search input */}
+              <div className="border-b border-outline-variant/20 px-3 py-2">
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  placeholder="Search keys and values…"
+                  className="w-full rounded-lg border border-outline-variant/40 bg-surface-container px-2.5 py-1.5 text-xs text-on-surface placeholder:text-outline focus:border-primary focus:outline-none"
+                  aria-label="Search JSON tree"
+                />
+              </div>
+
+              {/* Size banners */}
+              {isTooLarge && (
+                <div
+                  role="alert"
+                  className="mx-3 mt-2 rounded-lg border border-error/40 bg-error/10 px-3 py-2 text-xs text-error"
+                >
+                  Document is too large (~{Math.round(byteLength / 1_000_000)} MB). Tree rendering
+                  is disabled to avoid freezing the browser. Use a dedicated tool for large files.
+                </div>
+              )}
+              {isLarge && (
+                <div
+                  role="status"
+                  className="mx-3 mt-2 rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning"
+                >
+                  Large document — tree may be slow (~{Math.round(byteLength / 1_000_000)} MB).
+                </div>
+              )}
+
+              {/* Invalid JSON error card */}
+              {!parseResult.ok && value.trim() !== '' && (
+                <div
+                  role="alert"
+                  className="mx-3 mt-2 rounded-lg border border-error/40 bg-error/10 px-3 py-2 text-xs text-error"
+                >
+                  <p className="font-semibold">Invalid JSON</p>
+                  <p className="mt-0.5 font-mono">{parseResult.message}</p>
+                  <p className="mt-0.5 text-outline">
+                    Line {parseResult.line}, Col {parseResult.col}
+                  </p>
+                </div>
+              )}
+
+              <div className="flex-1 min-h-0 overflow-auto">
+                {!isTooLarge && (
+                  <JsonTreeView
+                    root={filteredTree}
+                    placeholder={
+                      parseResult.ok && tree !== null && filteredTree === null
+                        ? 'No matches found'
+                        : PLACEHOLDER
+                    }
+                  />
+                )}
+              </div>
+            </section>
+          }
+        />
+      </div>
+    </section>
   );
 }
 
@@ -199,7 +246,7 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
 export function JsonExplorerPage() {
   const [text, setText] = useState('');
   return (
-    <div className="h-full w-full">
+    <div className="h-full min-h-0 w-full p-2 md:p-4">
       <JsonExplorerView value={text} onChange={setText} />
     </div>
   );

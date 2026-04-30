@@ -18,8 +18,10 @@ describe('feature-vault manifest', () => {
 
   it('exposes a nav array with hrefs all rooted under basePath', () => {
     expect(featureModule.nav.length).toBeGreaterThan(0);
-    for (const item of featureModule.nav) {
-      expect(item.href.startsWith(manifest.basePath)).toBe(true);
+    for (const section of featureModule.nav) {
+      for (const item of section.items) {
+        expect(item.href.startsWith(manifest.basePath)).toBe(true);
+      }
     }
   });
 });

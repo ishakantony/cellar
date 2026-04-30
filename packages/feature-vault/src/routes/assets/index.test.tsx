@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { NuqsTestingAdapter, type UrlUpdateEvent } from 'nuqs/adapters/testing';
 import type { ReactNode } from 'react';
+import { MemoryRouter } from 'react-router';
 
 vi.mock('../../hooks/queries/use-assets', () => ({
   useAssetsQuery: () => ({ data: [] }),
@@ -18,13 +19,19 @@ vi.mock('../../hooks/use-asset-drawer', () => ({
 
 import { AssetsListPage } from './index';
 
-function makeWrapper(opts: { searchParams?: string; onUrlUpdate?: (e: UrlUpdateEvent) => void }) {
+function makeWrapper(opts: {
+  initialEntry?: string;
+  searchParams?: string;
+  onUrlUpdate?: (e: UrlUpdateEvent) => void;
+}) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>
-      <NuqsTestingAdapter searchParams={opts.searchParams ?? ''} onUrlUpdate={opts.onUrlUpdate}>
-        {children}
-      </NuqsTestingAdapter>
+      <MemoryRouter initialEntries={[opts.initialEntry ?? '/vault/assets']}>
+        <NuqsTestingAdapter searchParams={opts.searchParams ?? ''} onUrlUpdate={opts.onUrlUpdate}>
+          {children}
+        </NuqsTestingAdapter>
+      </MemoryRouter>
     </QueryClientProvider>
   );
 }
@@ -48,37 +55,31 @@ describe('AssetsListPage', () => {
     );
   });
 
-  it('marks the matching tab active based on the type URL query param', () => {
+  it('marks the matching tab active based on the type URL path', () => {
     render(<AssetsListPage />, {
-      wrapper: makeWrapper({ searchParams: '?type=SNIPPET' }),
+      wrapper: makeWrapper({ initialEntry: '/vault/assets/snippets' }),
     });
 
     expect(screen.getByRole('tab', { name: /snippets/i })).toHaveAttribute('aria-selected', 'true');
   });
 
-  it('updates the URL query param when a tab is clicked', async () => {
-    const onUrlUpdate = vi.fn();
+  it('selects a type-specific URL path when a tab is clicked', async () => {
     const user = userEvent.setup();
-    render(<AssetsListPage />, { wrapper: makeWrapper({ onUrlUpdate }) });
+    render(<AssetsListPage />, { wrapper: makeWrapper({}) });
 
     await user.click(screen.getByRole('tab', { name: /prompts/i }));
 
-    expect(onUrlUpdate).toHaveBeenCalled();
-    const lastCall = onUrlUpdate.mock.calls.at(-1)![0] as UrlUpdateEvent;
-    expect(lastCall.searchParams.get('type')).toBe('PROMPT');
+    expect(screen.getByRole('tab', { name: /prompts/i })).toHaveAttribute('aria-selected', 'true');
   });
 
-  it('clearing back to "All" removes the type query param from the URL', async () => {
-    const onUrlUpdate = vi.fn();
+  it('clearing back to "All" returns to the base assets path', async () => {
     const user = userEvent.setup();
     render(<AssetsListPage />, {
-      wrapper: makeWrapper({ searchParams: '?type=NOTE', onUrlUpdate }),
+      wrapper: makeWrapper({ initialEntry: '/vault/assets/notes' }),
     });
 
     await user.click(screen.getByRole('tab', { name: /all/i }));
 
-    expect(onUrlUpdate).toHaveBeenCalled();
-    const lastCall = onUrlUpdate.mock.calls.at(-1)![0] as UrlUpdateEvent;
-    expect(lastCall.searchParams.get('type')).toBeNull();
+    expect(screen.getByRole('tab', { name: /all/i })).toHaveAttribute('aria-selected', 'true');
   });
 });
