@@ -8,6 +8,7 @@ import { registry } from '@/shell/feature-registry';
 import { resolvedEntries } from '@/shell/feature-registry';
 import { shellStaticCommands } from '@/shell/shell-static-commands';
 import { filterCommandsByScope } from '@/shell/filter-commands-by-scope';
+import { useCommandFrecency, frecencyScore } from '@/shell/stores/command-frecency';
 import { cn } from '@cellar/ui';
 import type {
   PaletteCommand,
@@ -41,6 +42,7 @@ interface NamedConnector {
 
 export function CommandPalette() {
   const { open, query, setOpen, setQuery } = useCommandPalette();
+  const { usage, record } = useCommandFrecency();
   const navigate = useNavigate();
   const location = useLocation();
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -128,6 +130,7 @@ export function CommandPalette() {
 
   const handleSelectCommand = useCallback(
     (cmd: PaletteCommand) => {
+      record(cmd.id);
       handleClose();
       if (cmd.kind === 'navigate' && cmd.href) {
         navigate(cmd.href);
@@ -135,7 +138,7 @@ export function CommandPalette() {
         void cmd.action();
       }
     },
-    [handleClose, navigate]
+    [handleClose, navigate, record]
   );
 
   // Build item groups from connector results — each connector can report multiple groups
@@ -164,31 +167,54 @@ export function CommandPalette() {
     [connectors, connectorResults]
   );
 
-  // Categorize static commands for display
-  const { navCommands, actionCommands } = useMemo(() => {
+  // Compute frequent, nav, and action commands in one pass so frequent IDs can
+  // be excluded from the Go To / Quick Actions groups — preventing duplicate
+  // Command.Item values that break cmdk keyboard navigation.
+  const { frequentCommands, navCommands, actionCommands } = useMemo(() => {
+    const FREQUENT_LIMIT = 4;
+    const scopeFiltered = filterCommandsByScope(allStaticCommands, activeFeatureId);
+    const trimmed = query.trim();
+
+    // Frequent section — only shown when the query is empty
+    const frequent: PaletteCommand[] = trimmed
+      ? []
+      : scopeFiltered
+          .map(cmd => ({ cmd, score: frecencyScore(usage, cmd.id) }))
+          .filter(({ score }) => score > 0)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, FREQUENT_LIMIT)
+          .map(({ cmd }) => cmd);
+
+    const frequentIds = new Set(frequent.map(cmd => cmd.id));
+
+    // Nav / action groups — exclude commands already shown in Frequent
     const nav: PaletteCommand[] = [];
     const actions: PaletteCommand[] = [];
-
-    const trimmed = query.trim().toLowerCase();
-    const scopeFiltered = filterCommandsByScope(allStaticCommands, activeFeatureId);
+    const search = trimmed.toLowerCase();
 
     for (const cmd of scopeFiltered) {
+      if (frequentIds.has(cmd.id)) continue;
+
       const matchesSearch =
-        !trimmed ||
-        cmd.label.toLowerCase().includes(trimmed) ||
-        (cmd.href ?? '').toLowerCase().includes(trimmed);
+        !search ||
+        cmd.label.toLowerCase().includes(search) ||
+        (cmd.href ?? '').toLowerCase().includes(search);
 
       if (!matchesSearch) continue;
 
-      if (cmd.kind === 'navigate') {
-        nav.push(cmd);
-      } else {
-        actions.push(cmd);
-      }
+      if (cmd.kind === 'navigate') nav.push(cmd);
+      else actions.push(cmd);
     }
 
-    return { navCommands: nav, actionCommands: actions };
-  }, [allStaticCommands, activeFeatureId, query]);
+    const byScore = (a: PaletteCommand, b: PaletteCommand) =>
+      frecencyScore(usage, b.id) - frecencyScore(usage, a.id);
+
+    return {
+      frequentCommands: frequent,
+      navCommands: nav.sort(byScore),
+      actionCommands: actions.sort(byScore),
+    };
+  }, [allStaticCommands, activeFeatureId, query, usage]);
 
   // Sort item groups: active feature first, then alphabetically
   const anyGroupHasItems = connectors.some(({ id }) =>
@@ -295,6 +321,16 @@ export function CommandPalette() {
                             onSelect={handleSelectItem}
                           />
                         ))}
+
+                    {/* Frequent static commands (empty query, frecency data available) */}
+                    {frequentCommands.length > 0 && (
+                      <StaticCommandGroupSection
+                        id="frequent"
+                        label="Frequent"
+                        commands={frequentCommands}
+                        onSelect={handleSelectCommand}
+                      />
+                    )}
 
                     {/* Recents (empty query) */}
                     {showRecents && (
