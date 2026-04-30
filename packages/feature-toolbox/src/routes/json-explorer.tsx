@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { CodeMirrorEditor, SplitPane } from '@cellar/ui';
+import { CodeMirrorEditor, SearchInput, SplitPane } from '@cellar/ui';
 import type { EditorDiagnostic } from '@cellar/ui';
 import { buildJsonTree, type JsonNode, type JsonValue } from '../lib/json-tree';
 import { formatJson, minifyJson } from '../lib/json-format';
@@ -180,15 +180,12 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
                 </div>
               </div>
 
-              {/* Search input */}
               <div className="border-b border-outline-variant/20 px-3 py-2">
-                <input
-                  type="search"
+                <SearchInput
                   value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  onChange={setSearchQuery}
                   placeholder="Search keys and values…"
-                  className="w-full rounded-lg border border-outline-variant/40 bg-surface-container px-2.5 py-1.5 text-xs text-on-surface placeholder:text-outline focus:border-primary focus:outline-none"
-                  aria-label="Search JSON tree"
+                  debounceMs={0}
                 />
               </div>
 

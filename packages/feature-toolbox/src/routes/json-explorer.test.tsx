@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, within } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import { act } from 'react';
 import { JsonExplorerPage, JsonExplorerView } from './json-explorer';
 
@@ -109,6 +109,34 @@ describe('JsonExplorerView', () => {
     render(<JsonExplorerView value="" onChange={() => {}} />);
     expect(screen.getByRole('region', { name: /json tree/i })).toBeInTheDocument();
     expect(screen.getByText('Tree')).toBeInTheDocument();
+  });
+
+  it('scopes shared tree search to the tree pane and filters rendered results', async () => {
+    render(
+      <JsonExplorerView
+        value='{"name":"Ada","city":"Paris","nested":{"language":"TypeScript"}}'
+        onChange={() => {}}
+      />
+    );
+
+    const treePane = screen.getByRole('region', { name: /json tree/i });
+    expect(within(treePane).getByText('Tree')).toBeInTheDocument();
+    expect(within(treePane).queryByRole('tab')).not.toBeInTheDocument();
+
+    const search = within(treePane).getByRole('textbox', { name: /search/i });
+    fireEvent.change(search, { target: { value: 'city' } });
+
+    await waitFor(() => {
+      expect(within(treePane).getByText('city')).toBeInTheDocument();
+      expect(within(treePane).queryByText('name')).not.toBeInTheDocument();
+    });
+
+    fireEvent.click(within(treePane).getByRole('button', { name: /clear search/i }));
+
+    await waitFor(() => {
+      expect(within(treePane).getByText('name')).toBeInTheDocument();
+      expect(within(treePane).getByText('nested')).toBeInTheDocument();
+    });
   });
 });
 
