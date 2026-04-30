@@ -7,7 +7,15 @@ vi.mock('@cellar/ui', async () => {
   const actual = await vi.importActual<typeof import('@cellar/ui')>('@cellar/ui');
   return {
     ...actual,
-    CodeMirrorEditor: () => <div className="cm-editor" />,
+    CodeMirrorEditor: ({ diagnostics = [] }: { diagnostics?: Array<{ message: string }> }) => (
+      <div className="cm-editor">
+        {diagnostics.length > 0 && (
+          <div role="status" aria-label="Editor diagnostics">
+            {diagnostics.map(diagnostic => diagnostic.message).join('\n')}
+          </div>
+        )}
+      </div>
+    ),
   };
 });
 
@@ -63,10 +71,18 @@ describe('JsonExplorerView', () => {
     expect(within(getDocumentStatus()).getByText(status)).toBeInTheDocument();
   });
 
-  it('shows placeholder when value is empty', () => {
-    const { container } = render(<JsonExplorerView value="" onChange={() => {}} />);
-    const right = getRightPane(container);
-    expect(right.textContent).toMatch(/Paste JSON to begin/i);
+  it('shows empty editor and tree guidance as state cards', () => {
+    render(<JsonExplorerView value="" onChange={() => {}} />);
+
+    const editorPane = screen.getByRole('region', { name: /json editor/i });
+    const treePane = screen.getByRole('region', { name: /json tree/i });
+
+    expect(within(editorPane).getByRole('note', { name: /empty editor/i })).toHaveTextContent(
+      /paste json to begin/i
+    );
+    expect(within(treePane).getByRole('note', { name: /empty tree/i })).toHaveTextContent(
+      /paste json to begin/i
+    );
   });
 
   it('renders the tree when value parses', () => {
@@ -78,10 +94,13 @@ describe('JsonExplorerView', () => {
 
   it('renders an error card when JSON is invalid', () => {
     render(<JsonExplorerView value="not-valid-json" onChange={() => {}} />);
-    // #013: invalid JSON shows an error card with role="alert"
-    const alert = screen.getByRole('alert');
+    const alert = screen.getByRole('alert', { name: /invalid json/i });
     expect(alert).toBeInTheDocument();
     expect(alert.textContent).toMatch(/invalid json/i);
+    expect(alert).toHaveTextContent(/line 1, col 1/i);
+    expect(screen.getByRole('status', { name: /editor diagnostics/i })).toHaveTextContent(
+      /unexpected|not valid/i
+    );
   });
 
   it('shows warning-sized documents in the workspace header', () => {
@@ -91,6 +110,19 @@ describe('JsonExplorerView', () => {
     const workspace = screen.getByRole('region', { name: /json explorer workspace/i });
     const documentStatus = within(workspace).getByRole('status', { name: /document status/i });
     expect(within(documentStatus).getByText(/large/i)).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: /large document/i })).toHaveTextContent(
+      /tree may be slow/i
+    );
+  });
+
+  it('disables tree rendering for documents over the hard size limit', () => {
+    const tooLargeJson = JSON.stringify({ payload: 'a'.repeat(50_000_000) });
+    render(<JsonExplorerView value={tooLargeJson} onChange={() => {}} />);
+
+    expect(screen.getByRole('alert', { name: /document too large/i })).toHaveTextContent(
+      /tree rendering is disabled/i
+    );
+    expect(screen.queryByRole('tree')).not.toBeInTheDocument();
   });
 
   it('updates the tree when controlled value changes', () => {

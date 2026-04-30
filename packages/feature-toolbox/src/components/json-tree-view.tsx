@@ -130,7 +130,11 @@ export function JsonTreeView({ root, placeholder = 'Paste JSON to begin...' }: J
   if (root === null) {
     return (
       <div className="px-4 py-8 text-center">
-        <p className="text-xs text-outline">{placeholder}</p>
+        {typeof placeholder === 'string' ? (
+          <p className="text-xs text-outline">{placeholder}</p>
+        ) : (
+          placeholder
+        )}
       </div>
     );
   }

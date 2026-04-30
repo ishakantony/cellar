@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { CodeMirrorEditor, SearchInput, SplitPane } from '@cellar/ui';
 import type { EditorDiagnostic } from '@cellar/ui';
 import { buildJsonTree, type JsonNode, type JsonValue } from '../lib/json-tree';
@@ -26,15 +26,54 @@ export interface JsonExplorerViewProps {
   onChange: (next: string) => void;
 }
 
+interface StateCardProps {
+  title: string;
+  children: ReactNode;
+  tone?: 'neutral' | 'warning' | 'error';
+  role?: 'note' | 'status' | 'alert';
+  label?: string;
+  className?: string;
+}
+
+function StateCard({
+  title,
+  children,
+  tone = 'neutral',
+  role = 'note',
+  label,
+  className = '',
+}: StateCardProps) {
+  const toneClass = {
+    neutral: 'border-outline-variant/30 bg-surface-container-high/80 text-on-surface',
+    warning: 'border-warning/40 bg-warning/10 text-warning',
+    error: 'border-error/40 bg-error/10 text-error',
+  }[tone];
+
+  return (
+    <div
+      role={role}
+      aria-label={label ?? title}
+      className={`rounded-xl border px-4 py-3 shadow-sm shadow-black/10 backdrop-blur ${toneClass} ${className}`}
+    >
+      <p className="text-[10px] font-bold uppercase tracking-widest">{title}</p>
+      <div className="mt-1 text-xs leading-relaxed">{children}</div>
+    </div>
+  );
+}
+
 export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const parseResult = useMemo(() => parseJson(value), [value]);
+  const byteLength = value.length; // ASCII-safe proxy; good enough for thresholds
+  const isTooLarge = byteLength >= SIZE_LIMIT;
+  const isLarge = !isTooLarge && byteLength >= SIZE_WARN;
 
   const tree: JsonNode | null = useMemo(() => {
+    if (isTooLarge) return null;
     if (!parseResult.ok || parseResult.value === undefined) return null;
     return buildJsonTree(parseResult.value as JsonValue);
-  }, [parseResult]);
+  }, [isTooLarge, parseResult]);
 
   const filteredTree: JsonNode | null = useMemo(() => {
     if (tree === null) return null;
@@ -75,9 +114,6 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
 
   const { isDragOver, dragHandlers } = useJsonDrop({ onChange });
 
-  const byteLength = value.length; // ASCII-safe proxy; good enough for thresholds
-  const isTooLarge = byteLength >= SIZE_LIMIT;
-  const isLarge = !isTooLarge && byteLength >= SIZE_WARN;
   const documentStatus =
     value.trim() === ''
       ? 'Empty'
@@ -151,11 +187,13 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
                   diagnostics={diagnostics}
                 />
                 {value === '' && (
-                  <div
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 flex items-start px-12 pt-4 font-mono text-xs text-outline/80"
-                  >
-                    {PLACEHOLDER}
+                  <div className="pointer-events-none absolute inset-0 flex items-start px-6 pt-5 sm:px-10">
+                    <StateCard title="Empty editor" label="Empty editor" className="max-w-sm">
+                      <p className="font-mono">{PLACEHOLDER}</p>
+                      <p className="mt-1 text-outline">
+                        Drop a file or paste JSON to inspect the tree.
+                      </p>
+                    </StateCard>
                   </div>
                 )}
                 {isDragOver && (
@@ -195,37 +233,43 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
                 />
               </div>
 
-              {/* Size banners */}
               {isTooLarge && (
-                <div
+                <StateCard
+                  title="Document too large"
+                  label="Document too large"
                   role="alert"
-                  className="mx-3 mt-2 rounded-lg border border-error/40 bg-error/10 px-3 py-2 text-xs text-error"
+                  tone="error"
+                  className="mx-3 mt-2"
                 >
                   Document is too large (~{Math.round(byteLength / 1_000_000)} MB). Tree rendering
                   is disabled to avoid freezing the browser. Use a dedicated tool for large files.
-                </div>
+                </StateCard>
               )}
               {isLarge && (
-                <div
+                <StateCard
+                  title="Large document"
+                  label="Large document"
                   role="status"
-                  className="mx-3 mt-2 rounded-lg border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-warning"
+                  tone="warning"
+                  className="mx-3 mt-2"
                 >
                   Large document — tree may be slow (~{Math.round(byteLength / 1_000_000)} MB).
-                </div>
+                </StateCard>
               )}
 
-              {/* Invalid JSON error card */}
               {!parseResult.ok && value.trim() !== '' && (
-                <div
+                <StateCard
+                  title="Invalid JSON"
+                  label="Invalid JSON"
                   role="alert"
-                  className="mx-3 mt-2 rounded-lg border border-error/40 bg-error/10 px-3 py-2 text-xs text-error"
+                  tone="error"
+                  className="mx-3 mt-2"
                 >
-                  <p className="font-semibold">Invalid JSON</p>
                   <p className="mt-0.5 font-mono">{parseResult.message}</p>
                   <p className="mt-0.5 text-outline">
                     Line {parseResult.line}, Col {parseResult.col}
                   </p>
-                </div>
+                </StateCard>
               )}
 
               <div className="flex-1 min-h-0 overflow-auto">
@@ -233,9 +277,20 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
                   <JsonTreeView
                     root={filteredTree}
                     placeholder={
-                      parseResult.ok && tree !== null && filteredTree === null
-                        ? 'No matches found'
-                        : PLACEHOLDER
+                      parseResult.ok && tree !== null && filteredTree === null ? (
+                        'No matches found'
+                      ) : (
+                        <StateCard
+                          title="Empty tree"
+                          label="Empty tree"
+                          className="mx-auto max-w-sm"
+                        >
+                          <p className="font-mono">{PLACEHOLDER}</p>
+                          <p className="mt-1 text-outline">
+                            Parsed keys and values will appear here once the document is valid.
+                          </p>
+                        </StateCard>
+                      )
                     }
                   />
                 )}
