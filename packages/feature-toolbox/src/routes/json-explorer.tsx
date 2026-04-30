@@ -83,9 +83,11 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
       ? 'Empty'
       : !parseResult.ok
         ? 'Invalid'
-        : isTooLarge
-          ? 'Too large'
-          : 'Valid';
+        : isLarge
+          ? 'Large'
+          : isTooLarge
+            ? 'Too large'
+            : 'Valid';
 
   return (
     <section
@@ -97,8 +99,13 @@ export function JsonExplorerView({ value, onChange }: JsonExplorerViewProps) {
         <div>
           <p className="text-[10px] font-bold uppercase tracking-widest text-outline">Toolbox</p>
           <h1 className="text-lg font-semibold text-on-surface">JSON Explorer</h1>
+          <p className="text-xs text-outline">Editor and parsed tree</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-outline">
+        <div
+          role="status"
+          aria-label="Document status"
+          className="flex flex-wrap items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-outline"
+        >
           <span className="rounded-full border border-white/10 bg-surface-container px-2.5 py-1">
             {documentStatus}
           </span>

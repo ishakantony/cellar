@@ -1,7 +1,15 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { act } from 'react';
 import { JsonExplorerPage, JsonExplorerView } from './json-explorer';
+
+vi.mock('@cellar/ui', async () => {
+  const actual = await vi.importActual<typeof import('@cellar/ui')>('@cellar/ui');
+  return {
+    ...actual,
+    CodeMirrorEditor: () => <div className="cm-editor" />,
+  };
+});
 
 describe('JsonExplorerPage', () => {
   it('renders the explorer as a framed workspace with editor and tree panes', () => {
@@ -40,7 +48,21 @@ function getRightPane(container: HTMLElement): HTMLElement {
   return right;
 }
 
+function getDocumentStatus(): HTMLElement {
+  return screen.getByRole('status', { name: /document status/i });
+}
+
 describe('JsonExplorerView', () => {
+  it.each([
+    { value: '', status: /empty/i },
+    { value: '{"name":"Ada"}', status: /valid/i },
+    { value: 'not-valid-json', status: /invalid/i },
+  ])('shows $status in the workspace header', ({ value, status }) => {
+    render(<JsonExplorerView value={value} onChange={() => {}} />);
+
+    expect(within(getDocumentStatus()).getByText(status)).toBeInTheDocument();
+  });
+
   it('shows placeholder when value is empty', () => {
     const { container } = render(<JsonExplorerView value="" onChange={() => {}} />);
     const right = getRightPane(container);
@@ -60,6 +82,15 @@ describe('JsonExplorerView', () => {
     const alert = screen.getByRole('alert');
     expect(alert).toBeInTheDocument();
     expect(alert.textContent).toMatch(/invalid json/i);
+  });
+
+  it('shows warning-sized documents in the workspace header', () => {
+    const warningSizedJson = JSON.stringify({ payload: 'a'.repeat(5_000_000) });
+    render(<JsonExplorerView value={warningSizedJson} onChange={() => {}} />);
+
+    const workspace = screen.getByRole('region', { name: /json explorer workspace/i });
+    const documentStatus = within(workspace).getByRole('status', { name: /document status/i });
+    expect(within(documentStatus).getByText(/large/i)).toBeInTheDocument();
   });
 
   it('updates the tree when controlled value changes', () => {
