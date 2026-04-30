@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router';
-import { Braces, Binary } from 'lucide-react';
+import { Braces, Binary, Link } from 'lucide-react';
 import type { FeatureModule } from '@cellar/shell-contract';
 
 const featureModule: FeatureModule = {
@@ -19,9 +19,17 @@ const featureModule: FeatureModule = {
         return { Component: m.Base64Page };
       },
     },
+    {
+      path: 'url-encoder',
+      lazy: async () => {
+        const m = await import('./routes/url-encoder');
+        return { Component: m.UrlEncoderPage };
+      },
+    },
   ],
   nav: [
     {
+      title: 'Explorers',
       items: [
         {
           id: 'json-explorer',
@@ -34,6 +42,17 @@ const featureModule: FeatureModule = {
           label: 'Base64',
           href: '/toolbox/base64',
           icon: Binary,
+        },
+      ],
+    },
+    {
+      title: 'Encoders',
+      items: [
+        {
+          id: 'url-encoder',
+          label: 'URL Encoder',
+          href: '/toolbox/url-encoder',
+          icon: Link,
         },
       ],
     },

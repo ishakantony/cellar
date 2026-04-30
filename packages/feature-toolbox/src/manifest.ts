@@ -1,4 +1,4 @@
-import { Wrench, Braces, FileJson, Binary } from 'lucide-react';
+import { Wrench, Braces, FileJson, Binary, Link } from 'lucide-react';
 import type { FeatureManifest, PaletteCommand } from '@cellar/shell-contract';
 
 export const toolboxStaticCommands: PaletteCommand[] = [
@@ -25,6 +25,14 @@ export const toolboxStaticCommands: PaletteCommand[] = [
     group: 'Toolbox',
     kind: 'navigate',
     href: '/toolbox/base64',
+  },
+  {
+    id: 'toolbox-open-url-encoder',
+    label: 'Open URL Encoder',
+    icon: Link,
+    group: 'Toolbox',
+    kind: 'navigate',
+    href: '/toolbox/url-encoder',
   },
 ];
 
