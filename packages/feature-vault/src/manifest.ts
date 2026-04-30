@@ -9,18 +9,10 @@ import {
   Image as ImageIcon,
   FileText,
   FolderPlus,
-  PanelLeftClose,
 } from 'lucide-react';
 import type { FeatureManifest, PaletteCommand } from '@cellar/shell-contract';
 import { useAssetDrawer } from './hooks/use-asset-drawer';
 import { useCollectionModal } from './hooks/use-collection-modal';
-
-/**
- * Custom DOM event key that the shell listens on to toggle the sidebar.
- * Vault dispatches this event from its "Toggle sidebar" palette command so
- * the manifest doesn't need to import shell-owned Zustand stores.
- */
-export const VAULT_TOGGLE_SIDEBAR_EVENT = 'cellar:toggle-sidebar';
 
 /**
  * Static palette commands contributed by the Vault feature. These are
@@ -111,16 +103,6 @@ export const vaultStaticCommands: PaletteCommand[] = [
     group: 'Quick Actions',
     kind: 'action',
     action: () => useCollectionModal.getState().openCreate(),
-  },
-  {
-    id: 'vault-toggle-sidebar',
-    label: 'Toggle sidebar',
-    icon: PanelLeftClose,
-    group: 'Quick Actions',
-    kind: 'action',
-    action: () => {
-      document.dispatchEvent(new CustomEvent(VAULT_TOGGLE_SIDEBAR_EVENT));
-    },
   },
 ];
 

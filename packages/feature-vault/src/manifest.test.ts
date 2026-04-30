@@ -24,4 +24,9 @@ describe('feature-vault manifest', () => {
       }
     }
   });
+
+  it('does not include "Toggle sidebar" in vault staticCommands (it belongs to the shell)', () => {
+    const toggleCmd = (manifest.staticCommands ?? []).find(c => c.label === 'Toggle sidebar');
+    expect(toggleCmd).toBeUndefined();
+  });
 });

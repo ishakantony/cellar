@@ -14,6 +14,7 @@ export {
   type PaletteGroupResult,
   type PaletteGroupStatus,
 } from './palette-aggregator';
+export { shellStaticCommands, SHELL_TOGGLE_SIDEBAR_EVENT } from './shell-static-commands';
 export {
   useLastActiveFeature,
   LAST_ACTIVE_FEATURE_KEY,

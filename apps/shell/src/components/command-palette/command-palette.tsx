@@ -6,6 +6,7 @@ import { Search, Loader2, AlertCircle } from 'lucide-react';
 import { useCommandPalette } from '@/hooks/use-command-palette';
 import { registry } from '@/shell/feature-registry';
 import { aggregatePaletteResults } from '@/shell/palette-aggregator';
+import { shellStaticCommands } from '@/shell/shell-static-commands';
 import { cn } from '@cellar/ui';
 import type { FeatureModule, PaletteCommand, PaletteItem } from '@cellar/shell-contract';
 import type { NamedPaletteProvider } from '@/shell/palette-aggregator';
@@ -58,9 +59,10 @@ export function CommandPalette() {
   const [recentItems, setRecentItems] = useState<PaletteItem[]>([]);
   const [modulesLoading, setModulesLoading] = useState(false);
 
-  // Collect static commands from all manifests
+  // Collect static commands from shell and all feature manifests
   const allStaticCommands = useMemo(() => {
-    return registry.list().flatMap(entry => entry.manifest.staticCommands ?? []);
+    const featureCommands = registry.list().flatMap(entry => entry.manifest.staticCommands ?? []);
+    return [...shellStaticCommands, ...featureCommands];
   }, []);
 
   // Determine active feature by checking which manifest's basePath is a prefix
