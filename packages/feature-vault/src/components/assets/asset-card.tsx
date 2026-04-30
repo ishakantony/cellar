@@ -47,7 +47,7 @@ export function AssetCard({ asset, onTogglePin, onDelete, compact = false }: Ass
         hoverable
         onClick={() => openView(asset.id)}
         padding="sm"
-        className="flex items-center gap-3 hover:bg-surface-container group cursor-pointer"
+        className="flex items-center gap-3 hover:bg-surface-container-high group cursor-pointer"
       >
         <IconBadge
           icon={config.icon}

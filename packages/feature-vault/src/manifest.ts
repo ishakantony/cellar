@@ -9,7 +9,6 @@ import {
   Image as ImageIcon,
   FileText,
   FolderPlus,
-  LogOut,
   PanelLeftClose,
 } from 'lucide-react';
 import type { FeatureManifest, PaletteCommand } from '@cellar/shell-contract';
@@ -112,20 +111,6 @@ export const vaultStaticCommands: PaletteCommand[] = [
     group: 'Quick Actions',
     kind: 'action',
     action: () => useCollectionModal.getState().openCreate(),
-  },
-  {
-    id: 'vault-sign-out',
-    label: 'Sign out',
-    icon: LogOut,
-    group: 'Quick Actions',
-    kind: 'action',
-    action: async () => {
-      await fetch('/api/auth/sign-out', {
-        method: 'POST',
-        credentials: 'include',
-      });
-      window.location.href = '/sign-in';
-    },
   },
   {
     id: 'vault-toggle-sidebar',

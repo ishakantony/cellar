@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { LogOut, Settings as SettingsIcon } from 'lucide-react';
-import { Avatar, cn, useClickOutside } from '@cellar/ui';
+import { Avatar, Button, cn, useClickOutside } from '@cellar/ui';
 
 export interface UserMenuProps {
   user: {
@@ -52,31 +52,31 @@ export function UserMenu({ user, onSignOut, onNavigateSettings, className }: Use
             <p className="truncate text-[11px] text-outline">{user.email}</p>
           </div>
           <div className="my-1 border-t border-white/10" />
-          <button
+          <Button
             role="menuitem"
-            type="button"
+            variant="ghost"
             onClick={() => {
               setOpen(false);
               onNavigateSettings();
             }}
-            className="flex w-full items-center gap-2 px-3 py-2 text-xs text-on-surface-variant transition-colors hover:bg-surface-bright"
+            className="w-full justify-start gap-2 px-3 py-2 text-xs normal-case tracking-normal font-normal text-on-surface-variant hover:text-on-surface-variant"
           >
             <SettingsIcon className="h-3.5 w-3.5" />
             Settings
-          </button>
+          </Button>
           <div className="my-1 border-t border-white/10" />
-          <button
+          <Button
             role="menuitem"
-            type="button"
+            variant="ghost"
             onClick={() => {
               setOpen(false);
               onSignOut();
             }}
-            className="flex w-full items-center gap-2 px-3 py-2 text-xs text-error transition-colors hover:bg-error/10"
+            className="w-full justify-start gap-2 px-3 py-2 text-xs normal-case tracking-normal font-normal text-error hover:text-error hover:bg-error/10"
           >
             <LogOut className="h-3.5 w-3.5" />
             Sign out
-          </button>
+          </Button>
         </div>
       )}
     </div>

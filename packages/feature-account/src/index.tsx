@@ -1,4 +1,4 @@
-import type { FeatureModule } from '@cellar/shell-contract';
+import type { FeatureModule, NavSection } from '@cellar/shell-contract';
 import { SettingsPage } from './routes/settings';
 
 /**
@@ -9,7 +9,7 @@ import { SettingsPage } from './routes/settings';
  */
 const featureModule: FeatureModule = {
   routes: [{ path: 'settings', element: <SettingsPage /> }],
-  nav: [],
+  nav: [] as NavSection[],
 };
 
 export default featureModule;

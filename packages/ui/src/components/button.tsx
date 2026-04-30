@@ -7,15 +7,10 @@ export const allButtonSizes = ['sm', 'md', 'lg'] as const;
 export type ButtonVariant = (typeof allButtonVariants)[number];
 export type ButtonSize = (typeof allButtonSizes)[number];
 
-export interface ButtonProps {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  children: React.ReactNode;
-  disabled?: boolean;
   loading?: boolean;
-  onClick?: () => void;
-  type?: 'button' | 'submit' | 'reset';
-  className?: string;
 }
 
 const variantClasses: Record<string, string> = {
@@ -41,14 +36,13 @@ export function Button({
   children,
   disabled = false,
   loading = false,
-  onClick,
   type = 'button',
   className,
+  ...rest
 }: ButtonProps) {
   return (
     <button
       type={type}
-      onClick={onClick}
       disabled={disabled || loading}
       className={cn(
         'flex items-center justify-center gap-1.5 rounded font-bold uppercase tracking-widest transition-all disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed',
@@ -56,6 +50,7 @@ export function Button({
         sizeClasses[size],
         className
       )}
+      {...rest}
     >
       {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
       {children}

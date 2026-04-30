@@ -63,6 +63,19 @@ export const TYPE_CONFIG: Record<
   },
 };
 
+export const TYPE_TO_SLUG: Record<AssetType, string> = {
+  SNIPPET: 'snippets',
+  PROMPT: 'prompts',
+  LINK: 'links',
+  NOTE: 'notes',
+  IMAGE: 'images',
+  FILE: 'files',
+};
+
+export const SLUG_TO_TYPE: Record<string, AssetType> = Object.fromEntries(
+  Object.entries(TYPE_TO_SLUG).map(([type, slug]) => [slug, type as AssetType])
+);
+
 export const ASSET_TYPE_OPTIONS: { value: AssetType; label: string }[] = [
   { value: 'SNIPPET', label: 'Snippet' },
   { value: 'PROMPT', label: 'Prompt' },

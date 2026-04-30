@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router';
 import { cn } from '@cellar/ui';
-import type { NavItem } from '@cellar/shell-contract';
+import type { NavSection } from '@cellar/shell-contract';
 import { useSidebarCollapse } from '@/shell/stores/sidebar-collapse';
 import {
   resolvedEntries as defaultResolvedEntries,
@@ -58,7 +58,7 @@ export function FeatureSidebar({ resolved, className }: FeatureSidebarProps) {
     findActiveFeature(lastActivePath, list) ??
     list.find(e => e.entry.manifest.rail !== false);
 
-  const nav: NavItem[] = active?.module.nav ?? [];
+  const nav: NavSection[] = active?.module.nav ?? [];
 
   return (
     <aside
@@ -79,7 +79,7 @@ export function FeatureSidebar({ resolved, className }: FeatureSidebarProps) {
         )}
       >
         <FeatureSidebarHeader label={active?.entry.manifest.label ?? ''} />
-        <FeatureNavList items={nav} pathname={pathname} />
+        <FeatureNavList sections={nav} pathname={pathname} />
       </div>
     </aside>
   );

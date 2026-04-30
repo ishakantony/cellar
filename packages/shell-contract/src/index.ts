@@ -22,6 +22,12 @@ export interface NavItem {
   icon?: ComponentType<{ className?: string }>;
 }
 
+/** A labeled group of nav items rendered as a sidebar section. */
+export interface NavSection {
+  title?: string;
+  items: NavItem[];
+}
+
 export type PaletteCommandKind = 'navigate' | 'action';
 
 /**
@@ -83,7 +89,7 @@ export interface FeatureManifest {
  */
 export interface FeatureModule {
   routes: RouteObject[];
-  nav: NavItem[];
+  nav: NavSection[];
   paletteProvider?: PaletteProvider;
 }
 

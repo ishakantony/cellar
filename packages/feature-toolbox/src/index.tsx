@@ -1,4 +1,5 @@
 import { Navigate } from 'react-router';
+import { Braces } from 'lucide-react';
 import type { FeatureModule } from '@cellar/shell-contract';
 
 /**
@@ -22,7 +23,18 @@ const featureModule: FeatureModule = {
       },
     },
   ],
-  nav: [],
+  nav: [
+    {
+      items: [
+        {
+          id: 'json-explorer',
+          label: 'JSON Explorer',
+          href: '/toolbox/json-explorer',
+          icon: Braces,
+        },
+      ],
+    },
+  ],
 };
 
 export default featureModule;

@@ -1,7 +1,9 @@
 import { useCallback, useRef, useState, type ReactNode } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 import { parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
 import { toast } from 'sonner';
-import { ASSET_TYPES, type AssetSort } from '@cellar/shared';
+import { type AssetSort, type AssetType } from '@cellar/shared';
+import { SLUG_TO_TYPE, TYPE_TO_SLUG } from '../../lib/asset-types';
 import { AssetsFilterTabs } from '../../components/assets/assets-filter-tabs';
 import { AssetsToolbar } from '../../components/assets/assets-toolbar';
 import { AssetsView } from '../../components/assets/assets-view';
@@ -22,17 +24,23 @@ export function AssetsListPage() {
   const searchRef = useRef<HTMLInputElement>(null);
   useSlashFocus(searchRef);
 
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  // Derive the selected asset type from the URL path segment (e.g. /vault/assets/snippets → SNIPPET).
+  const slug = pathname.split('/').pop();
+  const selectedType: AssetType | null = (slug && SLUG_TO_TYPE[slug]) ?? null;
+
   const [filters, setFilters] = useQueryStates(
     {
       q: parseAsString.withDefault(''),
-      type: parseAsStringLiteral(ASSET_TYPES),
       sort: parseAsStringLiteral(SORT_VALUES).withDefault('newest'),
     },
     { throttleMs: 250 }
   );
   const [viewMode, setViewMode] = useViewMode();
 
-  const { q: searchQuery, type: selectedType, sort } = filters;
+  const { q: searchQuery, sort } = filters;
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [assetToDelete, setAssetToDelete] = useState<string | null>(null);
@@ -69,6 +77,17 @@ export function AssetsListPage() {
       toast.error('Failed to delete asset');
     }
   }, [assetToDelete, deleteAsset]);
+
+  function handleTypeChange(type: AssetType | null) {
+    const typeSlug = type ? TYPE_TO_SLUG[type] : null;
+    const path = typeSlug ? `/vault/assets/${typeSlug}` : '/vault/assets';
+    // Preserve q and sort in the URL when switching types.
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('q', searchQuery);
+    if (sort !== 'newest') params.set('sort', sort);
+    const search = params.toString();
+    navigate(search ? `${path}?${search}` : path);
+  }
 
   const assets: AssetSummary[] = assetsQuery.data ?? [];
   const assetItems = assets.map(asset => ({
@@ -111,7 +130,7 @@ export function AssetsListPage() {
 
       <AssetsFilterTabs
         selectedType={selectedType}
-        onTypeChange={type => setFilters({ type })}
+        onTypeChange={handleTypeChange}
         className="mt-3 mb-4"
       />
 
