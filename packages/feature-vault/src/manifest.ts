@@ -130,6 +130,7 @@ export const manifest: FeatureManifest = {
   icon: Package,
   basePath: '/vault',
   rail: true,
+  accent: 'var(--color-vault-accent)',
   staticCommands: vaultStaticCommands,
 };
 

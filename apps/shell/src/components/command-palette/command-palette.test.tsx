@@ -47,14 +47,14 @@ describe('CommandPalette', () => {
 
   it('renders the search input', () => {
     render(<CommandPalette />, { wrapper: makeWrapper() });
-    expect(screen.getByPlaceholderText('Search or run a command…')).toBeDefined();
+    expect(screen.getByPlaceholderText('Search assets, collections…')).toBeDefined();
   });
 
   it('renders the keyboard hint footer', () => {
     render(<CommandPalette />, { wrapper: makeWrapper() });
-    expect(screen.getByText('select')).toBeDefined();
-    expect(screen.getByText('navigate')).toBeDefined();
-    expect(screen.getByText('close')).toBeDefined();
+    expect(screen.getByText(/navigate/)).toBeDefined();
+    expect(screen.getByText(/open/)).toBeDefined();
+    expect(screen.getByText(/close/)).toBeDefined();
   });
 
   it('does not render when closed', () => {

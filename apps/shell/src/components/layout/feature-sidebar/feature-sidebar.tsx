@@ -1,7 +1,6 @@
 import { useLocation } from 'react-router';
 import { cn } from '@cellar/ui';
 import type { NavSection } from '@cellar/shell-contract';
-import { useSidebarCollapse } from '@/shell/stores/sidebar-collapse';
 import {
   resolvedEntries as defaultResolvedEntries,
   registry as defaultRegistry,
@@ -9,9 +8,19 @@ import {
 import type { ResolvedFeatureRegistryEntry } from '@/shell/route-composer';
 import type { FeatureRegistry } from '@/shell/registry';
 import { useLastActiveFeature } from '@/shell/stores/last-active-feature';
+import { AppSwitcher } from './app-switcher';
 import { FeatureNavList } from './feature-nav-list';
+import { SidebarUserFooter } from './sidebar-user-footer';
+
+export interface FeatureSidebarUser {
+  name: string;
+  email: string;
+  image?: string | null;
+}
 
 export interface FeatureSidebarProps {
+  user: FeatureSidebarUser;
+  onNavigateSettings: () => void;
   /** Optional override for tests. Defaults to the shell's running entries. */
   resolved?: ResolvedFeatureRegistryEntry[];
   /** Optional override used when the sidebar host wants a non-default registry. */
@@ -23,8 +32,6 @@ function findActiveFeature(
   pathname: string,
   resolved: ResolvedFeatureRegistryEntry[]
 ): ResolvedFeatureRegistryEntry | undefined {
-  // Prefer the longest matching basePath so nested features (if added later)
-  // win over shorter prefixes.
   let best: ResolvedFeatureRegistryEntry | undefined;
   for (const entry of resolved) {
     const base = entry.entry.manifest.basePath;
@@ -38,59 +45,52 @@ function findActiveFeature(
 }
 
 /**
- * Per-feature sidebar host. Reads the active feature from the URL and renders
- * its `module.nav`. Width transition mirrors the rail's so the two zones feel
- * coordinated.
+ * Single 220px sidebar with three zones:
+ *   1. App-switcher pill + popover (top)
+ *   2. Feature nav list (middle, scrolls)
+ *   3. User footer with settings cog (bottom)
  *
- * The skeleton + error code paths are wired even though the shell currently
- * resolves modules eagerly (see `feature-registry.ts`). When #014 (or a later
- * issue) flips to lazy module loading, this host already speaks the protocol.
+ * The active feature is derived from the URL with a fallback to the
+ * last-active feature, then to the first rail-visible registry entry.
  */
-export function FeatureSidebar({ resolved, className }: FeatureSidebarProps) {
+export function FeatureSidebar({
+  user,
+  onNavigateSettings,
+  resolved,
+  registry,
+  className,
+}: FeatureSidebarProps) {
   const list = resolved ?? defaultResolvedEntries;
-  const { collapsed } = useSidebarCollapse();
+  const reg = registry ?? defaultRegistry;
   const { pathname } = useLocation();
   const { path: lastActivePath } = useLastActiveFeature();
 
-  // Active feature: route match -> last-active fallback -> first rail-visible.
   const active =
     findActiveFeature(pathname, list) ??
     findActiveFeature(lastActivePath, list) ??
     list.find(e => e.entry.manifest.rail !== false);
 
   const nav: NavSection[] = active?.module.nav ?? [];
+  const accent = active?.entry.manifest.accent;
+  const switcherEntries = reg.list().filter(e => e.manifest.rail !== false);
 
   return (
     <aside
       aria-label={active ? `${active.entry.manifest.label} navigation` : 'Feature navigation'}
-      data-collapsed={collapsed ? 'true' : 'false'}
       className={cn(
-        'hidden h-full shrink-0 overflow-hidden border-r border-white/5',
-        'bg-surface-container-low/60',
-        'transition-[width,border-color] duration-300 ease-in-out md:flex',
-        collapsed ? 'w-0 border-transparent' : 'w-56',
+        'hidden h-full w-[220px] shrink-0 flex-col border-r border-outline-variant',
+        'bg-surface-container-low md:flex',
         className
       )}
     >
-      <div
-        className={cn(
-          'flex min-h-0 flex-1 flex-col py-6 transition-[opacity,transform] duration-200 ease-in-out',
-          collapsed ? 'pointer-events-none -translate-x-2 opacity-0' : 'translate-x-0 opacity-100'
-        )}
-      >
-        <FeatureSidebarHeader label={active?.entry.manifest.label ?? ''} />
-        <FeatureNavList sections={nav} pathname={pathname} />
+      <div className="px-2.5 pt-2.5">
+        <AppSwitcher entries={switcherEntries} active={active?.entry} />
       </div>
-    </aside>
-  );
-}
 
-function FeatureSidebarHeader({ label }: { label: string }) {
-  if (!label) return null;
-  return (
-    <div className="px-6 pb-4">
-      <p className="text-[10px] uppercase tracking-widest text-outline">{label}</p>
-    </div>
+      <FeatureNavList sections={nav} pathname={pathname} accent={accent} />
+
+      <SidebarUserFooter user={user} onNavigateSettings={onNavigateSettings} />
+    </aside>
   );
 }
 
@@ -102,15 +102,10 @@ export function FeatureSidebarSkeleton() {
   return (
     <div className="space-y-2 px-4 py-2" aria-hidden="true">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="h-6 rounded bg-muted/40 animate-pulse" />
+        <div key={i} className="h-6 rounded bg-surface-container-high animate-pulse" />
       ))}
     </div>
   );
 }
 
-/**
- * Re-export the default registry so external callers can pair the sidebar
- * with a custom retry handler in error cases. Not used by the running shell
- * yet — kept for the future lazy path.
- */
 export { defaultRegistry as featureSidebarDefaultRegistry };

@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
-import { FolderPlus, Pin } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { ASSET_TYPES } from '@cellar/shared';
-import { Button } from '@cellar/ui';
+import { ConfirmDialog, SectionHeader, cn } from '@cellar/ui';
 import { TYPE_CONFIG } from '../lib/asset-types';
 import { useDashboardQuery } from '../hooks/queries/use-dashboard';
 import { useAssetDrawer } from '../hooks/use-asset-drawer';
@@ -18,52 +18,65 @@ import {
 } from '../hooks/mutations/use-collection-mutations';
 import { AssetCard } from '../components/assets/asset-card';
 import { CollectionCard } from '../components/collections/collection-card';
-import { ConfirmDialog } from '@cellar/ui';
+
+const VAULT_ACCENT = 'var(--color-vault-accent)';
 
 // ---------------------------------------------------------------------------
-// Quick-capture row
+// Quick-capture row — horizontal pill bar + amber primary CTA
 // ---------------------------------------------------------------------------
-
-const COLLECTION_CAPTURE = {
-  key: 'collection',
-  label: 'Collection',
-  iconWrap: 'bg-teal-500/10 text-teal-400',
-} as const;
 
 function QuickCaptureRow() {
   const { openCreate: openAssetCreate } = useAssetDrawer();
-  const { openCreate: openCollectionCreate } = useCollectionModal();
 
   return (
-    <section>
-      <h2 className="mb-3 text-[10px] font-bold uppercase tracking-wide text-outline">
-        Quick capture
-      </h2>
-      <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-        {ASSET_TYPES.map(type => {
-          const config = TYPE_CONFIG[type];
-          const Icon = config.icon;
-          return (
-            <button
-              key={type}
-              onClick={() => openAssetCreate({ type })}
-              className="flex flex-col items-center gap-2.5 rounded-xl py-4 px-2 border border-white/5 bg-surface-container hover:bg-surface-container-high transition-colors cursor-pointer"
-            >
-              <div className={`rounded-lg p-2 ${config.iconWrap}`}>
-                <Icon className="h-5 w-5" />
-              </div>
-              <span className="text-[10px] font-medium text-slate-300">{config.label}</span>
-            </button>
-          );
-        })}
+    <section className="rounded-lg border border-outline-variant bg-surface-container px-4 py-3.5">
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="shrink-0 text-xs font-medium text-on-surface-faint">Add to vault</span>
+        <span className="h-4 w-px shrink-0 bg-outline-variant" aria-hidden="true" />
+        <div className="flex flex-1 flex-wrap gap-1.5">
+          {ASSET_TYPES.map(type => {
+            const config = TYPE_CONFIG[type];
+            const Icon = config.icon;
+            return (
+              <button
+                key={type}
+                type="button"
+                onClick={() => openAssetCreate({ type })}
+                className={cn(
+                  'group flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium',
+                  'border border-outline-variant text-on-surface-muted',
+                  'transition-colors'
+                )}
+                style={
+                  {
+                    ['--type-color' as string]: config.color,
+                  } as React.CSSProperties
+                }
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = `color-mix(in srgb, ${config.color} 10%, transparent)`;
+                  e.currentTarget.style.borderColor = `color-mix(in srgb, ${config.color} 35%, transparent)`;
+                  e.currentTarget.style.color = config.color;
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = '';
+                  e.currentTarget.style.borderColor = '';
+                  e.currentTarget.style.color = '';
+                }}
+              >
+                <Icon className="h-3 w-3" />
+                {config.label}
+              </button>
+            );
+          })}
+        </div>
         <button
-          onClick={openCollectionCreate}
-          className={`flex flex-col items-center gap-2.5 rounded-xl py-4 px-2 border border-white/5 bg-surface-container hover:bg-surface-container-high transition-colors cursor-pointer`}
+          type="button"
+          onClick={() => openAssetCreate()}
+          className="ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90"
+          style={{ background: VAULT_ACCENT }}
         >
-          <div className={`rounded-lg p-2 ${COLLECTION_CAPTURE.iconWrap}`}>
-            <FolderPlus className="h-5 w-5" />
-          </div>
-          <span className="text-[10px] font-medium text-slate-300">{COLLECTION_CAPTURE.label}</span>
+          <Plus className="h-3 w-3" />
+          New asset
         </button>
       </div>
     </section>
@@ -71,94 +84,83 @@ function QuickCaptureRow() {
 }
 
 // ---------------------------------------------------------------------------
-// Overview bento
+// Vault breakdown — segmented bar + 6-up tile grid
 // ---------------------------------------------------------------------------
 
-interface OverviewBentoProps {
+interface VaultBreakdownProps {
   total: number;
-  pinnedCount: number;
-  collectionCount: number;
-  byType: Record<string, number>;
+  byType: Partial<Record<(typeof ASSET_TYPES)[number], number>>;
 }
 
-function BigStatCard({
-  label,
-  value,
-  className,
-}: {
-  label: string;
-  value: number;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`rounded-xl border border-white/5 bg-surface-container p-4 flex flex-col items-center justify-center gap-2 text-center ${className ?? ''}`}
-    >
-      <p className="text-[10px] uppercase tracking-wide text-outline">{label}</p>
-      <p className="text-4xl font-bold text-slate-100">{value}</p>
-    </div>
-  );
-}
+function VaultBreakdown({ total, byType }: VaultBreakdownProps) {
+  const safeTotal = Math.max(total, 1);
 
-function OverviewBento({ total, pinnedCount, collectionCount, byType }: OverviewBentoProps) {
   return (
-    <section>
-      <h2 className="mb-3 text-[10px] font-bold uppercase tracking-wide text-outline">Overview</h2>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" data-testid="stats-strip">
-        {/* Left: summary stats — total + collections stacked, pinned beside them */}
-        <div className="grid grid-cols-2 gap-3">
-          <BigStatCard label="Total assets" value={total} />
-          {/* Pinned spans both rows on col 2 */}
-          <div className="rounded-xl border border-white/5 bg-surface-container p-4 row-span-2 flex flex-col items-center justify-center gap-4">
-            <div className="rounded-2xl p-4 bg-amber-500/10 text-amber-400">
-              <Pin className="h-10 w-10" />
-            </div>
-            <div className="flex items-center gap-2">
-              <p className="text-4xl font-bold text-slate-100">{pinnedCount}</p>
-              <p className="text-[10px] uppercase tracking-wide text-outline">Pinned</p>
-            </div>
-          </div>
-          <BigStatCard label="Total collections" value={collectionCount} />
-        </div>
+    <section className="mb-7">
+      <SectionHeader title="Your vault" count={total} />
 
-        {/* Right: per-type breakdown */}
-        <div className="grid grid-cols-3 gap-3">
-          {ASSET_TYPES.map(type => {
-            const config = TYPE_CONFIG[type];
-            const Icon = config.icon;
-            return (
-              <div
-                key={type}
-                className="rounded-xl border border-white/5 bg-surface-container p-3 grid grid-cols-2 items-center"
-              >
-                <div className={`rounded-xl p-2.5 justify-self-center ${config.iconWrap}`}>
-                  <Icon className="h-6 w-6" />
-                </div>
-                <div className="flex flex-col items-center justify-self-center">
-                  <p className="text-2xl font-bold text-slate-100">{byType[type] ?? 0}</p>
-                  <p className="text-[10px] text-outline">{config.label}</p>
-                </div>
+      {/* Segmented bar */}
+      <div className="mb-4 flex h-1.5 gap-px overflow-hidden rounded-full">
+        {ASSET_TYPES.map(type => {
+          const config = TYPE_CONFIG[type];
+          const count = byType[type] ?? 0;
+          if (count === 0) return null;
+          return (
+            <span
+              key={type}
+              className="block"
+              style={{ flex: count, background: config.color }}
+              aria-label={`${config.label}: ${count}`}
+            />
+          );
+        })}
+      </div>
+
+      {/* 6-up grid */}
+      <div
+        className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6"
+        data-testid="vault-breakdown"
+      >
+        {ASSET_TYPES.map(type => {
+          const config = TYPE_CONFIG[type];
+          const Icon = config.icon;
+          const count = byType[type] ?? 0;
+          return (
+            <div
+              key={type}
+              className={cn(
+                'group rounded-lg border border-outline-variant bg-surface-container-high p-3.5',
+                'transition-colors hover:bg-surface-container-highest'
+              )}
+            >
+              <div className="mb-2 flex items-center justify-between">
+                <span
+                  className="flex h-7 w-7 items-center justify-center rounded-md"
+                  style={{
+                    background: `color-mix(in srgb, ${config.color} 18%, transparent)`,
+                    color: config.color,
+                  }}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                </span>
+                <span className="text-lg font-bold tracking-tight text-foreground">{count}</span>
               </div>
-            );
-          })}
-        </div>
+              <p className="text-[11px] font-medium text-on-surface-variant">{config.label}s</p>
+              <div className="mt-2 h-0.5 overflow-hidden rounded-full bg-surface-bright">
+                <div
+                  className="h-full rounded-full transition-all"
+                  style={{
+                    width: `${(count / safeTotal) * 100}%`,
+                    background: config.color,
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })}
       </div>
     </section>
   );
-}
-
-// ---------------------------------------------------------------------------
-// Section heading
-// ---------------------------------------------------------------------------
-
-function SectionHeading({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="mb-3 text-[10px] font-bold uppercase tracking-wide text-outline">{children}</h2>
-  );
-}
-
-function EmptyHint({ message }: { message: string }) {
-  return <p className="text-[11px] text-outline py-4">{message}</p>;
 }
 
 // ---------------------------------------------------------------------------
@@ -170,22 +172,116 @@ function EmptyVault() {
   const { openCreate: openCollectionCreate } = useCollectionModal();
 
   return (
-    <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
+    <div className="flex flex-col items-center justify-center gap-4 py-20 text-center">
       <div className="text-4xl">📦</div>
       <div>
-        <p className="text-sm font-semibold text-slate-200">Your vault is empty</p>
-        <p className="text-xs text-outline mt-1 max-w-xs">
+        <p className="text-sm font-semibold text-foreground">Your vault is empty</p>
+        <p className="mt-1 max-w-xs text-xs text-on-surface-faint">
           Start by adding a snippet, note, or link — or create a collection to organise your assets.
         </p>
       </div>
-      <div className="flex gap-2 mt-2">
-        <Button variant="primary" size="sm" onClick={() => openAssetCreate()}>
+      <div className="mt-2 flex gap-2">
+        <button
+          type="button"
+          onClick={() => openAssetCreate()}
+          className="rounded-md px-3 py-1.5 text-xs font-semibold text-white"
+          style={{ background: VAULT_ACCENT }}
+        >
           New Asset
-        </Button>
-        <Button variant="secondary" size="sm" onClick={openCollectionCreate}>
+        </button>
+        <button
+          type="button"
+          onClick={openCollectionCreate}
+          className="rounded-md border border-outline px-3 py-1.5 text-xs font-medium text-on-surface-variant transition-colors hover:bg-surface-container-high"
+        >
           New Collection
-        </Button>
+        </button>
       </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Recently accessed — compact table
+// ---------------------------------------------------------------------------
+
+interface RecentRow {
+  id: string;
+  type: keyof typeof TYPE_CONFIG;
+  title: string;
+  pinned: boolean;
+  language?: string | null;
+  updatedAt: Date;
+}
+
+function formatRelative(date: Date): string {
+  const diffMs = Date.now() - date.getTime();
+  const minutes = Math.floor(diffMs / 60_000);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  if (minutes < 1) return 'now';
+  if (minutes < 60) return `${minutes}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  if (days < 7) return `${days}d ago`;
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+function RecentTable({ rows, onView }: { rows: RecentRow[]; onView: (id: string) => void }) {
+  return (
+    <div className="overflow-hidden rounded-lg border border-outline-variant bg-surface-container-high">
+      <div className="grid grid-cols-[1fr_88px_70px] gap-0 border-b border-outline-variant px-3.5 py-2">
+        {['Name', 'Type', 'Updated'].map(h => (
+          <div
+            key={h}
+            className="text-[10px] font-medium uppercase tracking-wider text-on-surface-faint"
+          >
+            {h}
+          </div>
+        ))}
+      </div>
+      {rows.map((row, i) => {
+        const config = TYPE_CONFIG[row.type];
+        const Icon = config.icon;
+        return (
+          <button
+            key={row.id}
+            type="button"
+            onClick={() => onView(row.id)}
+            className={cn(
+              'grid w-full grid-cols-[1fr_88px_70px] items-center gap-0 px-3.5 py-2 text-left',
+              'transition-colors hover:bg-surface-container-highest',
+              i < rows.length - 1 ? 'border-b border-outline-variant' : ''
+            )}
+          >
+            <div className="flex min-w-0 items-center gap-2">
+              <span
+                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-sm"
+                style={{
+                  background: `color-mix(in srgb, ${config.color} 18%, transparent)`,
+                  color: config.color,
+                }}
+              >
+                <Icon className="h-3 w-3" />
+              </span>
+              <span className="truncate text-xs font-medium text-foreground">{row.title}</span>
+            </div>
+            <div>
+              <span
+                className="inline-flex items-center rounded-sm px-1.5 py-0.5 font-mono text-[10px] font-medium tracking-wider"
+                style={{
+                  background: `color-mix(in srgb, ${config.color} 10%, transparent)`,
+                  color: config.color,
+                }}
+              >
+                {config.label.toLowerCase()}
+              </span>
+            </div>
+            <span className="font-mono text-[10px] text-on-surface-faint">
+              {formatRelative(row.updatedAt)}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -194,9 +290,17 @@ function EmptyVault() {
 // Dashboard page
 // ---------------------------------------------------------------------------
 
+const DATE_OPTS: Intl.DateTimeFormatOptions = {
+  weekday: 'long',
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+};
+
 export function VaultHomePage() {
   const navigate = useNavigate();
   const dashboardQuery = useDashboardQuery();
+  const { openView } = useAssetDrawer();
 
   const togglePinAsset = useTogglePinAssetMutation();
   const deleteAsset = useDeleteAssetMutation();
@@ -251,54 +355,61 @@ export function VaultHomePage() {
     }
   }, [deleteCollection, deleteCollectionId]);
 
-  if (dashboardQuery.isLoading) {
-    return (
-      <div>
-        <div className="mb-6">
-          <h1 className="text-xl font-bold tracking-tight text-slate-100">Dashboard</h1>
-          <p className="text-xs text-outline mt-1">Loading your vault…</p>
-        </div>
-        <QuickCaptureRow />
-      </div>
-    );
-  }
-
+  const today = new Date().toLocaleDateString(undefined, DATE_OPTS);
   const data = dashboardQuery.data;
   const counts = data?.counts ?? { total: 0, byType: {}, pinnedCount: 0 };
   const pinnedAssets = (data?.pinnedAssets ?? []).slice(0, 6);
   const pinnedCollections = (data?.pinnedCollections ?? []).slice(0, 6);
-  const recentAssets = (data?.recentAssets ?? []).slice(0, 10);
-  const collectionCount = pinnedCollections.length;
+  const recentAssets: RecentRow[] = (data?.recentAssets ?? []).slice(0, 8).map(a => ({
+    id: a.id,
+    type: a.type,
+    title: a.title,
+    pinned: a.pinned,
+    language: a.language,
+    updatedAt: new Date(a.updatedAt),
+  }));
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-xl font-bold tracking-tight text-slate-100">Dashboard</h1>
-        <p className="text-xs text-outline mt-1">Welcome back — here's your vault at a glance</p>
+    <div className="mx-auto max-w-[1200px]">
+      {/* Page header */}
+      <div className="mb-6">
+        <div className="mb-1 flex items-baseline gap-2.5">
+          <h1 className="text-[22px] font-bold leading-none tracking-tight text-foreground">
+            Dashboard
+          </h1>
+          <span className="font-mono text-xs text-on-surface-faint">vault.cellar</span>
+        </div>
+        <p className="text-xs text-on-surface-muted">{today}</p>
       </div>
 
-      <QuickCaptureRow />
+      {/* Quick capture */}
+      <div className="mb-7">
+        <QuickCaptureRow />
+      </div>
 
-      {counts.total === 0 ? (
+      {dashboardQuery.isLoading ? (
+        <p className="text-xs text-on-surface-faint">Loading your vault…</p>
+      ) : counts.total === 0 ? (
         <EmptyVault />
       ) : (
-        <>
-          <OverviewBento
-            total={counts.total}
-            pinnedCount={counts.pinnedCount}
-            collectionCount={collectionCount}
-            byType={counts.byType}
-          />
+        <div className="grid grid-cols-1 items-start gap-7 lg:grid-cols-[minmax(0,1fr)_280px]">
+          {/* Left column */}
+          <div className="min-w-0">
+            <VaultBreakdown total={counts.total} byType={counts.byType} />
 
-          {/* Pinned panels */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Pinned assets */}
-            <section>
-              <SectionHeading>Pinned assets</SectionHeading>
+            <section className="mb-7">
+              <SectionHeader
+                title="Pinned"
+                count={pinnedAssets.length}
+                action={pinnedAssets.length > 0 ? 'View all' : undefined}
+                onAction={() => navigate('/vault/assets')}
+              />
               {pinnedAssets.length === 0 ? (
-                <EmptyHint message="No pinned assets yet — pin any asset to see it here." />
+                <p className="py-3 text-[11px] text-on-surface-faint">
+                  No pinned assets yet — pin any asset to see it here.
+                </p>
               ) : (
-                <div className="grid grid-cols-1 gap-2" data-testid="pinned-assets">
+                <div className="grid grid-cols-1 gap-2 lg:grid-cols-2" data-testid="pinned-assets">
                   {pinnedAssets.map(asset => (
                     <AssetCard
                       key={asset.id}
@@ -319,13 +430,35 @@ export function VaultHomePage() {
               )}
             </section>
 
-            {/* Pinned collections */}
             <section>
-              <SectionHeading>Pinned collections</SectionHeading>
-              {pinnedCollections.length === 0 ? (
-                <EmptyHint message="No pinned collections yet — pin a collection to see it here." />
+              <SectionHeader
+                title="Recently accessed"
+                action={recentAssets.length > 0 ? 'View all' : undefined}
+                onAction={() => navigate('/vault/assets')}
+              />
+              {recentAssets.length === 0 ? (
+                <p className="py-3 text-[11px] text-on-surface-faint">No recent activity.</p>
               ) : (
-                <div className="grid grid-cols-1 gap-2" data-testid="pinned-collections">
+                <div data-testid="recent-assets">
+                  <RecentTable rows={recentAssets} onView={openView} />
+                </div>
+              )}
+            </section>
+          </div>
+
+          {/* Right column */}
+          <aside className="min-w-0">
+            <section>
+              <SectionHeader
+                title="Pinned collections"
+                count={pinnedCollections.length}
+                action="Manage"
+                onAction={() => navigate('/vault/collections')}
+              />
+              {pinnedCollections.length === 0 ? (
+                <p className="py-3 text-[11px] text-on-surface-faint">No pinned collections yet.</p>
+              ) : (
+                <div className="flex flex-col gap-1.5" data-testid="pinned-collections">
                   {pinnedCollections.map(col => (
                     <CollectionCard
                       key={col.id}
@@ -347,35 +480,8 @@ export function VaultHomePage() {
                 </div>
               )}
             </section>
-          </div>
-
-          {/* Recent activity */}
-          <section>
-            <SectionHeading>Recent activity</SectionHeading>
-            {recentAssets.length === 0 ? (
-              <EmptyHint message="No recent activity." />
-            ) : (
-              <div className="grid grid-cols-1 gap-2" data-testid="recent-assets">
-                {recentAssets.map(asset => (
-                  <AssetCard
-                    key={asset.id}
-                    asset={{
-                      id: asset.id,
-                      type: asset.type,
-                      title: asset.title,
-                      language: asset.language,
-                      pinned: asset.pinned,
-                      updatedAt: new Date(asset.updatedAt),
-                    }}
-                    compact
-                    onTogglePin={() => handleTogglePinAsset(asset.id)}
-                    onDelete={() => setDeleteAssetId(asset.id)}
-                  />
-                ))}
-              </div>
-            )}
-          </section>
-        </>
+          </aside>
+        </div>
       )}
 
       <ConfirmDialog

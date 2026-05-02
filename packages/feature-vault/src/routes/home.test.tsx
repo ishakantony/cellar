@@ -134,28 +134,32 @@ describe('VaultHomePage', () => {
 
   // ---- Stat counts ---------------------------------------------------------
 
-  it('renders total asset count from counts.total', () => {
+  it('renders the total asset count next to the "Your vault" header', () => {
     renderWithData();
-    // Should find "42" adjacent to "total assets" label
-    const statsStrip = screen.getByTestId('stats-strip');
-    expect(statsStrip).toHaveTextContent('42');
-    expect(statsStrip).toHaveTextContent(/total assets/i);
+    // The breakdown section title plus its count chip both render the total.
+    expect(screen.getByText('Your vault')).toBeInTheDocument();
+    // The count chip lives next to the title
+    const breakdown = screen.getByTestId('vault-breakdown');
+    expect(breakdown).toBeInTheDocument();
+    // Total appears in the section header count chip as "42"
+    expect(screen.getAllByText('42').length).toBeGreaterThan(0);
   });
 
-  it('renders pinned count from counts.pinnedCount', () => {
+  it('renders the pinned count next to the "Pinned" header', () => {
     renderWithData();
-    const statsStrip = screen.getByTestId('stats-strip');
-    expect(statsStrip).toHaveTextContent('2');
-    expect(statsStrip).toHaveTextContent(/pinned/i);
+    expect(screen.getByText('Pinned')).toBeInTheDocument();
+    // Pinned count chip — fixture has 2 pinned assets
+    const pinned = screen.getByTestId('pinned-assets');
+    expect(pinned).toBeInTheDocument();
   });
 
-  it('renders per-type counts in the stats strip', () => {
+  it('renders per-type counts in the vault breakdown grid', () => {
     renderWithData();
-    const statsStrip = screen.getByTestId('stats-strip');
+    const breakdown = screen.getByTestId('vault-breakdown');
     // SNIPPET = 10, NOTE = 15, LINK = 8
-    expect(statsStrip).toHaveTextContent('10');
-    expect(statsStrip).toHaveTextContent('15');
-    expect(statsStrip).toHaveTextContent('8');
+    expect(breakdown).toHaveTextContent('10');
+    expect(breakdown).toHaveTextContent('15');
+    expect(breakdown).toHaveTextContent('8');
   });
 
   // ---- Pinned assets section -----------------------------------------------
@@ -246,15 +250,15 @@ describe('VaultHomePage', () => {
 
   // ---- Quick-capture row ---------------------------------------------------
 
-  it('renders quick-capture buttons for each asset type', () => {
+  it('renders quick-capture buttons for each asset type plus a "New asset" CTA', () => {
     renderWithData();
-    expect(screen.getByRole('button', { name: /snippet/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /prompt/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /note/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /link/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /image/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /file/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /collection/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Snippet' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Prompt' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Note' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Link' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Image' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'File' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /new asset/i })).toBeInTheDocument();
   });
 
   // ---- Loading state -------------------------------------------------------

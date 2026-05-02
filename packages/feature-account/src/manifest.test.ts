@@ -8,8 +8,9 @@ describe('feature-account manifest', () => {
     expect(manifest.basePath).toBe('/account');
   });
 
-  it('does not appear in the rail', () => {
-    expect(manifest.rail).toBe(false);
+  it('appears in the app switcher with the account accent', () => {
+    expect(manifest.rail).toBe(true);
+    expect(manifest.accent).toBe('var(--color-account-accent)');
   });
 
   it('exposes the settings route under basePath', () => {
@@ -18,7 +19,9 @@ describe('feature-account manifest', () => {
     expect(settings).toBeDefined();
   });
 
-  it('exposes an empty nav array (no rail/sidebar entries)', () => {
-    expect(featureModule.nav).toEqual([]);
+  it('exposes a nav section with the Settings link', () => {
+    expect(featureModule.nav.length).toBeGreaterThan(0);
+    const items = featureModule.nav.flatMap(s => s.items);
+    expect(items.some(i => i.href === '/account/settings')).toBe(true);
   });
 });

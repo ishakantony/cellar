@@ -1,4 +1,5 @@
 import { Search } from 'lucide-react';
+import { Kbd } from '@cellar/ui';
 import { useCommandPalette } from '@/hooks/use-command-palette';
 
 export function CommandTrigger() {
@@ -6,18 +7,16 @@ export function CommandTrigger() {
 
   return (
     <>
-      {/* Desktop: search input style matching /collections SearchInput */}
+      {/* Desktop: full-width search-style trigger */}
       <button
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open command palette"
-        className="hidden md:flex relative items-center w-full max-w-sm rounded-lg bg-surface-container pl-9 pr-14 py-2.5 text-sm text-outline/50 hover:bg-surface-container-high transition-colors"
+        className="hidden md:flex relative items-center w-full max-w-[260px] h-8 rounded-md border border-outline bg-surface-container-high px-3 gap-2 text-xs text-on-surface-faint hover:text-on-surface-variant transition-colors"
       >
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-outline pointer-events-none" />
-        <span className="flex-1 text-left truncate">Search or run a command…</span>
-        <kbd className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center rounded border border-white/20 bg-white/5 px-1 py-0.5 text-[10px] font-medium text-outline/60">
-          ⌘K
-        </kbd>
+        <Search className="h-3.5 w-3.5 shrink-0" />
+        <span className="flex-1 text-left truncate">Search assets, collections…</span>
+        <Kbd>⌘K</Kbd>
       </button>
 
       {/* Mobile: magnifier icon only */}
@@ -25,7 +24,7 @@ export function CommandTrigger() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open command palette"
-        className="md:hidden flex items-center justify-center h-9 w-9 rounded-lg bg-surface-container text-outline hover:bg-surface-container-high transition-colors"
+        className="md:hidden flex items-center justify-center h-9 w-9 rounded-md bg-surface-container-high text-on-surface-variant hover:bg-surface-container-highest transition-colors"
       >
         <Search className="h-4 w-4" />
       </button>

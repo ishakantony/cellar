@@ -95,9 +95,15 @@ export interface FeatureManifest {
   basePath: string;
   /**
    * When `false` the feature is reachable by route/URL but does not appear in
-   * the rail. Defaults to `true`. The Account feature sets this to `false`.
+   * the app switcher popover.
    */
   rail?: boolean;
+  /**
+   * Brand color for this feature. Used by the sidebar app-switcher pill,
+   * popover tile, and any feature-themed UI. Accepts any valid CSS color
+   * string (most commonly a CSS variable like `var(--color-vault-accent)`).
+   */
+  accent?: string;
   staticCommands?: PaletteCommand[];
   Skeleton?: ComponentType;
 }

@@ -29,7 +29,8 @@ export const manifest: FeatureManifest = {
   label: 'Account',
   icon: User,
   basePath: '/account',
-  rail: false,
+  rail: true,
+  accent: 'var(--color-account-accent)',
   staticCommands: accountStaticCommands,
 };
 

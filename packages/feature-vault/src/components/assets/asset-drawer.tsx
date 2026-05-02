@@ -95,8 +95,8 @@ function AssetCreateContent({
 
   return (
     <>
-      <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-white/5 shrink-0">
-        <h2 className="text-base font-bold text-slate-100">New Asset</h2>
+      <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-outline-variant shrink-0">
+        <h2 className="text-base font-bold text-foreground">New Asset</h2>
         <IconButton icon={X} size="sm" onClick={onClose} label="Close drawer" />
       </div>
 
@@ -198,8 +198,8 @@ function AssetViewContent({
   if (mode === 'edit') {
     return (
       <>
-        <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-white/5 shrink-0">
-          <h2 className="text-base font-bold text-slate-100">Edit Asset</h2>
+        <div className="flex items-center justify-between px-6 pt-6 pb-5 border-b border-outline-variant shrink-0">
+          <h2 className="text-base font-bold text-foreground">Edit Asset</h2>
           <IconButton icon={X} size="sm" onClick={onClose} label="Close drawer" />
         </div>
 
@@ -232,16 +232,16 @@ function AssetViewContent({
 
   return (
     <>
-      <div className="flex items-center gap-3 px-6 pt-6 pb-5 border-b border-white/5 shrink-0">
+      <div className="flex items-center gap-3 px-6 pt-6 pb-5 border-b border-outline-variant shrink-0">
         <IconBadge
           icon={config.icon}
           variant={asset.type.toLowerCase() as IconBadgeProps['variant']}
           size="md"
         />
         <div className="flex-1 min-w-0">
-          <h2 className="text-base font-bold text-slate-100 leading-tight">{asset.title}</h2>
+          <h2 className="text-base font-bold text-foreground leading-tight">{asset.title}</h2>
           {asset.description && (
-            <p className="text-xs text-outline mt-0.5 line-clamp-2">{asset.description}</p>
+            <p className="text-xs text-on-surface-faint mt-0.5 line-clamp-2">{asset.description}</p>
           )}
         </div>
         <div className="flex items-center gap-1 shrink-0">
@@ -277,7 +277,7 @@ function AssetViewContent({
                 <Link
                   key={collection.id}
                   to={`/vault/collections/${collection.id}`}
-                  className="inline-flex items-center rounded-full bg-surface-container px-3 py-1 text-xs text-on-surface-variant hover:bg-surface-container-high hover:text-slate-100 transition-colors"
+                  className="inline-flex items-center rounded-full bg-surface-container px-3 py-1 text-xs text-on-surface-variant hover:bg-surface-container-high hover:text-foreground transition-colors"
                 >
                   {collection.name}
                 </Link>
@@ -287,7 +287,7 @@ function AssetViewContent({
         )}
       </div>
 
-      <div className="px-6 py-4 border-t border-white/5 shrink-0 flex items-center gap-4 text-[10px] text-outline">
+      <div className="px-6 py-4 border-t border-outline-variant shrink-0 flex items-center gap-4 text-[10px] text-on-surface-faint">
         <Tooltip content={formatExactTime(asset.createdAt)}>
           <span>Created {formatRelativeTime(asset.createdAt)}</span>
         </Tooltip>

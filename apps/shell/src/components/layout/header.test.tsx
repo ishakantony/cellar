@@ -1,8 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, act, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router';
 import { Header } from './header';
-import { useSidebarCollapse } from '@/shell/stores/sidebar-collapse';
 import { useCommandPalette } from '@/hooks/use-command-palette';
 
 const user = {
@@ -12,7 +11,6 @@ const user = {
 };
 
 function renderHeader(overrides: Partial<React.ComponentProps<typeof Header>> = {}) {
-  const onMobileMenuToggle = overrides.onMobileMenuToggle ?? vi.fn();
   const onSignOut = overrides.onSignOut ?? vi.fn();
   const onNavigateSettings = overrides.onNavigateSettings ?? vi.fn();
   const utils = render(
@@ -21,25 +19,14 @@ function renderHeader(overrides: Partial<React.ComponentProps<typeof Header>> = 
         <Route
           path="/"
           element={
-            <Header
-              user={user}
-              onMobileMenuToggle={onMobileMenuToggle}
-              onSignOut={onSignOut}
-              onNavigateSettings={onNavigateSettings}
-            />
+            <Header user={user} onSignOut={onSignOut} onNavigateSettings={onNavigateSettings} />
           }
         />
       </Routes>
     </MemoryRouter>
   );
-  return { ...utils, onMobileMenuToggle, onSignOut, onNavigateSettings };
+  return { ...utils, onSignOut, onNavigateSettings };
 }
-
-beforeEach(() => {
-  act(() => {
-    useSidebarCollapse.setState({ collapsed: false });
-  });
-});
 
 afterEach(() => {
   act(() => {
@@ -48,42 +35,19 @@ afterEach(() => {
 });
 
 describe('Header', () => {
-  it('renders the three header zones', () => {
+  it('renders the command-palette trigger and user-menu trigger', () => {
     renderHeader();
-    // Left: mobile menu toggle + sidebar collapse toggle
-    expect(screen.getByLabelText('Open menu')).toBeInTheDocument();
-    expect(screen.getByLabelText(/sidebar/i)).toBeInTheDocument();
-    // Center: command palette trigger (two responsive variants)
     expect(screen.getAllByLabelText('Open command palette').length).toBeGreaterThan(0);
-    // Right: user avatar trigger
     expect(screen.getByLabelText('Open user menu')).toBeInTheDocument();
   });
 
-  it('does NOT render a logo or notifications icon in the header', () => {
+  it('does NOT render a sidebar toggle, mobile menu, logo, or notifications icon', () => {
     const { container } = renderHeader();
+    expect(screen.queryByLabelText(/collapse sidebar/i)).toBeNull();
+    expect(screen.queryByLabelText(/expand sidebar/i)).toBeNull();
+    expect(screen.queryByLabelText(/open menu/i)).toBeNull();
     expect(container.querySelector('[data-testid="logo"]')).toBeNull();
     expect(screen.queryByLabelText(/notification/i)).toBeNull();
-  });
-
-  it('shows the ⌘B shortcut hint in the sidebar-collapse tooltip on hover', () => {
-    renderHeader();
-    const toggle = screen.getByLabelText('Collapse sidebar');
-    // Tooltip wraps the button in an inline-flex div – fire enter on the
-    // wrapper to open the portal.
-    const wrapper = toggle.parentElement!;
-    fireEvent.mouseEnter(wrapper);
-
-    const tooltip = document.querySelector('[role="tooltip"]');
-    expect(tooltip).not.toBeNull();
-    // Tooltip text should include either ⌘B or Ctrl+B depending on platform.
-    expect(tooltip!.textContent).toMatch(/(⌘|Ctrl\+)B/);
-  });
-
-  it('toggles the sidebar-collapse store when the toggle is clicked', () => {
-    renderHeader();
-    expect(useSidebarCollapse.getState().collapsed).toBe(false);
-    fireEvent.click(screen.getByLabelText('Collapse sidebar'));
-    expect(useSidebarCollapse.getState().collapsed).toBe(true);
   });
 
   it('opens the user menu and shows the user name and email', () => {

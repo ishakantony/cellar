@@ -4,121 +4,170 @@
 @source "../../../apps/**/*.{ts,tsx}";
 @source "../../../packages/**/*.{ts,tsx}";
 
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+
 @theme inline {
-  --font-sans: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Fira Code', monospace;
 
-  --color-background: #0a0e14;
-  --color-foreground: #d9e6fd;
-  --color-surface: #0a0e14;
-  --color-surface-dim: #0a0e14;
-  --color-surface-bright: #1e2d41;
-  --color-surface-container-lowest: #000000;
-  --color-surface-container-low: #0e141c;
-  --color-surface-container: #121a25;
-  --color-surface-container-high: #16202e;
-  --color-surface-container-highest: #1a2637;
-  --color-surface-variant: #1a2637;
+  /* Backgrounds — kept the existing semantic names so utilities like
+     bg-surface-container continue to work; only the values are remapped. */
+  --color-background: #0d1117;
+  --color-foreground: #edf1fb;
+  --color-surface: #0d1117;
+  --color-surface-dim: #080b12;
+  --color-surface-bright: #27334c;
+  --color-surface-container-lowest: #080b12;
+  --color-surface-container-low: #0d1117;
+  --color-surface-container: #131922;
+  --color-surface-container-high: #1a2236;
+  --color-surface-container-highest: #202a3e;
+  --color-surface-variant: #1a2236;
 
-  --color-primary: #b9c3ff;
-  --color-primary-dim: #a7b5ff;
-  --color-primary-container: #0033c2;
-  --color-on-primary: #002eb1;
-  --color-on-primary-container: #c6ceff;
-  --color-on-primary-fixed: #002daf;
-  --color-on-primary-fixed-variant: #2149e1;
-  --color-primary-fixed: #dee1ff;
-  --color-primary-fixed-dim: #cbd2ff;
-  --color-inverse-primary: #264de5;
+  /* Primary — indigo, matches design */
+  --color-primary: #7882f5;
+  --color-primary-dim: #6470f0;
+  --color-primary-container: #6470f0;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #edf1fb;
+  --color-on-primary-fixed: #ffffff;
+  --color-on-primary-fixed-variant: #4a55cc;
+  --color-primary-fixed: #c6cdff;
+  --color-primary-fixed-dim: #aab2ff;
+  --color-inverse-primary: #4a55cc;
 
-  --color-secondary: #9f9da1;
-  --color-secondary-dim: #9f9da1;
-  --color-secondary-container: #3b3b3f;
-  --color-on-secondary: #202023;
-  --color-on-secondary-container: #c1bec3;
-  --color-secondary-fixed: #e4e1e6;
-  --color-secondary-fixed-dim: #d6d3d8;
+  --color-secondary: #a8b5cc;
+  --color-secondary-dim: #8895ad;
+  --color-secondary-container: #2a3650;
+  --color-on-secondary: #0d1117;
+  --color-on-secondary-container: #edf1fb;
+  --color-secondary-fixed: #d9e1f0;
+  --color-secondary-fixed-dim: #c1cadd;
 
-  --color-tertiary: #f1e7ff;
-  --color-tertiary-dim: #d6c9ea;
-  --color-tertiary-container: #e4d7f9;
-  --color-on-tertiary: #5c526e;
-  --color-on-tertiary-container: #534a65;
-  --color-tertiary-fixed: #e4d7f9;
-  --color-tertiary-fixed-dim: #d6c9ea;
+  --color-tertiary: #c6cdff;
+  --color-tertiary-dim: #aab2ff;
+  --color-tertiary-container: #2c3787;
+  --color-on-tertiary: #0d1117;
+  --color-on-tertiary-container: #edf1fb;
+  --color-tertiary-fixed: #c6cdff;
+  --color-tertiary-fixed-dim: #aab2ff;
 
-  --color-error: #ec7c8a;
-  --color-error-dim: #b95463;
-  --color-error-container: #7f2737;
-  --color-on-error: #490013;
-  --color-on-error-container: #ff97a3;
+  /* Status */
+  --color-error: #ef4444;
+  --color-error-dim: #b03333;
+  --color-error-container: #5a1818;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #fecaca;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-info: #38bdf8;
 
-  --color-on-background: #d9e6fd;
-  --color-on-surface: #d9e6fd;
-  --color-on-surface-variant: #9facc1;
-  --color-outline: #6a768a;
-  --color-outline-variant: #3c495b;
-  --color-inverse-surface: #f8f9ff;
-  --color-inverse-on-surface: #51555c;
-  --color-surface-tint: #b9c3ff;
+  /* Foregrounds */
+  --color-on-background: #edf1fb;
+  --color-on-surface: #edf1fb;
+  --color-on-surface-variant: #a8b5cc;
+  --color-on-surface-muted: #6b7a96;
+  --color-on-surface-faint: #404e66;
 
-  --radius-DEFAULT: 0.125rem;
-  --radius-lg: 0.25rem;
-  --radius-xl: 0.5rem;
-  --radius-full: 0.75rem;
+  /* Borders / outlines */
+  --color-outline: #2a3650;
+  --color-outline-variant: #1a2234;
+  --color-outline-strong: #3d5070;
+
+  --color-inverse-surface: #edf1fb;
+  --color-inverse-on-surface: #1a2236;
+  --color-surface-tint: #7882f5;
+
+  /* Per-app accent colors. Used by the app switcher + feature-themed UI. */
+  --color-vault-accent: #f59e0b;
+  --color-toolbox-accent: #06b6d4;
+  --color-account-accent: #a855f7;
+
+  /* Radii */
+  --radius-sm: 0.25rem; /* 4px */
+  --radius-md: 0.375rem; /* 6px */
+  --radius-lg: 0.5rem; /* 8px */
+  --radius-xl: 0.75rem; /* 12px */
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-popover: 0 8px 32px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 body {
   font-family: var(--font-sans);
   background: var(--color-background);
   color: var(--color-on-background);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background: var(--color-primary-container);
-  color: var(--color-on-primary-container);
+  background: rgba(120, 130, 245, 0.3);
+  color: var(--color-on-surface);
 }
 
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-outline-variant);
-  border-radius: 10px;
+  background: var(--color-outline-strong);
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-outline);
 }
 
+button:focus-visible,
+a:focus-visible,
+[role='button']:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 .custom-glass {
-  background: rgba(22, 32, 46, 0.4);
+  background: rgba(26, 34, 54, 0.5);
   backdrop-filter: blur(12px);
 }
 
 .ghost-border {
-  border: 1px solid rgba(60, 73, 91, 0.2);
+  border: 1px solid rgba(61, 80, 112, 0.25);
 }
 
 .btn-gradient {
-  background: linear-gradient(135deg, #b9c3ff 0%, #0033c2 100%);
+  background: linear-gradient(135deg, #7882f5 0%, #6470f0 100%);
+}
+
+/* Subtle dotted grid texture used by the dashboard background */
+.dash-bg {
+  background-color: var(--color-surface);
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    rgba(255, 255, 255, 0.025) 1px,
+    transparent 0
+  );
+  background-size: 24px 24px;
 }
 
 [data-sonner-toaster] {
-  --normal-bg: #16202e; /* --color-surface-container-high */
-  --normal-text: #d9e6fd; /* --color-foreground */
-  --normal-border: rgba(255, 255, 255, 0.1);
+  --normal-bg: #1a2236;
+  --normal-text: #edf1fb;
+  --normal-border: rgba(255, 255, 255, 0.08);
 
-  --success-bg: #1a2e22;
-  --success-text: #86efac;
-  --success-border: rgba(134, 239, 172, 0.15);
+  --success-bg: #0e2a1a;
+  --success-text: #4ade80;
+  --success-border: rgba(74, 222, 128, 0.2);
 
-  --error-bg: #2e161b; /* dark variant of --color-error (#ec7c8a) */
-  --error-text: #ec7c8a; /* --color-error */
-  --error-border: rgba(236, 124, 138, 0.2);
+  --error-bg: #2a0e0e;
+  --error-text: #f87171;
+  --error-border: rgba(248, 113, 113, 0.25);
 }
 
 [data-sonner-toast] {

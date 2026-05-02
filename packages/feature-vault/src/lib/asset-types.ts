@@ -16,6 +16,8 @@ export const TYPE_CONFIG: Record<
     iconWrap: string;
     badge: string;
     label: string;
+    /** Hex color used for tints, accent bars, and TypeBadge fills. */
+    color: string;
     defaultLanguage: string;
   }
 > = {
@@ -24,20 +26,23 @@ export const TYPE_CONFIG: Record<
     iconWrap: 'bg-primary/10 text-primary',
     badge: 'text-primary bg-primary/10',
     label: 'Snippet',
+    color: '#7882F5',
     defaultLanguage: 'javascript',
   },
   PROMPT: {
     icon: Terminal,
-    iconWrap: 'bg-tertiary-container/20 text-tertiary',
-    badge: 'text-tertiary bg-tertiary/10',
+    iconWrap: 'bg-amber-500/10 text-amber-400',
+    badge: 'text-amber-400 bg-amber-500/10',
     label: 'Prompt',
+    color: '#F59E0B',
     defaultLanguage: 'markdown',
   },
   NOTE: {
     icon: StickyNote,
-    iconWrap: 'bg-amber-500/10 text-amber-400',
-    badge: 'text-amber-400 bg-amber-500/10',
+    iconWrap: 'bg-violet-500/10 text-violet-400',
+    badge: 'text-violet-400 bg-violet-500/10',
     label: 'Note',
+    color: '#A855F7',
     defaultLanguage: 'markdown',
   },
   LINK: {
@@ -45,6 +50,7 @@ export const TYPE_CONFIG: Record<
     iconWrap: 'bg-cyan-500/10 text-cyan-400',
     badge: 'text-cyan-400 bg-cyan-500/10',
     label: 'Link',
+    color: '#06B6D4',
     defaultLanguage: 'plaintext',
   },
   IMAGE: {
@@ -52,13 +58,15 @@ export const TYPE_CONFIG: Record<
     iconWrap: 'bg-rose-500/10 text-rose-400',
     badge: 'text-rose-400 bg-rose-500/10',
     label: 'Image',
+    color: '#EF4444',
     defaultLanguage: 'plaintext',
   },
   FILE: {
     icon: FileText,
-    iconWrap: 'bg-violet-500/10 text-violet-400',
-    badge: 'text-violet-400 bg-violet-500/10',
+    iconWrap: 'bg-emerald-500/10 text-emerald-400',
+    badge: 'text-emerald-400 bg-emerald-500/10',
     label: 'File',
+    color: '#22C55E',
     defaultLanguage: 'plaintext',
   },
 };

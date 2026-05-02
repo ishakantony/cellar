@@ -42,6 +42,7 @@ export const manifest: FeatureManifest = {
   icon: Wrench,
   basePath: '/toolbox',
   rail: true,
+  accent: 'var(--color-toolbox-accent)',
   staticCommands: toolboxStaticCommands,
 };
 

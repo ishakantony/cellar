@@ -1,6 +1,8 @@
 import { Folder, Pin, PinOff, Trash2, MoreHorizontal, Pencil } from 'lucide-react';
-import { getColorClasses } from '../../lib/colors';
-import { ActionMenu, Card, IconBadge, IconButton } from '@cellar/ui';
+import { ActionMenu, IconButton, cn } from '@cellar/ui';
+
+const DEFAULT_COLOR = '#3b82f6';
+
 interface CollectionCardProps {
   collection: {
     id: string;
@@ -25,15 +27,10 @@ export function CollectionCard({
   onEdit,
   onDelete,
 }: CollectionCardProps) {
-  const colorClasses = getColorClasses(collection.color);
+  const color = collection.color || DEFAULT_COLOR;
 
   const menuItems = [
-    {
-      id: 'edit',
-      label: 'Edit',
-      icon: Pencil,
-      onClick: onEdit,
-    },
+    { id: 'edit', label: 'Edit', icon: Pencil, onClick: onEdit },
     {
       id: 'pin',
       label: collection.pinned ? 'Unpin' : 'Pin',
@@ -66,43 +63,86 @@ export function CollectionCard({
   );
 
   const pinIcon = collection.pinned ? (
-    <Pin className="h-3 w-3 shrink-0 text-amber-400" aria-label="Pinned" />
+    <Pin className="h-3 w-3 shrink-0 text-vault-accent" aria-label="Pinned" />
   ) : null;
+
+  const folderTile = (
+    <span
+      className={cn('flex h-8 w-8 shrink-0 items-center justify-center rounded-md')}
+      style={{ background: `color-mix(in srgb, ${color} 18%, transparent)` }}
+    >
+      <Folder className="h-4 w-4" style={{ color }} />
+    </span>
+  );
 
   if (layout === 'list') {
     return (
-      <Card hoverable onClick={onClick} className="group cursor-pointer" padding="sm">
-        <div className="flex items-center gap-3">
-          <IconBadge icon={Folder} variant="collection" color={colorClasses} size="sm" />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1">
-              {pinIcon}
-              <p className="text-xs font-bold text-slate-200 truncate">{collection.name}</p>
-            </div>
-            {collection.description && (
-              <p className="text-[10px] text-outline truncate">{collection.description}</p>
-            )}
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={onClick}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onClick();
+          }
+        }}
+        className={cn(
+          'group flex items-center gap-2.5 rounded-md px-3 py-2.5 cursor-pointer',
+          'border border-outline-variant bg-surface-container-high',
+          'hover:bg-surface-container-highest hover:border-outline transition-colors'
+        )}
+      >
+        {folderTile}
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1">
+            {pinIcon}
+            <p className="truncate text-xs font-semibold text-foreground">{collection.name}</p>
           </div>
-          <p className="text-[10px] text-outline shrink-0">{collection._count.assets} items</p>
-          {actionMenu}
+          {collection.description && (
+            <p className="truncate text-[10px] text-on-surface-faint mt-0.5">
+              {collection.description}
+            </p>
+          )}
         </div>
-      </Card>
+        <span className="shrink-0 font-mono text-[10px] text-on-surface-faint">
+          {collection._count.assets} items
+        </span>
+        {actionMenu}
+      </div>
     );
   }
 
   return (
-    <Card hoverable onClick={onClick} className="group cursor-pointer">
-      <div className="flex items-center justify-between mb-3">
-        <IconBadge icon={Folder} variant="collection" color={colorClasses} size="md" />
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      className={cn(
+        'group flex flex-col gap-3 rounded-lg p-3.5 cursor-pointer',
+        'border border-outline-variant bg-surface-container-high',
+        'hover:bg-surface-container-highest hover:border-outline transition-colors'
+      )}
+    >
+      <div className="flex items-center justify-between">
+        {folderTile}
         {actionMenu}
       </div>
       <div>
         <div className="flex items-center gap-1">
           {pinIcon}
-          <p className="text-xs font-bold text-slate-200 truncate">{collection.name}</p>
+          <p className="truncate text-xs font-semibold text-foreground">{collection.name}</p>
         </div>
-        <p className="text-[10px] text-outline mt-0.5">{collection._count.assets} items</p>
+        <p className="mt-0.5 font-mono text-[10px] text-on-surface-faint">
+          {collection._count.assets} items
+        </p>
       </div>
-    </Card>
+    </div>
   );
 }

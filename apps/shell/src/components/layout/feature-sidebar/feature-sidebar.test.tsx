@@ -1,18 +1,19 @@
-import { render, screen, act } from '@testing-library/react';
-import { describe, expect, it, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 import { MemoryRouter } from 'react-router';
 import { Folder, LayoutDashboard, Package, User } from 'lucide-react';
 import type { FeatureManifest, FeatureModule } from '@cellar/shell-contract';
 import type { ResolvedFeatureRegistryEntry } from '@/shell/route-composer';
 import { FeatureSidebar } from './feature-sidebar';
-import { useSidebarCollapse } from '@/shell/stores/sidebar-collapse';
+import { createFeatureRegistry } from '@/shell/registry';
 
 function makeResolved(
   id: string,
   basePath: string,
   label: string,
   rail: boolean,
-  module: FeatureModule
+  module: FeatureModule,
+  accent?: string
 ): ResolvedFeatureRegistryEntry {
   const manifest: FeatureManifest = {
     id,
@@ -20,6 +21,7 @@ function makeResolved(
     icon: User,
     basePath,
     rail,
+    accent,
   };
   return {
     entry: { manifest, load: async () => module },
@@ -46,23 +48,37 @@ const accountModule: FeatureModule = {
 };
 
 const resolved: ResolvedFeatureRegistryEntry[] = [
-  makeResolved('vault', '/vault', 'Vault', true, vaultModule),
-  makeResolved('account', '/account', 'Account', false, accountModule),
+  makeResolved('vault', '/vault', 'Vault', true, vaultModule, 'var(--color-vault-accent)'),
+  makeResolved(
+    'account',
+    '/account',
+    'Account',
+    true,
+    accountModule,
+    'var(--color-account-accent)'
+  ),
 ];
 
-beforeEach(() => {
-  act(() => {
-    useSidebarCollapse.setState({ collapsed: false });
-  });
-});
+const registry = createFeatureRegistry(resolved.map(r => r.entry));
+
+const user = { name: 'Test User', email: 'test@example.com' };
+
+function renderSidebar(initialPath: string) {
+  return render(
+    <MemoryRouter initialEntries={[initialPath]}>
+      <FeatureSidebar
+        resolved={resolved}
+        registry={registry}
+        user={user}
+        onNavigateSettings={() => {}}
+      />
+    </MemoryRouter>
+  );
+}
 
 describe('FeatureSidebar', () => {
   it("renders the active feature's nav items based on the URL", () => {
-    render(
-      <MemoryRouter initialEntries={['/vault/assets']}>
-        <FeatureSidebar resolved={resolved} />
-      </MemoryRouter>
-    );
+    renderSidebar('/vault/assets');
 
     expect(screen.getByRole('link', { name: /dashboard/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /all items/i })).toBeInTheDocument();
@@ -70,11 +86,7 @@ describe('FeatureSidebar', () => {
   });
 
   it('marks the matching nav item active via aria-current=page', () => {
-    render(
-      <MemoryRouter initialEntries={['/vault/collections']}>
-        <FeatureSidebar resolved={resolved} />
-      </MemoryRouter>
-    );
+    renderSidebar('/vault/collections');
 
     const collections = screen.getByRole('link', { name: /all collections/i });
     expect(collections).toHaveAttribute('aria-current', 'page');
@@ -83,42 +95,30 @@ describe('FeatureSidebar', () => {
     expect(assets).not.toHaveAttribute('aria-current');
   });
 
-  it('renders Account nav when the URL is under /account, even though Account is rail:false', () => {
-    render(
-      <MemoryRouter initialEntries={['/account/settings']}>
-        <FeatureSidebar resolved={resolved} />
-      </MemoryRouter>
-    );
+  it('renders Account nav when the URL is under /account', () => {
+    renderSidebar('/account/settings');
 
     expect(screen.getByRole('link', { name: /settings/i })).toBeInTheDocument();
-    // Vault entries should not show.
     expect(screen.queryByRole('link', { name: /all items/i })).not.toBeInTheDocument();
   });
 
   it('falls back to the first rail-visible feature when no route matches', () => {
-    render(
-      <MemoryRouter initialEntries={['/somewhere/else']}>
-        <FeatureSidebar resolved={resolved} />
-      </MemoryRouter>
-    );
+    renderSidebar('/somewhere/else');
 
     // Vault is rail-visible and listed first — its nav should appear.
     expect(screen.getByRole('link', { name: /dashboard/i })).toBeInTheDocument();
   });
 
-  it('collapses to width 0 when the sidebar-collapse store is collapsed', () => {
-    act(() => {
-      useSidebarCollapse.setState({ collapsed: true });
-    });
+  it('renders the app switcher pill labeled with the active feature', () => {
+    renderSidebar('/vault');
 
-    const { container } = render(
-      <MemoryRouter initialEntries={['/vault']}>
-        <FeatureSidebar resolved={resolved} />
-      </MemoryRouter>
-    );
+    expect(screen.getByRole('button', { name: /switch app.*current.*vault/i })).toBeInTheDocument();
+  });
 
-    const aside = container.querySelector('aside');
-    expect(aside).toHaveClass('w-0');
-    expect(aside).not.toHaveClass('w-56');
+  it('renders the user footer with name and settings cog', () => {
+    renderSidebar('/vault');
+
+    expect(screen.getByText('Test User')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /account settings/i })).toBeInTheDocument();
   });
 });

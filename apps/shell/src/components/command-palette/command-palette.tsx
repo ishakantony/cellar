@@ -9,7 +9,7 @@ import { resolvedEntries } from '@/shell/feature-registry';
 import { shellStaticCommands } from '@/shell/shell-static-commands';
 import { filterCommandsByScope } from '@/shell/filter-commands-by-scope';
 import { useCommandFrecency, frecencyScore } from '@/shell/stores/command-frecency';
-import { cn } from '@cellar/ui';
+import { cn, Kbd } from '@cellar/ui';
 import type {
   PaletteCommand,
   PaletteItem,
@@ -254,7 +254,7 @@ export function CommandPalette() {
           {/* Dimmed + blurred backdrop */}
           <Dialog.Overlay
             className={cn(
-              'fixed inset-0 z-50 bg-black/60',
+              'fixed inset-0 z-50 bg-black/72',
               'data-[state=open]:animate-in data-[state=closed]:animate-out',
               'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0'
             )}
@@ -266,12 +266,12 @@ export function CommandPalette() {
             aria-describedby={undefined}
             className={cn(
               'fixed z-50 left-1/2 -translate-x-1/2',
-              'w-[calc(100vw-2rem)] max-w-[640px]',
+              'w-[calc(100vw-2rem)] max-w-[580px]',
               'top-0 sm:top-[15vh]',
               'h-screen sm:h-auto sm:max-h-[70vh]',
               'rounded-none sm:rounded-xl',
-              'overflow-hidden shadow-2xl',
-              'bg-surface-container-high border-0 sm:border border-white/10',
+              'overflow-hidden shadow-popover',
+              'bg-surface-container-high border-0 sm:border border-outline-strong',
               'data-[state=open]:animate-in data-[state=closed]:animate-out',
               'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
               'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
@@ -283,30 +283,31 @@ export function CommandPalette() {
 
             <Command shouldFilter={false} className="flex flex-col h-full">
               {/* Search input */}
-              <div className="flex items-center border-b border-white/10 px-3 shrink-0">
-                <Search className="h-4 w-4 shrink-0 text-white/40 mr-2" />
+              <div className="flex items-center gap-2.5 border-b border-outline-variant px-4 shrink-0">
+                <Search className="h-4 w-4 shrink-0 text-on-surface-faint" />
                 <Command.Input
                   value={query}
                   onValueChange={setQuery}
-                  placeholder="Search or run a command…"
+                  placeholder="Search assets, collections…"
                   className={cn(
-                    'flex-1 h-12 bg-transparent text-sm text-white/90',
-                    'placeholder:text-white/30 outline-none border-0'
+                    'flex-1 h-12 bg-transparent text-sm text-foreground',
+                    'placeholder:text-on-surface-faint outline-none border-0'
                   )}
                   autoFocus
                 />
+                <Kbd>esc</Kbd>
               </div>
 
               {/* Result list */}
-              <Command.List className="overflow-y-auto flex-1 p-2">
+              <Command.List className="overflow-y-auto flex-1 py-1.5">
                 {isSearching ? (
-                  <div className="py-8 flex items-center justify-center gap-2 text-sm text-white/30">
+                  <div className="py-8 flex items-center justify-center gap-2 text-sm text-on-surface-faint">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Searching…
                   </div>
                 ) : hasNoResults ? (
-                  <Command.Empty className="py-8 text-center text-sm text-white/30">
-                    No results found.
+                  <Command.Empty className="py-8 text-center text-sm text-on-surface-faint">
+                    No results for "{query}"
                   </Command.Empty>
                 ) : (
                   <>
@@ -366,15 +367,15 @@ export function CommandPalette() {
               </Command.List>
 
               {/* Keyboard hint footer */}
-              <div className="shrink-0 border-t border-white/10 px-3 py-2 flex items-center gap-4 text-[11px] text-white/25">
-                <span>
-                  <kbd className="rounded border border-white/10 px-1">↵</kbd> select
+              <div className="shrink-0 border-t border-outline-variant px-4 py-2 flex items-center gap-3.5 text-[10px] text-on-surface-faint">
+                <span className="inline-flex items-center gap-1">
+                  <Kbd>↑↓</Kbd> navigate
                 </span>
-                <span>
-                  <kbd className="rounded border border-white/10 px-1">↑↓</kbd> navigate
+                <span className="inline-flex items-center gap-1">
+                  <Kbd>↵</Kbd> open
                 </span>
-                <span>
-                  <kbd className="rounded border border-white/10 px-1">esc</kbd> close
+                <span className="inline-flex items-center gap-1">
+                  <Kbd>esc</Kbd> close
                 </span>
               </div>
             </Command>
@@ -394,7 +395,7 @@ const GROUP_HEADING_CLASS = cn(
   '[&>[cmdk-group-heading]]:py-1.5',
   '[&>[cmdk-group-heading]]:text-[11px]',
   '[&>[cmdk-group-heading]]:font-medium',
-  '[&>[cmdk-group-heading]]:text-white/30',
+  '[&>[cmdk-group-heading]]:text-on-surface-faint',
   '[&>[cmdk-group-heading]]:uppercase',
   '[&>[cmdk-group-heading]]:tracking-wider'
 );
@@ -409,7 +410,7 @@ function ItemGroupSection({
   if (group.status === 'error') {
     return (
       <Command.Group heading={group.label} className={GROUP_HEADING_CLASS}>
-        <div className="flex items-center gap-2 px-2 py-2 text-sm text-white/30">
+        <div className="flex items-center gap-2 px-2 py-2 text-sm text-on-surface-faint">
           <AlertCircle className="h-4 w-4 shrink-0" />
           Failed to load results.
         </div>
@@ -420,7 +421,7 @@ function ItemGroupSection({
   if (group.items.length === 0 && group.status === 'loading') {
     return (
       <Command.Group heading={group.label} className={GROUP_HEADING_CLASS}>
-        <div className="flex items-center gap-2 px-2 py-2 text-sm text-white/30">
+        <div className="flex items-center gap-2 px-2 py-2 text-sm text-on-surface-faint">
           <Loader2 className="h-4 w-4 animate-spin shrink-0" />
           Searching…
         </div>
@@ -490,13 +491,13 @@ function StaticCommandGroupSection({
           value={cmd.id}
           onSelect={() => onSelect(cmd)}
           className={cn(
-            'flex items-center gap-3 px-2 py-2 rounded-lg cursor-pointer',
-            'text-sm text-white/80 transition-colors select-none',
-            'data-[selected=true]:bg-white/10 data-[selected=true]:text-white',
-            'aria-selected:bg-white/10 aria-selected:text-white'
+            'flex items-center gap-2.5 px-3 py-1.5 cursor-pointer',
+            'text-sm text-on-surface-variant transition-colors select-none',
+            'data-[selected=true]:bg-surface-container-highest data-[selected=true]:text-foreground',
+            'aria-selected:bg-surface-container-highest aria-selected:text-foreground'
           )}
         >
-          {cmd.icon && <cmd.icon className="h-4 w-4 shrink-0 text-white/40" />}
+          {cmd.icon && <cmd.icon className="h-4 w-4 shrink-0 text-on-surface-faint" />}
           <span className="flex-1 truncate">{cmd.label}</span>
         </Command.Item>
       ))}
@@ -520,17 +521,17 @@ function PaletteItemRow({
       value={item.id}
       onSelect={() => onSelect(item)}
       className={cn(
-        'flex items-center gap-3 px-2 py-2 rounded-lg cursor-pointer',
-        'text-sm text-white/80 transition-colors select-none',
-        'data-[selected=true]:bg-white/10 data-[selected=true]:text-white',
-        'aria-selected:bg-white/10 aria-selected:text-white'
+        'flex items-center gap-2.5 px-3 py-1.5 cursor-pointer',
+        'text-sm text-on-surface-variant transition-colors select-none',
+        'data-[selected=true]:bg-surface-container-highest data-[selected=true]:text-foreground',
+        'aria-selected:bg-surface-container-highest aria-selected:text-foreground'
       )}
     >
-      {item.icon && <item.icon className="h-4 w-4 shrink-0 text-white/40" />}
-      {!item.icon && <Search className="h-4 w-4 shrink-0 text-white/40" />}
+      {item.icon && <item.icon className="h-4 w-4 shrink-0 text-on-surface-faint" />}
+      {!item.icon && <Search className="h-4 w-4 shrink-0 text-on-surface-faint" />}
       <span className="flex-1 truncate">{item.label}</span>
       {item.description && (
-        <span className="text-[11px] text-white/25 shrink-0">{item.description}</span>
+        <span className="text-[11px] text-on-surface-faint shrink-0">{item.description}</span>
       )}
     </Command.Item>
   );
